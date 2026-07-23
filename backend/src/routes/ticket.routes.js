@@ -18,17 +18,10 @@ const {
     requireRole
 } = require("../middleware/auth");
 
-router.patch(
-    "/:id/assign",
-    requireRole("support", "admin"),
-    assignTicket
-);
 // ======================================================
-// Todas las rutas requieren autenticación
+// TODAS LAS RUTAS REQUIEREN AUTENTICACIÓN
 // ======================================================
-
 router.use(requireAuth);
-
 
 // ======================================================
 // EMPLEADOS / SOPORTE / ADMIN
@@ -37,26 +30,38 @@ router.use(requireAuth);
 // Crear ticket
 router.post("/", createTicket);
 
-
 // Dashboard estadísticas
-router.get(
-    "/stats",
-    stats
-);
-
+router.get("/stats", stats);
 
 // Listar tickets
 router.get("/", listTickets);
 
-
 // Ver un ticket
 router.get("/:id", getTicket);
 
+// Agregar comentario
+router.post("/:id/comments", addComment);
+
+// Adjuntar archivo
+router.post("/:id/files", addAttachment);
 
 // ======================================================
 // SOPORTE Y ADMIN
 // ======================================================
 
+// Asignar ticket a un técnico
+router.patch(
+    "/:id/assign",
+    requireRole("support", "admin"),
+    assignTicket
+);
+
+// Tomar ticket
+router.patch(
+    "/:id/take",
+    requireRole("support", "admin"),
+    takeTicket
+);
 
 // Cambiar estado
 router.patch(
@@ -64,17 +69,5 @@ router.patch(
     requireRole("support", "admin"),
     updateTicketStatus
 );
-
-router.post('/:id/comments', addComment);
-router.post('/:id/files', addAttachment);
-
-
-// Tomar ticket
-router.patch(
-    "/:id/take",
-    requireRole("support","admin"),
-    takeTicket
-);
-
 
 module.exports = router;

@@ -64,9 +64,25 @@ async function createTicket(req, res) {
     // ===============================
     // Notificación por Telegram
     // ===============================
+    // ===============================
+// Notificación por Telegram
+// ===============================
+try {
+
+    console.log("===== ENVIANDO TELEGRAM =====");
+
     await enviarNuevoTicket(ticket, req.user);
 
-    res.status(201).json({ ticket });
+    console.log("===== TELEGRAM ENVIADO =====");
+
+} catch (err) {
+
+    console.error("===== ERROR TELEGRAM =====");
+    console.error(err);
+
+}
+
+res.status(201).json({ ticket });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error creando el ticket.' });
@@ -789,3 +805,4 @@ async function legacyUpdateTicketStatus(req, res) {
 }
 
 module.exports = { createTicket, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
+
