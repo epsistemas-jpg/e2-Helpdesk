@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>e2 Energía | Acceso</title>
+
+    <link rel="icon" type="image/x-icon" href="/images/icon/e2.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+   <link rel="stylesheet" href="../../assets/css/login.css">
+
+</head>
+
+<body>
+    <canvas id="canvas"></canvas>
+    <div class="background-glow glow-1"></div>
+    <div class="background-glow glow-2"></div>
+
+    <main class="login-wrapper">
+
+
+        <!-- PANEL DERECHO -->
+
+        <section class="auth-panel">
+
+            <div class="auth-card">
+                <div class="login-logo">
+                    <img src="../../images/logo-E2.png" alt="Logo E2" class="company-logo">
+                </div>
+
+                <div class="tabs">
+
+                    <button type="button" class="tab-btn active" id="loginTab">
+
+                        Iniciar Sesión
+
+                    </button>
+                   
+
+                    <button type="button" class="tab-btn" id="registerTab">
+
+                        Registrarse
+
+                    </button>
+
+                </div>
+
+                <!-- LOGIN -->
+
+                <form id="loginForm" class="auth-form active">
+
+                    <div class="input-group">
+
+                        <label>Correo electrónico</label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input type="email" name="email" placeholder="correo@empresa.com" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Contraseña</label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input type="password" name="password" placeholder="••••••••" required>
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="main-btn">
+
+                        Ingresar al Sistema
+
+                    </button>
+                     <div class="forgot-password">
+
+                        <a href="#" id="forgotPasswordLink">
+                            ¿Olvidaste tu contraseña?
+                        </a>
+
+                    </div>
+
+                </form>
+
+                <!-- REGISTRO -->
+
+                <form id="registerForm" class="auth-form">
+
+                    <div class="input-group">
+
+                        <label>Nombre completo</label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-user"></i>
+
+                            <input type="text" name="name" placeholder="Nombre completo" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Correo electrónico</label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-envelope"></i>
+
+                            <input type="email" name="email" placeholder="correo@empresa.com" required>
+
+                        </div>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Contraseña</label>
+
+                        <div class="input-box">
+
+                            <i class="fa-solid fa-lock"></i>
+
+                            <input type="password" name="password" placeholder="••••••••" required>
+
+                        </div>
+
+                    </div>
+
+                    <button type="submit" class="main-btn">
+
+                        Crear Cuenta
+
+                    </button>
+
+                    <p style="margin-top:20px;text-align:center;">
+
+                        ¿Ya tienes cuenta?
+
+                        <a href="#" id="goLogin" style="color:#c2d500;text-decoration:none;font-weight:600;">
+
+                            Iniciar sesión
+
+                        </a>
+
+                    </p>
+
+                </form>
+
+            </div>
+
+        </section>
+
+    </main>
+    <!-- Modal Recuperar Contraseña -->
+
+<div id="forgotPasswordModal" class="modal">
+
+    <div class="modal-content">
+
+        <h2>Recuperar contraseña</h2>
+
+        <p>
+
+            Ingresa el correo asociado a tu cuenta.
+
+        </p>
+
+        <input
+            type="email"
+            id="resetEmail"
+            placeholder="correo@empresa.com"
+        >
+
+        <div class="modal-buttons">
+
+            <button
+                id="sendResetBtn"
+                class="main-btn"
+            >
+
+                Enviar enlace
+
+            </button>
+
+            <button
+                id="closeResetModal"
+                class="secondary-btn"
+            >
+
+                Cancelar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="otpModal" class="modal otp-modal" role="dialog" aria-modal="true" aria-labelledby="otpTitle">
+    <div class="modal-content otp-content">
+        <div class="otp-icon"><i class="fa-solid fa-shield-halved"></i></div>
+        <h2 id="otpTitle">Verificación en dos pasos</h2>
+        <p>Enviamos un código de 6 dígitos a tu correo. Esta ventana permanecerá abierta hasta validar el código.</p>
+        <form id="otpForm">
+            <input id="otpCode" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" placeholder="000000" required>
+            <p id="otpError" class="otp-error" role="alert"></p>
+            <button id="otpSubmit" type="submit" class="main-btn">Validar código</button>
+        </form>
+        <button id="otpCancel" type="button" class="secondary-btn otp-cancel">Cancelar e iniciar de nuevo</button>
+    </div>
+</div>
+
+<div id="authLoader" class="auth-loader" aria-hidden="true">
+    <div class="loader-card"><div class="skeleton-line skeleton-title"></div><div class="skeleton-line"></div><div class="skeleton-line skeleton-short"></div><p id="loaderText">Procesando...</p></div>
+</div>
+
+    <script type="module" src="../../assets/js/login.js"></script>
+
+</body>
+
+
+</html>

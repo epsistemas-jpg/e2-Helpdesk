@@ -1,0 +1,273 @@
+@import url("./variables.css");
+
+/* ==========================================
+   SIDEBAR
+========================================== */
+
+.sidebar{
+
+    width:var(--sidebar-width);
+
+    min-height:100vh;
+
+    background:#0d0d0d;
+
+    border-right:1px solid var(--border);
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+    padding:28px;
+
+    flex-shrink:0;
+
+}
+
+/* ==========================================
+   LOGO
+========================================== */
+
+.sidebar-logo{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-bottom:45px;
+
+}
+
+.sidebar-logo img{
+
+    width:140px;
+
+}
+
+.sidebar-logo h2{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    color:var(--text);
+
+    letter-spacing:.5px;
+
+}
+
+/* ==========================================
+   USUARIO
+========================================== */
+
+.sidebar-user{
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    text-align:center;
+
+    margin-bottom:40px;
+
+}
+
+.avatar{
+
+    width:72px;
+
+    height:72px;
+
+    border-radius:50%;
+
+    background:#181818;
+
+    border:2px solid var(--primary);
+
+    color:var(--primary);
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    font-size:28px;
+
+    font-weight:700;
+
+    margin-bottom:14px;
+
+}
+
+.sidebar-user h3{
+
+    font-size:17px;
+
+    color:var(--text);
+
+    margin-bottom:6px;
+
+}
+
+.sidebar-user p{
+
+    color:var(--text-light);
+
+    font-size:14px;
+
+}
+
+.sidebar-user small{
+
+    margin-top:6px;
+
+    color:var(--text-muted);
+
+}
+
+/* ==========================================
+   MENÚ
+========================================== */
+
+.sidebar-menu{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    flex:1;
+
+}
+
+.sidebar-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    height:52px;
+
+    padding:0 18px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    transition:var(--transition);
+
+    color:var(--text-light);
+
+    border:1px solid transparent;
+
+    text-decoration:none;
+
+}
+
+.sidebar-item i{
+
+    font-size:19px;
+
+}
+
+.sidebar-item:hover{
+
+    background:#1a1a1a;
+
+    border-color:#2a2a2a;
+
+    color:#ffffff;
+
+}
+
+.sidebar-item.active{
+
+    background:#181818;
+
+    border-left:4px solid var(--primary);
+
+    color:#ffffff;
+
+    font-weight:600;
+
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.sidebar-footer{
+
+    margin-top:35px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+/* ==========================================
+   BOTÓN LOGOUT
+========================================== */
+
+#logoutBtn{
+
+    height:48px;
+
+    border:1px solid #303030;
+
+    border-radius:12px;
+
+    background:#181818;
+
+    color:#d5d5d5;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    gap:10px;
+
+    transition:var(--transition);
+
+}
+
+#logoutBtn:hover{
+
+    background:#232323;
+
+    border-color:#444;
+
+    color:#fff;
+
+}
+
+.sidebar-footer small{
+
+    text-align:center;
+
+    color:var(--text-muted);
+
+    font-size:12px;
+
+}

@@ -1,0 +1,636 @@
+/* =========================
+   RESET
+========================= */
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* =========================
+   BODY & FONDO ANIMADO
+========================= */
+
+body {
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background:
+        radial-gradient(circle at top left,
+            rgba(194, 213, 0, .13) 0%,
+            transparent 32%),
+        radial-gradient(circle at bottom right,
+            rgba(32, 67, 57, .28) 0%,
+            transparent 38%),
+        linear-gradient(135deg, #050b16 0%, #07111f 45%, #08131d 100%);
+    color: white;
+    position: relative;
+}
+
+#canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+}
+
+/* Grid de fondo */
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+    pointer-events: none;
+}
+
+/* =========================
+   LAYOUT PRINCIPAL
+========================= */
+
+.login-wrapper {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 24px;
+}
+
+/* =========================
+   PANEL DE MARCA (izquierda)
+   — se activa si el HTML lo incluye
+========================= */
+
+.brand-panel {
+    padding: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.brand-content { max-width: 580px; }
+
+.logo-box {
+    width: 160px;
+    margin-bottom: 40px;
+}
+
+.logo-box img {
+    width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 28px rgba(194, 213, 0, .18));
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .05);
+    border: 1px solid rgba(255, 255, 255, .09);
+    backdrop-filter: blur(14px);
+    color: #c2d500;
+    font-size: .88rem;
+    font-weight: 500;
+    margin-bottom: 28px;
+}
+
+.brand-content h2 {
+    font-size: 4rem;
+    line-height: 1.06;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    margin-bottom: 24px;
+}
+
+.brand-content h2 span { color: #c2d500; }
+
+.brand-content > p {
+    color: rgba(255, 255, 255, .68);
+    line-height: 1.85;
+    font-size: 1.02rem;
+    margin-bottom: 40px;
+}
+
+.feature-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.feature-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    color: rgba(255, 255, 255, .85);
+    font-size: .98rem;
+}
+
+.feature-item i {
+    width: 50px;
+    height: 50px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: rgba(194, 213, 0, .10);
+    color: #c2d500;
+    font-size: 1.05rem;
+    border: 1px solid rgba(194, 213, 0, .14);
+}
+
+/* =========================
+   PANEL AUTH
+========================= */
+
+.auth-panel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+}
+
+
+.auth-card {
+    width: min(580px, 88vw);
+    padding: 52px 64px 60px;
+    border-radius: 28px;
+    background: #ffffff;
+    border: 1.5px solid rgba(194, 213, 0, .40);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, .18),
+        0 32px 80px rgba(0, 0, 0, .28);
+    position: relative;
+}
+
+/* =========================
+   LOGO DENTRO DE LA TARJETA
+========================= */
+
+.login-logo {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+.login-logo img {
+    width: 250px;
+    height: 120px;
+    object-fit: contain;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tabs {
+    display: flex;
+    gap: 4px;
+    background: #f0f1f0;
+    border-radius: 14px;
+    padding: 5px;
+    margin-bottom: 32px;
+}
+
+.tab-btn {
+    flex: 1;
+    height: 44px;
+    border: none;
+    border-radius: 10px;
+    background: transparent;
+    color: rgba(0, 0, 0, .42);
+    font-family: 'Inter', sans-serif;
+    font-size: .9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background .22s, color .22s, box-shadow .22s;
+    letter-spacing: .01em;
+}
+
+.tab-btn:hover:not(.active) {
+    color: rgba(0, 0, 0, .65);
+    background: rgba(0, 0, 0, .04);
+}
+
+.tab-btn.active {
+    background: linear-gradient(135deg, #a8c814 0%, #c2d500 100%);
+    color: #1a2200;
+    box-shadow: 0 4px 16px rgba(162, 200, 0, .30);
+}
+
+/* =========================
+   FORMULARIOS
+========================= */
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-form h2,
+.auth-form h3 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #111418;
+    letter-spacing: -.4px;
+    margin-bottom: 6px;
+    line-height: 1.2;
+}
+
+.form-subtitle {
+    font-size: .9rem;
+    color: rgba(0, 0, 0, .45);
+    margin-bottom: 28px;
+    line-height: 1.5;
+}
+
+/* =========================
+   GRUPOS DE INPUT
+========================= */
+
+.input-group {
+    margin-bottom: 18px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: #2a2f2a;
+    font-size: .84rem;
+    font-weight: 600;
+    letter-spacing: .01em;
+}
+
+.input-box {
+    width: 100%;
+    height: 52px;
+    border-radius: 14px;
+    background: #f7f8f5;
+    border: 1.5px solid #e2e5dc;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    gap: 12px;
+    transition: border-color .2s, box-shadow .2s, background .2s;
+}
+
+.input-box:hover {
+    border-color: #c8d4a0;
+    background: #f4f6f0;
+}
+
+.input-box:focus-within {
+    border-color: #9eb800;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(162, 200, 0, .15);
+}
+
+.input-box i {
+    color: #8a9e00;
+    font-size: .95rem;
+    flex-shrink: 0;
+    width: 16px;
+    text-align: center;
+}
+
+.input-box input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent !important;
+    color: #111418;
+    font-family: 'Inter', sans-serif;
+    font-size: .95rem;
+    font-weight: 400;
+    box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.input-box input::placeholder {
+    color: rgba(0, 0, 0, .28);
+    font-weight: 400;
+}
+
+/* Autofill — evita fondo azul del navegador */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #f7f8f5 inset !important;
+    -webkit-text-fill-color: #111418 !important;
+    caret-color: #111418;
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+.input-box:focus-within input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+}
+
+/* =========================
+   BOTÓN PRINCIPAL
+========================= */
+
+.main-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #a8c814 0%, #c2d500 100%);
+    color: #1a2200;
+    font-family: 'Inter', sans-serif;
+    font-size: .95rem;
+    font-weight: 700;
+    letter-spacing: .01em;
+    cursor: pointer;
+    transition: transform .18s, box-shadow .18s, filter .18s;
+    margin-top: 8px;
+}
+
+.main-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 28px rgba(162, 200, 0, .35);
+    filter: brightness(1.04);
+}
+
+.main-btn:active {
+    transform: translateY(0);
+    box-shadow: none;
+    filter: brightness(.97);
+}
+
+/* =========================
+   ENLACE "¿YA TIENES CUENTA?"
+========================= */
+
+.auth-form > p {
+    margin-top: 22px;
+    text-align: center;
+    font-size: .88rem;
+    color: rgba(0, 0, 0, .48);
+}
+
+#goLogin {
+    color: #6b8200;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color .2s;
+}
+
+#goLogin:hover {
+    color: #4e6000;
+    text-decoration: underline;
+}
+
+/* =========================
+   DIVISOR OPCIONAL
+========================= */
+
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 22px 0;
+    color: rgba(0, 0, 0, .25);
+    font-size: .8rem;
+}
+
+.divider::before,
+.divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: rgba(0, 0, 0, .10);
+}
+
+/* =========================
+RESPONSIVE MOVIL
+========================= */
+
+@media (max-width: 768px) {
+
+    .login-wrapper {
+        padding: 20px;
+        min-height: 100vh;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .auth-panel {
+        width: 100%;
+        padding: 0;
+    }
+
+    .auth-card {
+
+        width: 100%;
+        max-width: 450px;
+
+        padding: 45px 35px 50px;
+
+        border-radius: 28px;
+    }
+
+    .login-logo img {
+        width: 140px;
+    }
+
+    .tabs {
+        height: 60px;
+    }
+
+    .tab-btn {
+        font-size: 1rem;
+        height: 50px;
+    }
+
+    .auth-form h2,
+    .auth-form h3 {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
+
+    .form-subtitle {
+        font-size: 1rem;
+        margin-bottom: 35px;
+    }
+
+    .input-group label {
+        font-size: .95rem;
+    }
+
+    .input-box {
+        height: 58px;
+        border-radius: 16px;
+    }
+
+    .input-box input {
+        font-size: 1rem;
+    }
+
+    .main-btn {
+        height: 58px;
+        font-size: 1rem;
+        margin-top: 15px;
+    }
+
+}
+/* =========================
+   RECUPERAR CONTRASEÑA
+========================= */
+
+.forgot-password{
+    margin-top:18px;
+    text-align:center;
+}
+
+.forgot-password a{
+    color:#6b8200;
+    font-weight:600;
+    text-decoration:none;
+    transition:.2s;
+}
+
+.forgot-password a:hover{
+    color:#4e6000;
+    text-decoration:underline;
+}
+
+.modal{
+
+    display:none;
+
+    position:fixed;
+
+    inset:0;
+
+    background:rgba(0,0,0,.45);
+
+    backdrop-filter:blur(6px);
+
+    justify-content:center;
+
+    align-items:center;
+
+    z-index:9999;
+
+}
+
+.modal.active{
+
+    display:flex;
+
+}
+
+.modal-content{
+
+    width:420px;
+
+    max-width:92%;
+
+    background:#fff;
+
+    border-radius:22px;
+
+    padding:35px;
+
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+
+}
+
+.modal-content h2{
+
+    color:#111;
+
+    margin-bottom:10px;
+
+}
+
+.modal-content p{
+
+    color:#666;
+
+    margin-bottom:20px;
+
+    line-height:1.5;
+
+}
+
+.modal-content input{
+
+    width:100%;
+
+    height:52px;
+
+    border:1px solid #d9d9d9;
+
+    border-radius:14px;
+
+    padding:0 15px;
+
+    font-size:.95rem;
+
+    margin-bottom:20px;
+
+}
+
+.modal-buttons{
+
+    display:flex;
+
+    gap:12px;
+
+}
+
+.modal-buttons button{
+
+    flex:1;
+
+}
+
+.secondary-btn{
+
+    height:52px;
+
+    border:none;
+
+    border-radius:14px;
+
+    background:#ececec;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+.otp-modal { cursor: default; }
+.otp-content { text-align: center; }
+.otp-icon { width:58px; height:58px; margin:0 auto 16px; display:grid; place-items:center; border-radius:50%; color:#fff; background:#c2d500; font-size:25px; }
+.otp-content input { text-align:center; letter-spacing:10px; font-size:1.4rem; font-weight:700; }
+.otp-content .main-btn { width:100%; }
+.otp-error { min-height:20px; margin:0 0 10px !important; color:#c62828 !important; font-size:.9rem; }
+.otp-cancel { width:100%; margin-top:12px; }
+.auth-loader { display:none; position:fixed; inset:0; z-index:10000; align-items:center; justify-content:center; background:rgba(9,18,35,.42); backdrop-filter:blur(5px); }
+.auth-loader.active { display:flex; }
+.loader-card { min-width:190px; padding:25px; text-align:center; border-radius:18px; color:#1b2430; background:#fff; box-shadow:0 18px 45px rgba(0,0,0,.22); }
+.loader-card p { margin:14px 0 0; color:#555; }
+.skeleton-line { height:12px; margin:10px auto; border-radius:8px; background:linear-gradient(90deg,#edf0f2 25%,#dfe5e8 37%,#edf0f2 63%); background-size:400% 100%; animation:skeleton 1.2s ease infinite; }
+.skeleton-title { width:52%; height:18px; }
+.skeleton-short { width:65%; }
+@keyframes skeleton { 0% { background-position:100% 0; } 100% { background-position:-100% 0; } }

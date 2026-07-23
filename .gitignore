@@ -1,0 +1,16 @@
+# Variables privadas
+.env
+.env.*
+
+# Dependencias Node
+node_modules/
+
+# Logs
+*.log
+
+# Configuración del editor
+.vscode/
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db

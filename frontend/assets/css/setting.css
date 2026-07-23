@@ -1,0 +1,180 @@
+/* ==========================================
+SETTINGS
+========================================== */
+
+.settings-grid{
+
+    display:grid;
+    gap:25px;
+
+}
+
+.settings-grid .ticket-card{
+
+    padding:30px;
+
+}
+
+.settings-grid h3{
+
+    display:flex;
+    align-items:center;
+    gap:10px;
+
+    margin-bottom:25px;
+
+    color:var(--text);
+
+}
+
+/* ---------- Formularios ---------- */
+
+#profileForm,
+#passwordForm{
+
+    display:flex;
+    flex-direction:column;
+    gap:25px;
+
+}
+
+#profileForm .ticket-grid,
+#passwordForm .ticket-grid{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+
+}
+
+#profileForm label,
+#passwordForm label{
+
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+
+    color:var(--text);
+    font-weight:500;
+
+}
+
+/* ---------- Inputs ---------- */
+
+#profileForm input,
+#passwordForm input{
+
+    width:100%;
+    height:46px;
+
+    padding:0 14px;
+
+    background:#1a1a1a;
+
+    color:#ffffff;
+
+    border:1px solid #343434;
+
+    border-radius:10px;
+
+    outline:none;
+
+    font-size:14px;
+
+    transition:.25s;
+
+}
+
+#profileForm input:focus,
+#passwordForm input:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(194,213,0,.15);
+
+}
+
+/* ---------- Botones ---------- */
+
+#profileForm button,
+#passwordForm button{
+
+    width:max-content;
+
+    min-width:210px;
+
+    height:46px;
+
+    padding:0 22px;
+
+    background:#1a1a1a;
+
+    color:#ffffff;
+
+    border:1px solid #343434;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+    transition:.25s;
+
+}
+
+#profileForm button:hover,
+#passwordForm button:hover{
+
+    background:#252525;
+
+    border-color:#4b4b4b;
+
+}
+
+#profileForm button:focus,
+#passwordForm button:focus{
+
+    border-color:var(--primary);
+
+    box-shadow:0 0 0 3px rgba(194,213,0,.15);
+
+}
+
+/* ---------- Información ---------- */
+
+.settings-info{
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:18px;
+
+}
+
+.settings-info div{
+
+    background:#181818;
+
+    border:1px solid #2f2f2f;
+
+    border-radius:12px;
+
+    padding:18px;
+
+}
+
+.settings-info strong{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    color:var(--text);
+
+}
+
+.settings-info p{
+
+    color:var(--text-light);
+
+}

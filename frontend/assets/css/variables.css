@@ -1,0 +1,191 @@
+:root{
+
+    /* Marca */
+
+    --primary:#9fc82c;
+    --primary-dark:#86ad21;
+    --primary-light:#b7df4f;
+
+    /* Fondos */
+
+    --background:#0b0b0b;
+    --surface:#141414;
+    --surface-hover:#1c1c1c;
+
+    /* Texto */
+
+    --text:#f5f5f5;
+    --text-light:#b6b6b6;
+    --text-muted:#7c7c7c;
+
+    /* Estados */
+
+    --success:#3ccf4e;
+    --warning:#f4b400;
+    --danger:#ff4d4d;
+    --info:#4ea1ff;
+
+    /* Bordes */
+
+    --border:#262626;
+
+    /* Sombras */
+
+    --shadow-xs:none;
+    --shadow-sm:none;
+    --shadow-md:none;
+    --shadow-lg:none;
+
+    --radius-sm:8px;
+    --radius:14px;
+    --radius-lg:18px;
+
+    --sidebar-width:280px;
+    --header-height:72px;
+
+    --transition:.25s ease;
+}
+
+
+.ticket-actions button:disabled:hover{
+
+    transform:none;
+
+    background:#222;
+
+}
+
+.ticket-locked{
+
+    margin-top:20px;
+
+    padding:14px;
+
+    border-radius:12px;
+
+    background:#2b2b2b;
+
+    border:1px solid #444;
+
+    color:#aaa;
+
+    text-align:center;
+
+    font-size:14px;
+
+}
+
+.ticket-locked i{
+
+    margin-right:8px;
+
+}
+.ticket-actions button:disabled{
+
+    opacity:.45;
+
+    cursor:not-allowed;
+
+    transform:none;
+
+    filter:grayscale(.2);
+
+}
+
+.ticket-actions button:disabled:hover{
+
+    transform:none;
+
+    background:inherit;
+
+}
+
+.ticket-locked{
+
+    margin-top:18px;
+
+    padding:14px;
+
+    border:1px solid var(--border);
+
+    border-radius:12px;
+
+    background:#171717;
+
+    color:#9ca3af;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:10px;
+
+    font-size:14px;
+
+}
+
+.ticket-locked i{
+
+    color:#888;
+
+    font-size:18px;
+
+}
+
+
+
+
+body{
+
+    font-family:"Inter",sans-serif;
+
+    color:var(--text);
+
+    background:
+        url("../images/topo.svg") center center / cover no-repeat,
+        #0b0b0b;
+
+}
+.sidebar,
+.main,
+.content,
+header{
+
+    position:relative;
+
+    z-index:1;
+
+}
+.not-assigned{
+
+    color:#f59e0b;
+
+    font-style:italic;
+
+}
+/* SWEETALERT OVERRIDE FINAL */
+
+.swal2-container{
+    z-index:99999 !important;
+}
+
+.swal2-popup{
+    background:#000 !important;
+    border:1px solid var(--border) !important;
+    border-radius:18px !important;
+}
+
+.swal2-confirm{
+    background:var(--primary) !important;
+    color:#000 !important;
+}
+
+.swal2-title{
+    color:#fff !important;
+}
+
+.swal2-html-container{
+    color:#b6b6b6 !important;
+}
