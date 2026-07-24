@@ -1,9 +1,11 @@
+import CONFIG from "../../config/config.js";
+
 export function TicketTimeline(events = [], files = []) {
 
     const attachments = files.length ? `
         <div class="ticket-attachments">
             <h4>Archivos adjuntos</h4>
-            ${files.map(file => `<p><a href="http://localhost:4000${file.storage_path}" target="_blank" rel="noopener">📎 ${file.original_name}</a> <small>(${Math.ceil(file.file_size / 1024)} KB)</small></p>`).join("")}
+            ${files.map(file => `<p><a href="${CONFIG.API_URL.replace(/\/api$/, "")}${file.storage_path}" target="_blank" rel="noopener">📎 ${file.original_name}</a> <small>(${Math.ceil(file.file_size / 1024)} KB)</small></p>`).join("")}
         </div>` : "";
 
     if (!events.length) {

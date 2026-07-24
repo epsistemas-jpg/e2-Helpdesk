@@ -43,6 +43,6 @@ export function logout() {
 
 export function goTo(path) {
 
-    window.location.href = `${window.location.origin}/frontend${path}`;
+    window.location.href = path;
 
 }

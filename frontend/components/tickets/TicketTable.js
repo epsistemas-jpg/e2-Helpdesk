@@ -22,7 +22,7 @@ export function TicketTable(tickets = []) {
                 const id = button.dataset.id;
 
                 window.location.href =
-                    `../tickets/ticketDetails.html?id=${id}`;
+                    `/pages/tickets/ticketDetails.html?id=${id}`;
 
             });
 

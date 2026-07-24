@@ -178,7 +178,7 @@ loginForm.addEventListener("submit", async (e) => {
             showOtpModal();
             return;
         }
-        window.location.href = "../dashboard/dashboard.html";
+        window.location.href = "/pages/dashboard/dashboard.html";
 
     } catch (error) {
 
@@ -200,7 +200,7 @@ otpForm.addEventListener("submit", async (e) => {
     try {
         await verifyOtp(window.__otpChallengeId, code);
         hideOtpModal();
-        window.location.href = "../dashboard/dashboard.html";
+        window.location.href = "/pages/dashboard/dashboard.html";
     } catch (error) {
         setLoading(false);
         otpError.textContent = error.message;

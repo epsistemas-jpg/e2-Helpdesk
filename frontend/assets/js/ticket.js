@@ -31,7 +31,7 @@ async function init() {
         btn.addEventListener("click", () => {
 
             window.location.href =
-                `../../pages/tickets/ticketDetails.html?id=${btn.dataset.id}`;
+                `/pages/tickets/ticketDetails.html?id=${btn.dataset.id}`;
 
         });
 

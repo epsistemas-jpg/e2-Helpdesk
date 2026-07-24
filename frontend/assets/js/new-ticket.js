@@ -63,7 +63,7 @@ Toast.success(
 
 );
 
-window.location="dashboard.html";
+window.location="/pages/dashboard/dashboard.html";
 
 }catch(error){
 

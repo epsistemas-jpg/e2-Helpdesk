@@ -13,7 +13,7 @@ fuera de la oficina (la sede principal es "América 2").
 helpdesk/
 ├── backend/          Node.js + Express + MySQL + JWT + Nodemailer
 │   └── database/schema.sql   ← Importa este archivo en MySQL Workbench
-└── frontend/          React + Vite
+└── frontend/          HTML + CSS + JavaScript ES Modules + Vite
 ```
 
 ## Roles del sistema
@@ -93,8 +93,8 @@ cp .env.example .env
 npm run dev
 ```
 
-Se abre en `http://localhost:5173`. Ya apunta al backend en `http://localhost:4000/api`
-(puedes cambiarlo en `frontend/.env`).
+Se abre en `http://localhost:5173`. La URL del backend se configura en `frontend/.env`
+mediante `VITE_API_URL` (por defecto: `https://e2-helpdesk.onrender.com/api`).
 
 ---
 
