@@ -3,6 +3,7 @@ const path = require('path');
 const cors = require('cors');
 require('dotenv').config();
 
+const pool = require("./src/config/db");
 const authRoutes = require('./src/routes/auth.routes');
 const ticketRoutes = require('./src/routes/ticket.routes');
 const userRoutes = require('./src/routes/user.routes');
@@ -62,5 +63,17 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Error interno del servidor.' });
 });
 
+(async () => {
+    try {
+        const conn = await pool.getConnection();
+        console.log("✅ Conectado a TiDB");
+        conn.release();
+    } catch (err) {
+        console.error("❌ Error conectando a TiDB:");
+        console.error(err);
+    }
+})();
+
 const PORT = process.env.PORT || 4000;
+
 app.listen(PORT, () => console.log(`Backend corriendo en el puerto ${PORT}`));
