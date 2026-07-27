@@ -1,21 +1,25 @@
 import { defineConfig } from "vite";
 import { resolve } from "node:path";
-import { readdirSync } from "node:fs";
+import { fileURLToPath } from "node:url";
 
-function htmlEntries(directory, prefix = "") {
-  return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
-    if (["node_modules", "dist", ".git"].includes(entry.name)) return [];
-    const relative = prefix ? `${prefix}/${entry.name}` : entry.name;
-    const absolute = resolve(directory, entry.name);
-    if (entry.isDirectory()) return htmlEntries(absolute, relative);
-    return entry.name.endsWith(".html") ? absolute : [];
-  });
-}
+const projectRoot = fileURLToPath(new URL(".", import.meta.url));
+const htmlEntries = [
+  "index.html",
+  "pages/auth/login.html",
+  "pages/dashboard/dashboard.html",
+  "pages/reports/reports.html",
+  "pages/settings/settings.html",
+  "pages/tickets/tickets.html",
+  "pages/tickets/createTicket.html",
+  "pages/tickets/ticketDetails.html",
+  "pages/users/users.html"
+].map(file => resolve(projectRoot, file));
 
 export default defineConfig({
+  root: projectRoot,
   build: {
     rollupOptions: {
-      input: htmlEntries(resolve("."))
+      input: htmlEntries
     }
   },
   server: {

@@ -69,10 +69,6 @@ async function login(req, res) {
     }
     const user = rows[0];
 
-    console.log("Email recibido:", email);
-    console.log("Password recibida:", password);
-    console.log("Hash guardado:", user.password_hash);
-
     const match = await bcrypt.compare(password, user.password_hash);
 
     console.log("¿Coincide la contraseña?:", match);
@@ -80,8 +76,6 @@ async function login(req, res) {
     if (!match) {
       return res.status(401).json({ error: 'Credenciales inválidas.' });
     }
-    console.log("Headers:", req.headers);
-    console.log("Trusted Device:", req.headers["x-trusted-device"]);
     // Revisar si el dispositivo ya es de confianza
     const trustedDevice = req.headers["x-trusted-device"];
 
@@ -100,8 +94,6 @@ async function login(req, res) {
          AND expires_at > NOW()`,
         [user.id, hash]
       );
-      console.log("Dispositivos encontrados:", devices);
-
       if (devices.length) {
 
         return res.json({

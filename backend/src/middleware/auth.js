@@ -19,12 +19,6 @@ function requireAuth(req, res, next) {
 function requireRole(...roles) {
   return (req, res, next) => {
 
-    console.log("==============");
-    console.log("Usuario:", req.user);
-    console.log("Rol:", req.user?.role);
-    console.log("Permitidos:", roles);
-    console.log("==============");
-
     if (!req.user || !roles.includes(req.user.role)) {
       return res.status(403).json({
         error: "No tienes permisos para esta acción."

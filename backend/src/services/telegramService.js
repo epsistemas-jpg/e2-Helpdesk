@@ -6,8 +6,7 @@ const CHAT_ID = process.env.TELEGRAM_CHAT_ID;
 async function enviarNuevoTicket(ticket, usuario) {
     try {
 
-        console.log("TOKEN:", TOKEN);
-        console.log("CHAT_ID:", CHAT_ID);
+        if (!TOKEN || !CHAT_ID) return;
 
         const mensaje = `
 🔔 *NUEVO REPORTE TI*

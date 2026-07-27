@@ -5,6 +5,14 @@
 # Dependencias Node
 node_modules/
 
+# Builds
+dist/
+frontend/dist/
+
+# Archivos subidos localmente; en Render el disco es efímero
+backend/uploads/*
+!backend/uploads/.gitkeep
+
 # Logs
 *.log
 

@@ -24,19 +24,27 @@ async function request(endpoint, options = {}) {
 
     }
 
-    const response = await fetch(
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    let response;
 
-        CONFIG.API_URL + endpoint,
-
-        {
-
-            ...options,
-
-            headers
-
+    try {
+        response = await fetch(
+            `${CONFIG.API_URL}${endpoint.startsWith("/") ? endpoint : `/${endpoint}`}`,
+            {
+                ...options,
+                headers,
+                signal: options.signal || controller.signal
+            }
+        );
+    } catch (error) {
+        if (error.name === "AbortError") {
+            throw new Error("El servidor tardó demasiado en responder.");
         }
-
-    );
+        throw new Error("No fue posible conectarse con el backend.");
+    } finally {
+        clearTimeout(timeout);
+    }
 
     const data = response.status === 204 ? {} : await response.json();
 
