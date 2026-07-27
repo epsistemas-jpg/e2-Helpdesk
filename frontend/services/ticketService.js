@@ -6,9 +6,27 @@ export async function createTicket(data) {
 
 }
 
-export async function getTickets() {
+export async function getTickets(filters = {}) {
 
-    return await api.get("/tickets");
+    const params = new URLSearchParams();
+
+    if (filters.search) {
+        params.append("search", filters.search);
+    }
+
+    if (filters.status) {
+        params.append("status", filters.status);
+    }
+
+    if (filters.priority) {
+        params.append("priority", filters.priority);
+    }
+
+    const query = params.toString();
+
+    return await api.get(
+        `/tickets${query ? `?${query}` : ""}`
+    );
 
 }
 

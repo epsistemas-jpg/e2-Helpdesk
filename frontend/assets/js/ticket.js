@@ -2,6 +2,7 @@ import { requireAuth } from "../../utils/router.js";
 import { renderLayout } from "../../layouts/MainLayout.js";
 import { TicketsPage } from "../../pages/tickets/TicketsPage.js";
 import { enableTableSearch } from "../../utils/TableSearch.js";
+import { enableTicketFilters } from "../../utils/TicketFilters.js";
 
 requireAuth();
 
@@ -24,7 +25,7 @@ async function init() {
         "tableSearch",
         "table"
     );
-
+    enableTicketFilters();
     // Abrir detalle del ticket
     document.querySelectorAll(".view-ticket").forEach(btn => {
 

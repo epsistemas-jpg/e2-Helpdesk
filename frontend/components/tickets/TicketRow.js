@@ -18,21 +18,20 @@ export function TicketRow(ticket) {
             <td>${TicketStatusBadge(ticket.status)}</td>
 
             <td>
-                ${
-                    ticket.assigned_name
-                        ? `
+                ${ticket.assigned_name
+            ? `
                             <span class="assigned-user">
                                 <i class="bi bi-person-fill"></i>
                                 ${ticket.assigned_name}
                             </span>
                         `
-                        : `
+            : `
                             <span class="assigned-empty">
                                 <i class="bi bi-person-dash-fill"></i>
                                 Sin asignar
                             </span>
                         `
-                }
+        }
             </td>
 
             <td>${ticket.reporter_name}</td>
@@ -52,8 +51,18 @@ export function TicketRow(ticket) {
                 </button>
 
             </td>
+            
 
         </tr>
+        <tr
+    data-id="${ticket.id}"
+    data-title="${ticket.title.toLowerCase()}"
+    data-category="${ticket.category.toLowerCase()}"
+    data-priority="${ticket.priority}"
+    data-status="${ticket.status}"
+    data-reporter="${ticket.reporter_name.toLowerCase()}"
+    data-assigned="${(ticket.assigned_name || "").toLowerCase()}"
+>
 
     `;
 

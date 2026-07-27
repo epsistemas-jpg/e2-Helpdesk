@@ -92,7 +92,7 @@ res.status(201).json({ ticket });
 // Empleados ven solo sus tickets. Soporte/admin ven todos, con filtros opcionales.
 async function listTickets(req, res) {
   try {
-    const { status, priority, office, mine } = req.query;
+    const { status, priority, office, mine, search } = req.query;
     const conditions = [];
     const params = [];
 
@@ -112,6 +112,21 @@ async function listTickets(req, res) {
       conditions.push('t.office = ?');
       params.push(office);
     }
+
+    if (search) {
+    conditions.push(`
+        (
+            t.title LIKE ?
+            OR t.description LIKE ?
+            OR u.name LIKE ?
+            OR t.id LIKE ?
+        )
+    `);
+
+    const term = `%${search}%`;
+
+    params.push(term, term, term, term);
+}
 
     const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
     const [rows] = await pool.query(
