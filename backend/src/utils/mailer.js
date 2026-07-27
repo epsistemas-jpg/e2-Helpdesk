@@ -40,6 +40,31 @@ async function sendMail({ to, subject, html }) {
     throw err;
   }
 }
+function ticketCreatedEmail(ticket) {
+    return `
+        <div style="font-family:Arial,sans-serif">
+
+            <h2>Nuevo ticket registrado</h2>
+
+            <p>Tu solicitud fue creada correctamente.</p>
+
+            <p><strong>Ticket:</strong> #${ticket.id}</p>
+
+            <p><strong>Título:</strong> ${ticket.title}</p>
+
+            <p><strong>Estado:</strong> ${ticket.status}</p>
+
+            <p><strong>Prioridad:</strong> ${ticket.priority}</p>
+
+            <br>
+
+            <p>
+                Pronto uno de nuestros técnicos atenderá tu solicitud.
+            </p>
+
+        </div>
+    `;
+}
 
 function otpEmail(code) {
   return `
@@ -186,5 +211,7 @@ function otpEmail(code) {
 }
 module.exports = {
   sendMail,
-  otpEmail
+  otpEmail,
+  ticketCreatedEmail
+
 };
