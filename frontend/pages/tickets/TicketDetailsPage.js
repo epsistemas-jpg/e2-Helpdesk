@@ -1,7 +1,7 @@
 import { getTicket } from "../../services/ticketService.js";
 import { TicketInfo } from "../../components/tickets/TicketInfo.js";
 import { TicketActions } from "../../components/tickets/TicketActions.js";
-import { TicketTimeline } from "../../components/tickets/TicketTimeline.js";
+import { TicketTimeline } from "../../components/tickets/TicketTimeLine.js";
 
 export async function TicketDetailsPage(id) {
 

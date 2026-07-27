@@ -107,7 +107,8 @@ async function login(req, res) {
     const challengeId = crypto.randomUUID();
     const code = String(crypto.randomInt(100000, 1000000));
     pendingLogins.set(challengeId, { codeHash: crypto.createHash('sha256').update(code).digest('hex'), user: publicUser(user), expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
-    await sendMail({ to: user.email, subject: 'Código de verificación de HelpDesk', html: otpEmail(code) });
+    //await sendMail({ to: user.email, subject: 'Código de verificación de HelpDesk', html: otpEmail(code) });
+    console.log("Código OTP:", code);
     res.json({ requiresOtp: true, challengeId, message: 'Enviamos un código de verificación a tu correo.' });
   } catch (err) {
     console.error(err);
