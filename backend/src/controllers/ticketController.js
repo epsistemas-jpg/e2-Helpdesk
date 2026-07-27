@@ -11,81 +11,98 @@ const STATUSES = ['abierto', 'en_progreso', 'resuelto', 'cerrado'];
 // el código de AnyDesk se vuelve obligatorio.
 async function createTicket(req, res) {
   try {
-    const { title, description, category, priority, office, is_remote, anydesk_code } = req.body;
+    const {
+      title,
+      description,
+      category,
+      priority,
+      office,
+      is_remote,
+      anydesk_code
+    } = req.body;
 
     if (!title || !description) {
-      return res.status(400).json({ error: 'El título y la descripción son obligatorios.' });
-    }
-    const remote = !!is_remote;
-    if (remote && (!anydesk_code || !anydesk_code.trim())) {
-      return res.status(400).json({ error: 'Si estás fuera de la oficina, el código de AnyDesk es obligatorio.' });
+      return res.status(400).json({
+        error: "El título y la descripción son obligatorios."
+      });
     }
 
-    const finalCategory = CATEGORIES.includes(category) ? category : 'otro';
-    const finalPriority = PRIORITIES.includes(priority) ? priority : 'media';
+    const remote = !!is_remote;
+
+    if (remote && (!anydesk_code || !anydesk_code.trim())) {
+      return res.status(400).json({
+        error: "Si estás fuera de la oficina, el código de AnyDesk es obligatorio."
+      });
+    }
+
+    const finalCategory = CATEGORIES.includes(category)
+      ? category
+      : "otro";
+
+    const finalPriority = PRIORITIES.includes(priority)
+      ? priority
+      : "media";
 
     const [result] = await pool.query(
-      `INSERT INTO tickets (user_id, title, description, category, priority, office, is_remote, anydesk_code)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO tickets
+      (
+        user_id,
+        title,
+        description,
+        category,
+        priority,
+        office,
+        is_remote,
+        anydesk_code
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id,
         title,
         description,
         finalCategory,
         finalPriority,
-        office || req.user.office || 'América 2',
+        office || req.user.office || "América 2",
         remote ? 1 : 0,
-        remote ? anydesk_code.trim() : null,
+        remote ? anydesk_code.trim() : null
       ]
     );
 
-    const [rows] = await pool.query('SELECT * FROM tickets WHERE id = ?', [result.insertId]);
+    const [rows] = await pool.query(
+      "SELECT * FROM tickets WHERE id = ?",
+      [result.insertId]
+    );
+
     const ticket = rows[0];
 
-    // Notificar a todos los administradores TI
-
-
-    // Notificación por correo
-
+    // Obtener todos los administradores activos
     const [admins] = await pool.query(
       "SELECT email FROM users WHERE role = 'admin' AND active = 1"
     );
 
     if (admins.length > 0) {
-      const toList = admins.map((a) => a.email).join(',');
+
+      // ← IMPORTANTE: NO usar join(',')
+      const toList = admins.map(admin => admin.email);
 
       await sendMail({
         to: toList,
         subject: `🎫 Nuevo ticket #${ticket.id} - ${ticket.title} [${finalPriority.toUpperCase()}]`,
-        html: ticketCreatedEmail(ticket, req.user),
+        html: ticketCreatedEmail(ticket, req.user)
       });
+
     }
 
-    // ===============================
-    // Notificación por Telegram
-    // ===============================
-    // ===============================
-// Notificación por Telegram
-// ===============================
-try {
+    res.status(201).json({
+      ticket
+    });
 
-    console.log("===== ENVIANDO TELEGRAM =====");
-
-    await enviarNuevoTicket(ticket, req.user);
-
-    console.log("===== TELEGRAM ENVIADO =====");
-
-} catch (err) {
-
-    console.error("===== ERROR TELEGRAM =====");
-    console.error(err);
-
-}
-
-res.status(201).json({ ticket });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Error creando el ticket.' });
+
+    res.status(500).json({
+      error: "Error creando el ticket."
+    });
   }
 }
 

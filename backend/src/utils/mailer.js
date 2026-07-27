@@ -10,11 +10,9 @@ async function sendMail({ to, subject, html }) {
           email: "epsistemas@e2energiaeficiente.com"
         },
 
-        to: [
-          {
-            email: to
-          }
-        ],
+        to: Array.isArray(to)
+          ? to.map(email => ({ email }))
+          : [{ email: to }],
 
         subject,
 
@@ -40,8 +38,9 @@ async function sendMail({ to, subject, html }) {
     throw err;
   }
 }
+
 function ticketCreatedEmail(ticket) {
-    return `
+  return `
         <div style="font-family:Arial,sans-serif">
 
             <h2>Nuevo ticket registrado</h2>
@@ -64,6 +63,7 @@ function ticketCreatedEmail(ticket) {
 
         </div>
     `;
+  console.log("DESTINATARIO:", to);
 }
 
 function otpEmail(code) {
