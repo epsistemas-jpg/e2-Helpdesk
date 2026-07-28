@@ -12,13 +12,18 @@ export function enableTicketFilters() {
 
         document.querySelectorAll(".ticket-table tbody tr").forEach(row => {
 
-            const matchesSearch =
-                row.dataset.id.includes(text) ||
-                row.dataset.title.includes(text) ||
-                row.dataset.category.includes(text) ||
-                row.dataset.reporter.includes(text) ||
-                row.dataset.assigned.includes(text);
+            const id = row.dataset.id || "";
+            const title = row.dataset.title || "";
+            const category = row.dataset.category || "";
+            const reporter = row.dataset.reporter || "";
+            const assigned = row.dataset.assigned || "";
 
+            const matchesSearch =
+                id.includes(text) ||
+                title.includes(text) ||
+                category.includes(text) ||
+                reporter.includes(text) ||
+                assigned.includes(text);
             const matchesStatus =
                 !statusValue || row.dataset.status === statusValue;
 
@@ -27,8 +32,8 @@ export function enableTicketFilters() {
 
             row.style.display =
                 matchesSearch &&
-                matchesStatus &&
-                matchesPriority
+                    matchesStatus &&
+                    matchesPriority
                     ? ""
                     : "none";
 

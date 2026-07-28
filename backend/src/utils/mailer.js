@@ -39,33 +39,234 @@ async function sendMail({ to, subject, html }) {
   }
 }
 
-function ticketCreatedEmail(ticket) {
-  return `
-        <div style="font-family:Arial,sans-serif">
+function ticketCreatedEmail(ticket, user) {
 
-            <h2>Nuevo ticket registrado</h2>
+    return `
 
-            <p>Tu solicitud fue creada correctamente.</p>
+    <table align="center" width="620" cellpadding="0" cellspacing="0"
+        style="
+            background:#141414;
+            border-radius:18px;
+            overflow:hidden;
+            border:1px solid #262626;
+            font-family:Arial,sans-serif;
+        ">
 
-            <p><strong>Ticket:</strong> #${ticket.id}</p>
+        <tr>
 
-            <p><strong>Título:</strong> ${ticket.title}</p>
+            <td align="center" style="padding:35px 30px 15px;">
 
-            <p><strong>Estado:</strong> ${ticket.status}</p>
+                <img
+                    src="https://e2-helpdesk.vercel.app/images/logo-E2.png"
+                    width="170"
+                    alt="e2 Energía">
 
-            <p><strong>Prioridad:</strong> ${ticket.priority}</p>
+            </td>
 
-            <br>
+        </tr>
 
-            <p>
-                Pronto uno de nuestros técnicos atenderá tu solicitud.
-            </p>
+        <tr>
 
-        </div>
+            <td style="padding:15px 40px;">
+
+                <h2 style="
+                    margin:0;
+                    color:#ffffff;
+                    text-align:center;
+                    font-size:28px;
+                ">
+                    🎫 Nuevo Ticket Registrado
+                </h2>
+
+                <p style="
+                    color:#b6b6b6;
+                    font-size:16px;
+                    line-height:28px;
+                    text-align:center;
+                    margin-top:18px;
+                ">
+
+                    Se ha registrado una nueva solicitud de soporte en el
+                    <strong style="color:#9fc82c;">
+                        HelpDesk e2 Energía Eficiente
+                    </strong>.
+
+                </p>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td style="padding:0 40px;">
+
+                <table width="100%"
+                    cellpadding="12"
+                    cellspacing="0"
+                    style="
+                        background:#0f0f0f;
+                        border:1px solid #262626;
+                        border-radius:12px;
+                    ">
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;width:170px;">
+                            Ticket
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            #${ticket.id}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Solicitante
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${user.name}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Oficina
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${ticket.office}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Categoría
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${ticket.category}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Prioridad
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${ticket.priority.toUpperCase()}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Estado
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${ticket.status.replace("_"," ").toUpperCase()}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="color:#9fc82c;font-weight:bold;">
+                            Título
+                        </td>
+
+                        <td style="color:#ffffff;">
+                            ${ticket.title}
+                        </td>
+                    </tr>
+
+                </table>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td style="padding:30px 40px;">
+
+                <div style="
+                    background:#0b0b0b;
+                    border-left:4px solid #9fc82c;
+                    padding:18px;
+                    color:#d6d6d6;
+                    line-height:28px;
+                    border-radius:8px;
+                ">
+
+                    <strong style="color:#ffffff;">
+                        Descripción del incidente
+                    </strong>
+
+                    <br><br>
+
+                    ${ticket.description}
+
+                </div>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td style="padding:0 40px 35px;">
+
+                <p style="
+                    color:#b6b6b6;
+                    font-size:15px;
+                    line-height:28px;
+                    text-align:center;
+                ">
+
+                    El equipo de Tecnología fue notificado automáticamente
+                    y atenderá esta solicitud lo antes posible.
+
+                </p>
+
+            </td>
+
+        </tr>
+
+        <tr>
+
+            <td style="
+                background:#111111;
+                border-top:1px solid #262626;
+                padding:25px 35px;
+            ">
+
+                <p style="
+                    margin:0;
+                    color:#888;
+                    font-size:13px;
+                    line-height:24px;
+                    text-align:center;
+                ">
+
+                    Este correo fue generado automáticamente por el
+                    <strong>HelpDesk e2</strong>.
+
+                    <br><br>
+
+                    © ${new Date().getFullYear()} e2 Energía Eficiente
+
+                </p>
+
+            </td>
+
+        </tr>
+
+    </table>
+
     `;
-  console.log("DESTINATARIO:", to);
-}
 
+}
 function otpEmail(code) {
   return `
   <div style="
