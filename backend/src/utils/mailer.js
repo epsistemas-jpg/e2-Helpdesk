@@ -287,7 +287,7 @@ function statusUpdatedEmail(ticket) {
         padding:40px 0;
         background:#f1f5f9;
         font-family:Arial,Helvetica,sans-serif;
-        color:#ffffff;
+        color:#0f172a;
     ">
 
         <table align="center" width="620" cellpadding="0" cellspacing="0"
@@ -486,7 +486,7 @@ function otpEmail(code) {
       padding:40px 0;
       background:#f1f5f9;
       font-family:Arial,Helvetica,sans-serif;
-      color:#ffffff;
+      color:#0f172a;
   ">
 
       <table align="center" width="600" cellpadding="0" cellspacing="0"

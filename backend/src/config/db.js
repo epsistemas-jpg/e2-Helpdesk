@@ -34,7 +34,14 @@ async function query(sql, values = []) {
   const isInsert = /^\s*INSERT\s+INTO\s+/i.test(statement) && !/\bRETURNING\b/i.test(statement);
   if (isInsert) statement = `${statement.trim().replace(/;$/, '')} RETURNING id`;
   const result = await pool.query(statement, values);
-  return [result.rows || [], { insertId: result.rows?.[0]?.id, affectedRows: result.rowCount }];
+  // Mantener la forma de respuesta que usaba mysql2: varios controladores
+  // leen `result.insertId` o `result.affectedRows` del primer elemento.
+  // En pg, las filas vienen como un array, así que adjuntamos esos metadatos
+  // al mismo array sin romper los SELECT existentes (`const [rows] = ...`).
+  const rows = result.rows || [];
+  rows.insertId = rows[0]?.id;
+  rows.affectedRows = result.rowCount;
+  return [rows, { insertId: rows.insertId, affectedRows: rows.affectedRows }];
 }
 
 module.exports = { query, end: () => pool.end() };
