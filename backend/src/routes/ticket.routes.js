@@ -10,7 +10,9 @@ const {
     addAttachment,
     takeTicket,
     assignTicket,
-    stats
+    stats,
+    ticketRanking,
+    suggestProblems
 } = require("../controllers/ticketController");
 
 const {
@@ -30,8 +32,14 @@ router.use(requireAuth);
 // Crear ticket
 router.post("/", createTicket);
 
+// Sugerencias no persistentes para ayudar a redactar el ticket.
+router.post("/suggestions", suggestProblems);
+
 // Dashboard estadísticas
 router.get("/stats", stats);
+
+// Ranking de tickets creados, exclusivo para administradores.
+router.get("/ranking", requireRole("admin"), ticketRanking);
 
 // Listar tickets
 router.get("/", listTickets);

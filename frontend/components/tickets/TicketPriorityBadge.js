@@ -14,7 +14,7 @@ export function TicketPriorityBadge(priority) {
 
     return `
 
-        <span class="badge ${colors[priority]}">
+        <span class="badge priority-badge ${colors[priority] || "secondary"}">
 
             ${priority}
 

@@ -97,6 +97,11 @@ export function TicketInfo(ticket) {
             </div>
 
             <div>
+                <span>SLA</span>
+                <strong>${ticket.sla_due_at ? new Date(ticket.sla_due_at).toLocaleString() : "Pendiente"}</strong>
+            </div>
+
+            <div>
 
                 <span>Asignado a</span>
 

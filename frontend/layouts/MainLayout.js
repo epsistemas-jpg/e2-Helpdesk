@@ -2,6 +2,8 @@ import { Sidebar } from "../components/sidebar.js";
 import { Header } from "../components/header.js";
 import { Storage } from "../utils/storage.js";
 import { logout } from "../utils/router.js";
+import { AssistantChat } from "../components/assistant/AssistantChat.js";
+import { initAssistantChat } from "../assets/js/assistantChat.js";
 
 export function renderLayout({
 
@@ -38,6 +40,8 @@ export function renderLayout({
 
 </div>
 
+${AssistantChat()}
+
 `;
 
     initLayoutEvents();
@@ -48,8 +52,12 @@ function initLayoutEvents() {
 
     const logoutBtn = document.querySelector("#logoutBtn");
 
-    if (!logoutBtn) return;
+    if (logoutBtn) logoutBtn.addEventListener("click", logout);
+    initAssistantChat();
 
-    logoutBtn.addEventListener("click", logout);
+    if (!window.__helpdeskContextMenuBlocked) {
+        document.addEventListener("contextmenu", event => event.preventDefault());
+        window.__helpdeskContextMenuBlocked = true;
+    }
 
 }

@@ -20,35 +20,35 @@ export function TicketActions(ticket) {
 
             ${isSupport
             ? `
-                    <button
+    <button class="ticket-action-button ticket-action-primary"
     id="assignTicket"
     data-assigned="${ticket.assigned_to || ""}"
     ${blocked ? "disabled" : ""}
 >
-    ${ticket.assigned_name ? "Reasignar técnico" : "Asignar técnico"}
+    <i class="bi bi-person-check"></i><span>${ticket.assigned_name ? "Reasignar técnico" : "Asignar técnico"}</span><i class="bi bi-arrow-right action-arrow"></i>
 </button>
 
-                    <button id="changeStatus" ${blocked ? "disabled" : ""}>
-                        Cambiar estado
+                    <button id="changeStatus" class="ticket-action-button" ${blocked ? "disabled" : ""}>
+                        <i class="bi bi-arrow-repeat"></i><span>Cambiar estado</span><i class="bi bi-chevron-right action-arrow"></i>
                     </button>
                     `
             : ""
         }
 
-            <button id="commentTicket" ${blocked ? "disabled" : ""}>
-                Agregar comentario
+            <button id="commentTicket" class="ticket-action-button" ${blocked ? "disabled" : ""}>
+                <i class="bi bi-chat-left-text"></i><span>Agregar comentario</span><i class="bi bi-chevron-right action-arrow"></i>
             </button>
 
-            <button id="uploadFile" ${blocked ? "disabled" : ""}>
-                Adjuntar archivo
+            <button id="uploadFile" class="ticket-action-button" ${blocked ? "disabled" : ""}>
+                <i class="bi bi-paperclip"></i><span>Adjuntar archivo</span><i class="bi bi-chevron-right action-arrow"></i>
             </button>
 
             ${isSupport && ticket.status !== "cerrado"
             ? `
                     <button id="closeTicket"
-                            class="danger"
+                            class="ticket-action-button danger"
                             ${blocked ? "disabled" : ""}>
-                        Cerrar ticket
+                        <i class="bi bi-check2-circle"></i><span>Cerrar ticket</span><i class="bi bi-chevron-right action-arrow"></i>
                     </button>
                     `
             : ""

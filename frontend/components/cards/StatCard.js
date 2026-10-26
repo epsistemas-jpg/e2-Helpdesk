@@ -16,7 +16,7 @@ return `
 
     <div class="stat-left">
 
-        <small>${title}</small>
+        <small><span class="stat-card-dot"></span>${title}</small>
 
         <h2>${value}</h2>
 

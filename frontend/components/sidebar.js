@@ -28,7 +28,7 @@ export function Sidebar(active) {
 
         {
             id: "tickets",
-            title: "Tickets",
+            title: role === "employee" ? "Mi historial" : "Tickets",
             icon: "bi-ticket-perforated-fill",
             page: "/pages/tickets/tickets.html",
             roles: ["employee", "support", "admin"]
@@ -82,17 +82,20 @@ export function Sidebar(active) {
 
         <aside class="sidebar">
 
+            <button id="sidebarToggle" class="sidebar-toggle" type="button" aria-label="Recoger menú" title="Recoger menú">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+
             <div class="sidebar-user">
 
                 <div class="avatar">
-
                     ${user.name ? user.name.charAt(0).toUpperCase() : "U"}
-
                 </div>
 
-                
-
-                <p>${role.toUpperCase()}</p>
+                <div class="sidebar-user-copy">
+                    <strong>${user.name || "Usuario"}</strong>
+                    <p>${role.toUpperCase()}</p>
+                </div>
 
                 
 
@@ -129,6 +132,23 @@ export function Sidebar(active) {
 }
 
 function initSidebarEvents() {
+
+    const sidebar = document.querySelector(".sidebar");
+    const toggle = document.querySelector("#sidebarToggle");
+    const collapsed = localStorage.getItem("helpdesk.sidebarCollapsed") === "true";
+
+    const setCollapsed = (value) => {
+        sidebar?.classList.toggle("collapsed", value);
+        if (toggle) {
+            toggle.setAttribute("aria-label", value ? "Expandir menú" : "Recoger menú");
+            toggle.title = value ? "Expandir menú" : "Recoger menú";
+            toggle.innerHTML = `<i class="bi bi-chevron-${value ? "right" : "left"}"></i>`;
+        }
+        localStorage.setItem("helpdesk.sidebarCollapsed", String(value));
+    };
+
+    setCollapsed(collapsed);
+    toggle?.addEventListener("click", () => setCollapsed(!sidebar?.classList.contains("collapsed")));
 
     document.querySelectorAll(".sidebar-item").forEach(item => {
 

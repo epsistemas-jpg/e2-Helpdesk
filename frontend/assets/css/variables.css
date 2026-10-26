@@ -8,27 +8,28 @@
 @import "./user.css";
 @import "./ticket.css";
 @import "./ticket-details.css";
+@import "./assistant.css";
 
 
 :root{
 
     /* Marca */
 
-    --primary:#9fc82c;
-    --primary-dark:#86ad21;
-    --primary-light:#b7df4f;
+    --primary:#6366f1;
+    --primary-dark:#4f46e5;
+    --primary-light:#818cf8;
 
     /* Fondos */
 
-    --background:#0b0b0b;
-    --surface:#141414;
-    --surface-hover:#1c1c1c;
+    --background:#ffffff;
+    --surface:#ffffff;
+    --surface-hover:#f8fafc;
 
     /* Texto */
 
-    --text:#f5f5f5;
-    --text-light:#b6b6b6;
-    --text-muted:#7c7c7c;
+    --text:#0f172a;
+    --text-light:#475569;
+    --text-muted:#64748b;
 
     /* Estados */
 
@@ -39,7 +40,7 @@
 
     /* Bordes */
 
-    --border:#262626;
+    --border:#e2e8f0;
 
     /* Sombras */
 
@@ -52,8 +53,8 @@
     --radius:14px;
     --radius-lg:18px;
 
-    --sidebar-width:280px;
-    --header-height:72px;
+    --sidebar-width:256px;
+    --header-height:64px;
 
     --transition:.25s ease;
 }
@@ -155,9 +156,7 @@ body{
 
     color:var(--text);
 
-    background:
-        url("../images/topo.svg") center center / cover no-repeat,
-        #0b0b0b;
+    background:#ffffff;
 
 }
 .sidebar,
@@ -184,20 +183,79 @@ header{
 }
 
 .swal2-popup{
-    background:#000 !important;
+    background:#ffffff !important;
+    color:var(--text) !important;
     border:1px solid var(--border) !important;
     border-radius:18px !important;
+    box-shadow:0 20px 50px rgba(15,23,42,.18) !important;
 }
 
 .swal2-confirm{
     background:var(--primary) !important;
-    color:#000 !important;
+    color:#fff !important;
+    border:0 !important;
+    border-radius:10px !important;
+    padding:11px 24px !important;
+    font-weight:700 !important;
 }
 
+.swal2-confirm:hover{ background:var(--primary-dark) !important; }
+
+.swal2-cancel{
+    background:#f1f5f9 !important;
+    color:#334155 !important;
+    border:1px solid #e2e8f0 !important;
+    border-radius:10px !important;
+    padding:11px 24px !important;
+    font-weight:600 !important;
+}
+
+.swal2-cancel:hover{ background:#e2e8f0 !important; }
+
 .swal2-title{
-    color:#fff !important;
+    color:var(--text) !important;
+    font-size:24px !important;
 }
 
 .swal2-html-container{
-    color:#b6b6b6 !important;
+    color:var(--text-light) !important;
+}
+
+.swal2-input,
+.swal2-textarea,
+.swal2-select{
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:12px 0 !important;
+    background:#f8fafc !important;
+    color:var(--text) !important;
+    border:1px solid #dbe3ef !important;
+    border-radius:10px !important;
+    box-shadow:none !important;
+}
+
+.swal2-input:focus,
+.swal2-textarea:focus,
+.swal2-select:focus{
+    border-color:var(--primary-light) !important;
+    box-shadow:0 0 0 3px rgba(99,102,241,.14) !important;
+}
+
+.swal2-textarea{ min-height:112px !important; resize:vertical !important; }
+.swal2-input::placeholder,
+.swal2-textarea::placeholder{ color:#94a3b8 !important; }
+.swal2-actions{ gap:10px !important; margin-top:18px !important; }
+.swal2-validation-message{ background:#fff1f2 !important; color:#be123c !important; }
+.swal2-icon.swal2-success{ border-color:#22a06b !important; color:#22a06b !important; }
+.swal2-icon.swal2-warning{ border-color:#f59e0b !important; color:#f59e0b !important; }
+.swal2-icon.swal2-error{ border-color:#ef4444 !important; color:#ef4444 !important; }
+.swal2-icon.swal2-info{ border-color:#6366f1 !important; color:#6366f1 !important; }
+
+@media (max-width:600px){
+    .swal2-container{ padding:12px !important; }
+    .swal2-popup{ width:calc(100vw - 24px) !important; max-width:420px !important; padding:1.25em !important; }
+    .swal2-title{ font-size:1.15rem !important; }
+    .swal2-html-container{ margin:.7em 0 !important; font-size:.9rem !important; }
+    .swal2-actions{ flex-wrap:wrap !important; }
+    .swal2-actions button{ flex:1 1 120px; }
 }

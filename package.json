@@ -1,5 +1,9 @@
 {
-  "dependencies": {
-    "axios": "^1.18.1"
+  "scripts": {
+    "start": "node start.js",
+    "backend": "npm --prefix backend start",
+    "frontend": "npm --prefix frontend run dev -- --host 127.0.0.1",
+    "build": "npm --prefix backend ci && npm --prefix frontend ci && npm --prefix frontend run build",
+    "hostinger:start": "node backend/server.js"
   }
 }

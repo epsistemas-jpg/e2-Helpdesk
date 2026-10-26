@@ -1,7 +1,9 @@
 .toast{
   position:fixed;
-  right:25px;
-  top:25px;
+  right:clamp(12px, 3vw, 25px);
+  top:clamp(12px, 3vw, 25px);
+  max-width:min(420px, calc(100vw - 24px));
+  overflow-wrap:anywhere;
   padding:15px 25px;
   border-radius:var(--radius-sm);
   color:white;
@@ -30,6 +32,57 @@
 
 .toast.info{
   background:var(--info);
+}
+
+.priority-ai-note{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 16px;
+  margin-bottom:22px;
+  border:1px solid rgba(159,200,44,.35);
+  border-radius:var(--radius);
+  background:rgba(159,200,44,.08);
+  color:var(--text-light);
+}
+.priority-ai-note i{ color:var(--primary-light); font-size:20px; }
+.priority-ai-note div{ display:grid; gap:4px; }
+.priority-ai-note strong{ color:var(--text); font-size:14px; }
+.priority-ai-note span{ font-size:13px; line-height:1.45; }
+
+.ticket-guidance{
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  padding:14px 16px;
+  margin:-8px 0 24px;
+  border-radius:var(--radius);
+  background:rgba(80,160,220,.08);
+  border:1px solid rgba(80,160,220,.25);
+  color:var(--text-light);
+}
+.ticket-guidance-icon{ color:#70b7e8; font-size:20px; line-height:1; }
+.ticket-guidance div:last-child{ display:grid; gap:4px; }
+.ticket-guidance strong{ color:var(--text); font-size:14px; }
+.ticket-guidance span{ font-size:13px; line-height:1.45; }
+.field-help{ margin-top:6px; color:var(--text-muted); font-size:12px; }
+.ticket-submit-status{ color:var(--text-muted); font-size:13px; margin-right:auto; align-self:center; }
+.field-with-mic{ position:relative; display:flex; align-items:stretch; }
+.field-with-mic input,.field-with-mic textarea{ flex:1; padding-right:52px; }
+.voice-input-btn{ position:absolute; right:10px; top:10px; width:34px; height:34px; border:1px solid var(--border); border-radius:50%; background:var(--surface); color:var(--text-light); cursor:pointer; }
+.voice-input-btn:hover,.voice-input-btn:focus{ color:var(--primary-light); border-color:var(--primary); outline:none; }
+.voice-input-btn.recording{ color:#fff; background:var(--danger); border-color:var(--danger); animation:voicePulse 1s infinite; }
+.field-with-mic-textarea .voice-input-btn{ top:12px; }
+@keyframes voicePulse{ 50%{ box-shadow:0 0 0 6px rgba(220,70,70,.18); } }
+.problem-suggestions{ margin-top:10px; padding:12px; border:1px solid rgba(194,213,0,.28); border-radius:var(--radius-sm); background:rgba(194,213,0,.05); }
+.suggestions-heading{ display:flex; align-items:center; gap:7px; color:var(--text-light); font-size:12px; font-weight:700; margin-bottom:8px; }
+.suggestions-heading i{ color:var(--primary-light); }
+.suggestions-list{ display:flex; flex-wrap:wrap; gap:7px; }
+.problem-suggestion{ border:1px solid var(--border); border-radius:999px; padding:7px 11px; background:var(--surface); color:var(--text); cursor:pointer; font-size:12px; text-align:left; }
+.problem-suggestion:hover,.problem-suggestion:focus{ border-color:var(--primary); color:var(--primary-light); outline:none; }
+
+@media (max-width:600px){
+  .toast{ left:12px; right:12px; width:auto; text-align:center; }
 }
 
 .loader-overlay{

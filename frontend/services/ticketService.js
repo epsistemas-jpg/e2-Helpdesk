@@ -22,6 +22,10 @@ export async function getTickets(filters = {}) {
         params.append("priority", filters.priority);
     }
 
+    if (filters.user_id) {
+        params.append("user_id", filters.user_id);
+    }
+
     const query = params.toString();
 
     return await api.get(

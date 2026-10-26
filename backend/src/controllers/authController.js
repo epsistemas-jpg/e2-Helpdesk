@@ -1,12 +1,8 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const crypto = require('crypto');
+const crypto = require('node:crypto');
 const pool = require('../config/db');
-const { sendMail, otpEmail } = require('../utils/mailer');
 require('dotenv').config();
-const { v4: uuidv4 } = require("uuid");
-
-const pendingLogins = new Map();
 
 function validPassword(password) {
   return typeof password === 'string' && password.length >= 8 && password.length <= 64 &&
@@ -18,6 +14,33 @@ function publicUser(user) {
 }
 
 const OFFICES = ['América 2', 'Sede Norte', 'Sede Centro', 'Sede Sur', 'Otra / Remoto'];
+
+const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
+const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
+const GOOGLE_USERINFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo';
+
+function frontendUrl() {
+  return (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+}
+
+function googleRedirectUri() {
+  return process.env.GOOGLE_REDIRECT_URI || 'http://localhost:4000/api/auth/google/callback';
+}
+
+function readCookie(req, name) {
+  const header = req.headers.cookie || '';
+  const match = header.split(';').map(value => value.trim()).find(value => value.startsWith(`${name}=`));
+  return match ? decodeURIComponent(match.slice(name.length + 1)) : null;
+}
+
+function googleConfigured() {
+  return Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+}
+
+function isCorporateEmail(email) {
+  const domain = (process.env.GOOGLE_ALLOWED_DOMAIN || 'e2energiaeficiente.com').toLowerCase();
+  return typeof email === 'string' && email.toLowerCase().endsWith(`@${domain}`);
+}
 
 function signToken(user) {
   return jwt.sign(
@@ -71,96 +94,92 @@ async function login(req, res) {
 
     const match = await bcrypt.compare(password, user.password_hash);
 
-    console.log("¿Coincide la contraseña?:", match);
-
     if (!match) {
       return res.status(401).json({ error: 'Credenciales inválidas.' });
     }
-    // Revisar si el dispositivo ya es de confianza
-    const trustedDevice = req.headers["x-trusted-device"];
-
-    if (trustedDevice) {
-
-      const hash = crypto
-        .createHash("sha256")
-        .update(trustedDevice)
-        .digest("hex");
-
-      const [devices] = await pool.query(
-        `SELECT *
-         FROM trusted_devices
-         WHERE user_id = ?
-         AND device_token = ?
-         AND expires_at > NOW()`,
-        [user.id, hash]
-      );
-      if (devices.length) {
-
-        return res.json({
-          token: signToken(user),
-          user: publicUser(user)
-        });
-
-      }
-
-    }
-    const challengeId = crypto.randomUUID();
-    const code = String(crypto.randomInt(100000, 1000000));
-    pendingLogins.set(challengeId, { codeHash: crypto.createHash('sha256').update(code).digest('hex'), user: publicUser(user), expiresAt: Date.now() + 5 * 60 * 1000, attempts: 0 });
-    await sendMail({ to: user.email, subject: 'Código de verificación de HelpDesk', html: otpEmail(code) });
-    console.log("Código OTP:", code);
-    res.json({ requiresOtp: true, challengeId, message: 'Enviamos un código de verificación a tu correo.' });
+    res.json({ token: signToken(user), user: publicUser(user) });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Error iniciando sesión.' });
   }
 }
 
-async function verifyOtp(req, res) {
+function startGoogleLogin(req, res) {
+  if (!googleConfigured()) {
+    return res.status(503).json({ error: 'Google OAuth no está configurado en el backend.' });
+  }
+
+  const state = crypto.randomBytes(24).toString('hex');
+  res.setHeader('Set-Cookie', `oauth_state=${encodeURIComponent(state)}; HttpOnly; SameSite=Lax; Max-Age=600; Path=/`);
+
+  const params = new URLSearchParams({
+    client_id: process.env.GOOGLE_CLIENT_ID,
+    redirect_uri: googleRedirectUri(),
+    response_type: 'code',
+    scope: 'openid email profile',
+    state,
+    prompt: 'select_account'
+  });
+
+  res.redirect(`${GOOGLE_AUTH_URL}?${params.toString()}`);
+}
+
+async function googleCallback(req, res) {
+  const fail = message => res.redirect(`${frontendUrl()}/pages/auth/login.html#google_error=${encodeURIComponent(message)}`);
+
   try {
-    const { challengeId, code } = req.body;
-    const challenge = pendingLogins.get(challengeId);
-    if (!challenge || Date.now() > challenge.expiresAt) {
-      pendingLogins.delete(challengeId);
-      return res.status(401).json({ error: 'El código expiró. Inicia sesión nuevamente.' });
+    if (!googleConfigured()) return fail('Google OAuth no está configurado.');
+    if (req.query.error) return fail('Autenticación cancelada.');
+    if (!req.query.code || !req.query.state || req.query.state !== readCookie(req, 'oauth_state')) {
+      return fail('La sesión de Google no es válida o expiró.');
     }
-    if (!/^\d{6}$/.test(String(code || ''))) return res.status(400).json({ error: 'El código debe tener 6 dígitos.' });
-    challenge.attempts += 1;
-    const hash = crypto.createHash('sha256').update(String(code)).digest('hex');
-    if (challenge.attempts > 5 || hash !== challenge.codeHash) {
-      if (challenge.attempts > 5) pendingLogins.delete(challengeId);
-      return res.status(401).json({ error: 'Código de verificación incorrecto.' });
-    }
-    pendingLogins.delete(challengeId);
 
-    // Crear identificador único para este dispositivo
-    const deviceToken = uuidv4();
-
-    // Guardarlo como hash por seguridad
-    const deviceHash = crypto
-      .createHash("sha256")
-      .update(deviceToken)
-      .digest("hex");
-
-    // Expira en 15 días
-    await pool.query(
-      `INSERT INTO trusted_devices
-    (user_id, device_token, expires_at)
-    VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 DAY))`,
-      [
-        challenge.user.id,
-        deviceHash
-      ]
-    );
-
-    return res.json({
-      token: signToken(challenge.user),
-      trustedDevice: deviceToken,
-      user: challenge.user
+    const tokenResponse = await fetch(GOOGLE_TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code: req.query.code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: googleRedirectUri(),
+        grant_type: 'authorization_code'
+      })
     });
+    const tokens = await tokenResponse.json();
+    if (!tokenResponse.ok || !tokens.access_token) return fail('Google no pudo validar la cuenta.');
+
+    const profileResponse = await fetch(GOOGLE_USERINFO_URL, {
+      headers: { Authorization: `Bearer ${tokens.access_token}` }
+    });
+    const profile = await profileResponse.json();
+    if (!profileResponse.ok || !profile.email || profile.email_verified === false) {
+      return fail('Google no devolvió un correo verificado.');
+    }
+    if (!isCorporateEmail(profile.email)) {
+      return fail('Solo se permiten cuentas corporativas de e2energiaeficiente.com.');
+    }
+
+    const [rows] = await pool.query('SELECT * FROM users WHERE email = ?', [profile.email]);
+    let user = rows[0];
+    if (user && !user.active) return fail('La cuenta está desactivada.');
+
+    if (!user) {
+      const temporaryPassword = crypto.randomBytes(32).toString('hex');
+      const passwordHash = await bcrypt.hash(temporaryPassword, 10);
+      const name = String(profile.name || profile.email.split('@')[0]).slice(0, 100);
+      const [result] = await pool.query(
+        'INSERT INTO users (name, email, password_hash, role, office) VALUES (?, ?, ?, ?, ?)',
+        [name, profile.email, passwordHash, 'employee', 'América 2']
+      );
+      user = { id: result.insertId, name, email: profile.email, role: 'employee', office: 'América 2' };
+    }
+
+    const token = signToken(user);
+    res.setHeader('Set-Cookie', 'oauth_state=; HttpOnly; SameSite=Lax; Max-Age=0; Path=/');
+    return res.redirect(`${frontendUrl()}/pages/auth/login.html#google_token=${encodeURIComponent(token)}`);
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: 'Error verificando el código.' });
+    console.error('Error en Google OAuth:', err);
+    return fail('No fue posible iniciar sesión con Google.');
   }
 }
 
@@ -232,4 +251,4 @@ async function getTechnicians(req, res) {
     }
 }
 
-module.exports = { register, login, verifyOtp, me, offices, updateProfile, updatePassword, OFFICES, getTechnicians };
+module.exports = { register, login, startGoogleLogin, googleCallback, me, offices, updateProfile, updatePassword, OFFICES, getTechnicians };

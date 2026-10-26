@@ -14,59 +14,104 @@ export function TicketForm(offices = []) {
 
                 <h2>Crear Ticket de Soporte</h2>
 
-                <p>
-                    Describe el inconveniente para que el equipo de TI pueda atenderlo.
-                </p>
+                <p>Describe el inconveniente con datos concretos para que TI pueda clasificarlo y atenderlo más rápido.</p>
 
             </div>
 
+            <div class="ticket-layout">
+
             <form id="ticketForm" class="ticket-form">
+
+                <div class="ticket-form-banner">
+                    <div class="ticket-form-banner-icon"><i class="bi bi-stars"></i></div>
+                    <div>
+                        <span>ASISTENCIA INTELIGENTE</span>
+                        <strong>Cuéntanos qué necesitas</strong>
+                    </div>
+                    <small><i class="bi bi-check2-circle"></i> Clasificación automática</small>
+                </div>
+
+                <div class="ticket-guidance" role="note">
+                    <div class="ticket-guidance-icon"><i class="bi bi-lightbulb"></i></div>
+                    <div>
+                        <strong>¿Qué debe incluir?</strong>
+                        <span>Qué ocurrió, desde cuándo, a quién afecta y qué intentaste hacer. No incluyas contraseñas ni códigos de seguridad.</span>
+                    </div>
+                </div>
 
                 <div class="form-group">
 
-                    <label for="title">
+                    <label for="title" class="field-label-with-icon">
+                        <span class="field-label-icon"><i class="bi bi-file-earmark-text"></i></span>
                         Título
                     </label>
 
-                    <input
-                        id="title"
-                        name="title"
-                        type="text"
-                        maxlength="200"
-                        placeholder="Ej: Outlook no abre"
-                        required
-                    >
+                    <div class="field-with-mic">
+                        <input
+                            id="title"
+                            name="title"
+                            type="text"
+                            maxlength="200"
+                            placeholder="Ej: Outlook no abre"
+                            autocomplete="off"
+                            aria-describedby="titleHelp"
+                            required
+                        >
+                        <button type="button" class="voice-input-btn" data-voice-target="title" aria-label="Dictar título" title="Dictar título">
+                            <i class="bi bi-mic-fill"></i>
+                        </button>
+                    </div>
+
+                    <small id="titleHelp" class="field-help"><span id="titleCount">0</span>/200 caracteres</small>
+
+                    <div id="problemSuggestions" class="problem-suggestions" aria-live="polite" hidden>
+                        <div class="suggestions-heading"><i class="bi bi-stars"></i><span>Sugerencias relacionadas</span></div>
+                        <div id="problemSuggestionsList" class="suggestions-list"></div>
+                    </div>
 
                 </div>
 
                 <div class="form-group">
 
-                    <label for="description">
+                    <label for="description" class="field-label-with-icon">
+                        <span class="field-label-icon"><i class="bi bi-chat-square-text"></i></span>
                         Descripción
                     </label>
 
-                    <textarea
-                        id="description"
-                        name="description"
-                        rows="6"
-                        maxlength="5000"
-                        placeholder="Describe detalladamente el problema..."
-                        required
-                    ></textarea>
+                    <div class="field-with-mic field-with-mic-textarea">
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows="6"
+                            maxlength="5000"
+                            minlength="20"
+                            placeholder="Ej: Desde las 8:00 a. m. Outlook muestra un error y no permite enviar correos. Le ocurre a tres personas del área..."
+                            aria-describedby="descriptionHelp"
+                            required
+                        ></textarea>
+                        <button type="button" class="voice-input-btn" data-voice-target="description" aria-label="Dictar descripción" title="Dictar descripción">
+                            <i class="bi bi-mic-fill"></i>
+                        </button>
+                    </div>
+
+                    <small id="descriptionHelp" class="field-help"><span id="descriptionCount">0</span>/5000 caracteres · mínimo 20</small>
 
                 </div>
 
-                <div class="row">
+                <div class="ticket-options-grid">
 
                     <div class="form-group">
 
-                        <label for="category">
+                        <label for="category" class="field-label-with-icon">
+                            <span class="field-label-icon"><i class="bi bi-folder2-open"></i></span>
                             Categoría
                         </label>
 
                         <select
                             id="category"
-                            name="category"
+                            disabled
+                            aria-disabled="true"
+                            aria-describedby="categoryHelp"
                         >
 
                             <option value="hardware">Hardware</option>
@@ -89,123 +134,143 @@ export function TicketForm(offices = []) {
                                 Accesos / Permisos
                             </option>
 
-                            <option value="otro">
+                            <option value="otro" selected>
                                 Otro
                             </option>
 
                         </select>
 
+                        <input type="hidden" id="categoryValue" name="category" value="otro">
+                        <small id="categoryHelp" class="field-help category-help"><i class="bi bi-lock-fill"></i> Se asigna automáticamente según el título y no se puede editar.</small>
+
                     </div>
 
                     <div class="form-group">
 
-                        <label for="priority">
-                            Prioridad
+                        <label for="office" class="field-label-with-icon">
+                            <span class="field-label-icon"><i class="bi bi-geo-alt-fill"></i></span>
+                            Oficina
                         </label>
 
                         <select
-                            id="priority"
-                            name="priority"
+                            id="office"
+                            name="office"
                         >
 
-                            <option value="baja">
-                                Baja
-                            </option>
-
-                            <option
-                                value="media"
-                                selected
-                            >
-                                Media
-                            </option>
-
-                            <option value="alta">
-                                Alta
-                            </option>
-
-                            <option value="urgente">
-                                Urgente
-                            </option>
+                            ${officeOptions || '<option value="">Se usará tu oficina registrada</option>'}
 
                         </select>
 
+                        <small class="field-help">Indica dónde necesitas la atención.</small>
+
                     </div>
 
                 </div>
 
-                <div class="form-group">
-
-                    <label for="office">
-                        Oficina
-                    </label>
-
-                    <select
-                        id="office"
-                        name="office"
-                    >
-
-                        ${officeOptions}
-
-                    </select>
-
+                <div class="priority-ai-note" role="status">
+                    <i class="bi bi-stars"></i>
+                    <div>
+                        <strong>Prioridad y SLA automáticos</strong>
+                        <span>La asistencia inteligente analizará el título y la descripción para proponer la prioridad y el tiempo de atención según las reglas corporativas.</span>
+                    </div>
                 </div>
 
-                <div class="checkbox">
+                <div class="remote-access-section">
+                    <div class="remote-access-heading">
+                        <div>
+                            <strong class="field-label-with-icon"><span class="field-label-icon"><i class="bi bi-display"></i></span>Atención remota</strong>
+                            <span>Actívala solo si no estás en la oficina y el equipo de soporte necesita conectarse.</span>
+                        </div>
+                    </div>
 
-                    <label>
+                    <div class="checkbox">
 
-                        <input
-                            id="is_remote"
-                            name="is_remote"
-                            type="checkbox"
-                        >
+                        <label>
 
-                        Estoy fuera de la oficina
+                            <input
+                                id="is_remote"
+                                name="is_remote"
+                                type="checkbox"
+                            >
 
-                    </label>
-
-                </div>
-
-                <div id="remoteSection">
-
-                    <div class="form-group">
-
-                        <label for="anydesk_code">
-
-                            Código AnyDesk
+                            <span>Necesito atención remota</span>
 
                         </label>
 
-                        <input
-
-                            id="anydesk_code"
-
-                            name="anydesk_code"
-
-                            type="text"
-
-                            placeholder="Ej: 123 456 789"
-
-                        >
-
                     </div>
 
+                    <div id="remoteSection">
+
+                        <div class="form-group">
+
+                            <label for="anydesk_code">
+
+                                Código AnyDesk
+
+                            </label>
+
+                            <input
+
+                                id="anydesk_code"
+
+                                name="anydesk_code"
+
+                                type="text"
+
+                                placeholder="Ej: 123 456 789"
+                                inputmode="numeric"
+                                autocomplete="off"
+
+                            >
+
+                            <small class="field-help">Compártelo únicamente cuando el equipo de soporte te lo solicite.</small>
+
+                        </div>
+
+                    </div>
                 </div>
 
                 <div class="actions">
+
+                    <span id="ticketSubmitStatus" class="ticket-submit-status" aria-live="polite"></span>
 
                     <button
                         class="btn-primary"
                         type="submit"
                     >
 
-                        Crear Ticket
+                        <span>Crear Ticket</span>
+                        <i class="bi bi-arrow-right"></i>
 
                     </button>
 
                 </div>
 
             </form>
+
+            <aside class="ticket-help-column" aria-label="Consejos para crear un ticket">
+                <section class="ticket-help-card ticket-tips-card">
+                    <div class="ticket-help-icon"><i class="bi bi-lightning-charge-fill"></i></div>
+                    <h3>Consejos rápidos</h3>
+                    <ul>
+                        <li><i class="bi bi-check-circle-fill"></i> Sé específico con el problema.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Indica desde cuándo ocurre.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> Menciona a quién afecta.</li>
+                        <li><i class="bi bi-check-circle-fill"></i> No incluyas contraseñas ni códigos de seguridad.</li>
+                    </ul>
+                </section>
+
+                <section class="ticket-help-card ticket-contact-card">
+                    <div class="ticket-contact-illustration"><i class="bi bi-person-workspace"></i></div>
+                    <h3>¿Necesitas ayuda?</h3>
+                    <p>Si tienes dudas o el problema es urgente, puedes comunicarte con el equipo de soporte.</p>
+                    <a href="#" data-open-assistant class="ticket-help-button">
+                        <i class="bi bi-chat-square-text"></i> Contactar soporte
+                    </a>
+                </section>
+            </aside>
+
+            </div>
 
         </div>
 

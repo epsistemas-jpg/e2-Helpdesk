@@ -39,6 +39,7 @@ async function request(endpoint, options = {}) {
         );
     } catch (error) {
         if (error.name === "AbortError") {
+            if (options.signal) throw error;
             throw new Error("El servidor tardó demasiado en responder.");
         }
         throw new Error("No fue posible conectarse con el backend.");

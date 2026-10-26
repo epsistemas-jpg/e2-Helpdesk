@@ -1,5 +1,5 @@
-import { SummaryCards } from "../../components/dashboard/SummaryCards.js";
 import { RecentActivity } from "../../components/dashboard/RecentActivity.js";
+import { DashboardInsights } from "../../components/dashboard/DashboardInsights.js";
 import { getDashboardData } from "../../services/dashboardService.js";
 
 export async function DashboardPage() {
@@ -8,9 +8,7 @@ export async function DashboardPage() {
 
     return `
 
-        ${SummaryCards(data.stats)}
-
-        <br>
+        ${DashboardInsights(data.stats)}
 
         ${RecentActivity(data.recent.slice(0,5))}
 

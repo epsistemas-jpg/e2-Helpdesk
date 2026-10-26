@@ -4,7 +4,8 @@ const router = express.Router();
 const {
     register,
     login,
-    verifyOtp,
+    startGoogleLogin,
+    googleCallback,
     me,
     offices,
     updateProfile,
@@ -14,9 +15,8 @@ const {
 
 const { requireAuth } = require('../middleware/auth');
 
-router.post('/register', register);
-router.post('/login', login);
-router.post('/verify-otp', verifyOtp);
+router.get('/google', startGoogleLogin);
+router.get('/google/callback', googleCallback);
 
 router.get('/me', requireAuth, me);
 

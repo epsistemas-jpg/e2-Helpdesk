@@ -3,16 +3,30 @@ import { renderLayout } from "../../layouts/MainLayout.js";
 import { TicketsPage } from "../../pages/tickets/TicketsPage.js";
 import { enableTableSearch } from "../../utils/TableSearch.js";
 import { enableTicketFilters } from "../../utils/TicketFilters.js";
+import { Storage } from "../../utils/storage.js";
 
 requireAuth();
 
 async function init() {
 
-    const html = await TicketsPage();
+    const params = new URLSearchParams(window.location.search);
+    const userId = params.get("user_id");
+    const userName = params.get("user_name");
+    const historyFilters = userId
+        ? { user_id: userId, user_name: userName || "usuario" }
+        : {};
+
+    const html = await TicketsPage(historyFilters);
+    const currentUser = Storage.getUser() || {};
+    const pageTitle = userId
+        ? "Historial de usuario"
+        : currentUser.role === "employee"
+            ? "Mi historial de tickets"
+            : "Tickets";
 
     renderLayout({
 
-        title: "Tickets",
+        title: pageTitle,
 
         active: "tickets",
 

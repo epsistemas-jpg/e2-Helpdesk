@@ -4,11 +4,9 @@ export function Header(title,user){
 
 <header class="header">
 
-    <h2 class="header-title">
-
-        ${title}
-
-    </h2>
+    <div class="header-heading">
+        <h2 class="header-title">${title}</h2>
+    </div>
 
     <div class="user-box">
 
@@ -16,7 +14,7 @@ export function Header(title,user){
 
             <strong>${user.name}</strong><br>
 
-            <small>${user.role}</small>
+            <small class="role-badge">${user.role}</small>
 
         </div>
 

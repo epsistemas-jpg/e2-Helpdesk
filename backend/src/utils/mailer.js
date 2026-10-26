@@ -1,5 +1,7 @@
 const axios = require("axios");
 
+// C:\Users\Charlis Vinci\e2-Helpdesk\frontend\assets\images
+
 async function sendMail({ to, subject, html }) {
   try {
     const response = await axios.post(
@@ -45,10 +47,10 @@ function ticketCreatedEmail(ticket, user) {
 
     <table align="center" width="620" cellpadding="0" cellspacing="0"
         style="
-            background:#141414;
+            background:#ffffff;
             border-radius:18px;
             overflow:hidden;
-            border:1px solid #262626;
+            border:1px solid #e2e8f0;
             font-family:Arial,sans-serif;
         ">
 
@@ -79,7 +81,7 @@ function ticketCreatedEmail(ticket, user) {
                 </h2>
 
                 <p style="
-                    color:#b6b6b6;
+                    color:#475569;
                     font-size:16px;
                     line-height:28px;
                     text-align:center;
@@ -87,7 +89,7 @@ function ticketCreatedEmail(ticket, user) {
                 ">
 
                     Se ha registrado una nueva solicitud de soporte en el
-                    <strong style="color:#9fc82c;">
+                    <strong style="color:#4f46e5;">
                         HelpDesk e2 Energía Eficiente
                     </strong>.
 
@@ -105,13 +107,13 @@ function ticketCreatedEmail(ticket, user) {
                     cellpadding="12"
                     cellspacing="0"
                     style="
-                        background:#0f0f0f;
-                        border:1px solid #262626;
+                        background:#f8fafc;
+                        border:1px solid #e2e8f0;
                         border-radius:12px;
                     ">
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;width:170px;">
+                        <td style="color:#4f46e5;font-weight:bold;width:170px;">
                             Ticket
                         </td>
 
@@ -121,7 +123,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Solicitante
                         </td>
 
@@ -131,7 +133,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Oficina
                         </td>
 
@@ -141,7 +143,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Categoría
                         </td>
 
@@ -151,7 +153,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Prioridad
                         </td>
 
@@ -161,7 +163,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Estado
                         </td>
 
@@ -171,7 +173,7 @@ function ticketCreatedEmail(ticket, user) {
                     </tr>
 
                     <tr>
-                        <td style="color:#9fc82c;font-weight:bold;">
+                        <td style="color:#4f46e5;font-weight:bold;">
                             Título
                         </td>
 
@@ -191,10 +193,10 @@ function ticketCreatedEmail(ticket, user) {
             <td style="padding:30px 40px;">
 
                 <div style="
-                    background:#0b0b0b;
-                    border-left:4px solid #9fc82c;
+                    background:#f8fafc;
+                    border-left:4px solid #6366f1;
                     padding:18px;
-                    color:#d6d6d6;
+                    color:#334155;
                     line-height:28px;
                     border-radius:8px;
                 ">
@@ -218,7 +220,7 @@ function ticketCreatedEmail(ticket, user) {
             <td style="padding:0 40px 35px;">
 
                 <p style="
-                    color:#b6b6b6;
+                    color:#475569;
                     font-size:15px;
                     line-height:28px;
                     text-align:center;
@@ -236,14 +238,14 @@ function ticketCreatedEmail(ticket, user) {
         <tr>
 
             <td style="
-                background:#111111;
-                border-top:1px solid #262626;
+                background:#f1f5f9;
+                border-top:1px solid #e2e8f0;
                 padding:25px 35px;
             ">
 
                 <p style="
                     margin:0;
-                    color:#888;
+                    color:#64748b;
                     font-size:13px;
                     line-height:24px;
                     text-align:center;
@@ -267,22 +269,229 @@ function ticketCreatedEmail(ticket, user) {
     `;
 
 }
+
+
+/* =========================================================
+   NUEVA FUNCIÓN
+   Correo enviado cuando cambia el estado de un ticket
+   ========================================================= */
+
+function statusUpdatedEmail(ticket) {
+
+    return `
+    <div style="
+        margin:0;
+        padding:40px 0;
+        background:#f1f5f9;
+        font-family:Arial,Helvetica,sans-serif;
+        color:#ffffff;
+    ">
+
+        <table align="center" width="620" cellpadding="0" cellspacing="0"
+            style="
+                background:#ffffff;
+                border-radius:18px;
+                overflow:hidden;
+                border:1px solid #e2e8f0;
+            ">
+
+            <tr>
+                <td align="center" style="padding:35px 30px 15px;">
+
+                    <img
+                        src="https://e2-helpdesk.vercel.app/images/logo-E2.png"
+                        width="170"
+                        alt="e2 Energía">
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="padding:15px 40px;">
+
+                    <h2 style="
+                        margin:0;
+                        color:#ffffff;
+                        text-align:center;
+                        font-size:28px;
+                    ">
+                        🎫 Actualización de Ticket
+                    </h2>
+
+                    <p style="
+                        color:#475569;
+                        font-size:16px;
+                        text-align:center;
+                        line-height:28px;
+                        margin-top:20px;
+                    ">
+                        El estado de tu solicitud de soporte ha sido
+                        <strong style="color:#4f46e5;">
+                            actualizado.
+                        </strong>
+                    </p>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="padding:0 40px;">
+
+                    <table width="100%"
+                        cellpadding="12"
+                        cellspacing="0"
+                        style="
+                            background:#f8fafc;
+                            border:1px solid #e2e8f0;
+                            border-radius:12px;
+                        ">
+
+                        <tr>
+                            <td style="color:#4f46e5;font-weight:bold;width:170px;">
+                                Ticket
+                            </td>
+
+                            <td style="color:#ffffff;">
+                                #${ticket.id}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="color:#4f46e5;font-weight:bold;">
+                                Solicitante
+                            </td>
+
+                            <td style="color:#ffffff;">
+                                ${ticket.reporter_name}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="color:#4f46e5;font-weight:bold;">
+                                Estado
+                            </td>
+
+                            <td style="color:#ffffff;">
+                                ${ticket.status.replace("_", " ").toUpperCase()}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="color:#4f46e5;font-weight:bold;">
+                                Prioridad
+                            </td>
+
+                            <td style="color:#ffffff;">
+                                ${ticket.priority.toUpperCase()}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td style="color:#4f46e5;font-weight:bold;">
+                                Título
+                            </td>
+
+                            <td style="color:#ffffff;">
+                                ${ticket.title}
+                            </td>
+                        </tr>
+
+                    </table>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="padding:30px 40px;">
+
+                    <div style="
+                        background:#f8fafc;
+                        border-left:4px solid #6366f1;
+                        padding:18px;
+                        color:#334155;
+                        line-height:28px;
+                        border-radius:8px;
+                    ">
+
+                        <strong style="color:#ffffff;">
+                            Descripción del incidente
+                        </strong>
+
+                        <br><br>
+
+                        ${ticket.description}
+
+                    </div>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="padding:0 40px 35px;">
+
+                    <p style="
+                        color:#475569;
+                        font-size:15px;
+                        line-height:28px;
+                        text-align:center;
+                    ">
+                        El equipo de Tecnología ha actualizado el estado
+                        de tu solicitud en el HelpDesk.
+                    </p>
+
+                </td>
+            </tr>
+
+            <tr>
+                <td style="
+                    background:#f1f5f9;
+                    padding:25px 35px;
+                    border-top:1px solid #e2e8f0;
+                ">
+
+                    <p style="
+                        margin:0;
+                    color:#64748b;
+                        font-size:13px;
+                        text-align:center;
+                        line-height:24px;
+                    ">
+
+                        Este correo fue generado automáticamente por el
+                        <strong>HelpDesk e2</strong>.
+
+                        <br><br>
+
+                        © ${new Date().getFullYear()} e2 Energía Eficiente
+
+                    </p>
+
+                </td>
+            </tr>
+
+        </table>
+
+    </div>
+    `;
+}
+
+
 function otpEmail(code) {
   return `
   <div style="
       margin:0;
       padding:40px 0;
-      background:#0b0b0b;
+      background:#f1f5f9;
       font-family:Arial,Helvetica,sans-serif;
       color:#ffffff;
   ">
 
       <table align="center" width="600" cellpadding="0" cellspacing="0"
           style="
-              background:#141414;
+              background:#ffffff;
               border-radius:18px;
               overflow:hidden;
-              border:1px solid #262626;
+              border:1px solid #e2e8f0;
           ">
 
           <tr>
@@ -310,14 +519,14 @@ function otpEmail(code) {
                   </h2>
 
                   <p style="
-                      color:#b6b6b6;
+                      color:#475569;
                       font-size:16px;
                       text-align:center;
                       line-height:28px;
                       margin-top:20px;
                   ">
                       Hemos recibido un intento de inicio de sesión en tu cuenta del
-                      <strong style="color:#9fc82c;">HelpDesk e2 Energía Eficiente</strong>.
+                      <strong style="color:#4f46e5;">HelpDesk e2 Energía Eficiente</strong>.
                   </p>
 
               </td>
@@ -329,14 +538,14 @@ function otpEmail(code) {
 
                   <div style="
                       display:inline-block;
-                      background:#0b0b0b;
-                      border:2px dashed #9fc82c;
+                      background:#f8fafc;
+                      border:2px dashed #6366f1;
                       border-radius:16px;
                       padding:18px 35px;
                   ">
 
                       <div style="
-                          color:#9fc82c;
+                          color:#4f46e5;
                           font-size:42px;
                           font-weight:bold;
                           letter-spacing:12px;
@@ -355,7 +564,7 @@ function otpEmail(code) {
               <td style="padding:0 40px 35px;">
 
                   <p style="
-                      color:#b6b6b6;
+                      color:#475569;
                       font-size:15px;
                       line-height:28px;
                       text-align:center;
@@ -365,7 +574,7 @@ function otpEmail(code) {
                   </p>
 
                   <p style="
-                      color:#b6b6b6;
+                      color:#475569;
                       font-size:15px;
                       line-height:28px;
                       text-align:center;
@@ -380,14 +589,14 @@ function otpEmail(code) {
           <tr>
 
               <td style="
-                  background:#111111;
+                  background:#f1f5f9;
                   padding:25px 35px;
-                  border-top:1px solid #262626;
+                  border-top:1px solid #e2e8f0;
               ">
 
                   <p style="
                       margin:0;
-                      color:#888;
+                      color:#64748b;
                       font-size:13px;
                       text-align:center;
                       line-height:24px;
@@ -410,9 +619,11 @@ function otpEmail(code) {
   </div>
   `;
 }
+
+
 module.exports = {
   sendMail,
   otpEmail,
-  ticketCreatedEmail
-
+  ticketCreatedEmail,
+  statusUpdatedEmail
 };

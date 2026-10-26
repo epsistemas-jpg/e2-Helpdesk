@@ -1,6 +1,6 @@
 import { requireAuth } from "../../utils/router.js";
 import { renderLayout } from "../../layouts/MainLayout.js";
-import { getUsers, updateUser } from "../../services/userService.js";
+import { getUsers, updateUser, createUser } from "../../services/userService.js";
 import { Storage } from "../../utils/storage.js";
 
 if (requireAuth()) {
@@ -47,11 +47,17 @@ async function renderUsers() {
         content: `
             <div class="section">
 
-                <h3>Usuarios del sistema</h3>
-
-                <br>
-
-                <p>Administra los roles y el acceso de cada cuenta.</p>
+                <div class="users-section-header">
+                    <div>
+                        <span class="section-kicker">ADMINISTRACIÓN</span>
+                        <h3>Usuarios del sistema</h3>
+                        <p>Administra los roles y el acceso de cada cuenta.</p>
+                    </div>
+                    <button id="addUserBtn" class="users-add-button" type="button">
+                        <i class="bi bi-person-plus-fill"></i>
+                        <span>Agregar usuario</span>
+                    </button>
+                </div>
 
                 <br>
 
@@ -78,7 +84,7 @@ async function renderUsers() {
 
                                 <td>${user.name}</td>
 
-                                <td>${user.email}</td>
+                                <td class="user-email">${user.email}</td>
 
                                 <td>${user.office || "-"}</td>
 
@@ -119,6 +125,14 @@ async function renderUsers() {
                                 </td>
 
                                 <td>
+
+                                    <a
+                                        class="btn-secondary history-user"
+                                        href="/pages/tickets/tickets.html?user_id=${user.id}&user_name=${encodeURIComponent(user.name || user.email)}"
+                                    >
+                                        <i class="bi bi-clock-history"></i>
+                                        Historial
+                                    </a>
 
                                     <button
                                         class="btn-secondary toggle-user"
@@ -173,6 +187,47 @@ async function renderUsers() {
 
         });
 
+    });
+
+    const addUserBtn = document.querySelector("#addUserBtn");
+    if (addUserBtn) addUserBtn.addEventListener("click", async () => {
+        const { value: form } = await Swal.fire({
+            title: "Agregar usuario",
+            html: `
+                <input id="newUserName" class="swal2-input" placeholder="Nombre completo">
+                <input id="newUserEmail" class="swal2-input" type="email" placeholder="correo@e2energiaeficiente.com">
+                <input id="newUserOffice" class="swal2-input" placeholder="Oficina">
+                <select id="newUserRole" class="swal2-select">
+                    <option value="employee">Empleado</option>
+                    <option value="support">Soporte</option>
+                    <option value="admin">Administrador</option>
+                </select>
+                <p class="user-modal-help"><i class="bi bi-info-circle"></i> El usuario ingresará con Google corporativo.</p>
+            `,
+            showCancelButton: true,
+            confirmButtonText: "Crear usuario",
+            cancelButtonText: "Cancelar",
+            focusConfirm: false,
+            preConfirm: () => {
+                const name = document.querySelector("#newUserName")?.value.trim();
+                const email = document.querySelector("#newUserEmail")?.value.trim();
+                const office = document.querySelector("#newUserOffice")?.value.trim();
+                const role = document.querySelector("#newUserRole")?.value;
+                if (!name || !email || !office) {
+                    Swal.showValidationMessage("Completa nombre, correo y oficina.");
+                    return false;
+                }
+                return { name, email, office, role };
+            }
+        });
+        if (!form) return;
+        try {
+            await createUser(form);
+            await Swal.fire({ icon: "success", title: "Usuario creado", text: "Ya puede ingresar con Google corporativo.", timer: 1500, showConfirmButton: false });
+            await renderUsers();
+        } catch (error) {
+            Swal.fire({ icon: "error", title: "No fue posible crear el usuario", text: error.message });
+        }
     });
 
     document.querySelectorAll(".toggle-user").forEach(button => {

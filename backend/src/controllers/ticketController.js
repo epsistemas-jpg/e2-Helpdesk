@@ -3,9 +3,23 @@ const fs = require('fs/promises');
 const path = require('path');
 const { sendMail, ticketCreatedEmail, statusUpdatedEmail } = require('../utils/mailer');
 const { enviarNuevoTicket } = require('../services/telegramService');
+const { suggestPriority, suggestTicketProblems, inferCategory } = require('../services/geminiService');
 const CATEGORIES = ['hardware', 'software', 'red_internet', 'correo', 'impresora', 'acceso_permisos', 'otro'];
 const PRIORITIES = ['baja', 'media', 'alta', 'urgente'];
 const STATUSES = ['abierto', 'en_progreso', 'resuelto', 'cerrado'];
+const MAX_TITLE_LENGTH = 200;
+const MAX_DESCRIPTION_LENGTH = 5000;
+
+async function suggestProblems(req, res) {
+  try {
+    const text = typeof req.body?.text === 'string' ? req.body.text.trim() : '';
+    if (text.length < 3) return res.json({ suggestions: [], category: 'otro', source: 'local' });
+    return res.json(await suggestTicketProblems({ text }));
+  } catch (error) {
+    console.error('Error generando sugerencias:', error.message);
+    return res.json({ suggestions: [], category: 'otro', source: 'fallback' });
+  }
+}
 
 // Crea un ticket. Si el empleado marca que está fuera de la oficina,
 // el código de AnyDesk se vuelve obligatorio.
@@ -14,34 +28,53 @@ async function createTicket(req, res) {
     const {
       title,
       description,
-      category,
-      priority,
       office,
       is_remote,
       anydesk_code
     } = req.body;
 
-    if (!title || !description) {
+    const cleanTitle = typeof title === 'string' ? title.trim() : '';
+    const cleanDescription = typeof description === 'string' ? description.trim() : '';
+
+    if (!cleanTitle || !cleanDescription) {
       return res.status(400).json({
         error: "El título y la descripción son obligatorios."
       });
     }
 
-    const remote = !!is_remote;
+    if (cleanTitle.length < 5 || cleanTitle.length > MAX_TITLE_LENGTH) {
+      return res.status(400).json({ error: "El título debe tener entre 5 y 200 caracteres." });
+    }
 
-    if (remote && (!anydesk_code || !anydesk_code.trim())) {
+    if (cleanDescription.length < 20 || cleanDescription.length > MAX_DESCRIPTION_LENGTH) {
+      return res.status(400).json({ error: "La descripción debe tener entre 20 y 5000 caracteres." });
+    }
+
+    const remote = is_remote === true || is_remote === 1 || is_remote === 'true';
+    const cleanAnyDesk = typeof anydesk_code === 'string' ? anydesk_code.trim() : '';
+
+    if (remote && !cleanAnyDesk) {
       return res.status(400).json({
         error: "Si estás fuera de la oficina, el código de AnyDesk es obligatorio."
       });
     }
 
-    const finalCategory = CATEGORIES.includes(category)
-      ? category
-      : "otro";
+    // La categoría se determina en el backend. El valor enviado por el navegador
+    // no se considera una fuente confiable porque el control es automático.
+    const ticketText = `${cleanTitle} ${cleanDescription}`;
+    let automaticCategory = inferCategory(ticketText);
+    if (automaticCategory === 'otro') {
+      const categoryAnalysis = await suggestTicketProblems({ text: cleanTitle, description: cleanDescription });
+      automaticCategory = categoryAnalysis.category;
+    }
+    const finalCategory = CATEGORIES.includes(automaticCategory)
+      ? automaticCategory
+      : 'otro';
 
-    const finalPriority = PRIORITIES.includes(priority)
-      ? priority
-      : "media";
+    const priorityAnalysis = await suggestPriority({ title: cleanTitle, description: cleanDescription, category: finalCategory });
+    const finalPriority = priorityAnalysis.priority;
+    const slaHours = priorityAnalysis.slaHours;
+    const slaDueAt = new Date(Date.now() + slaHours * 60 * 60 * 1000);
 
     const [result] = await pool.query(
       `INSERT INTO tickets
@@ -51,20 +84,24 @@ async function createTicket(req, res) {
         description,
         category,
         priority,
+        sla_hours,
+        sla_due_at,
         office,
         is_remote,
         anydesk_code
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id,
-        title,
-        description,
+        cleanTitle,
+        cleanDescription,
         finalCategory,
         finalPriority,
-        office || req.user.office || "América 2",
+        slaHours,
+        slaDueAt,
+        typeof office === 'string' && office.trim() ? office.trim().slice(0, 100) : (req.user.office || "América 2"),
         remote ? 1 : 0,
-        remote ? anydesk_code.trim() : null
+        remote ? cleanAnyDesk : null
       ]
     );
 
@@ -85,16 +122,27 @@ async function createTicket(req, res) {
       // ← IMPORTANTE: NO usar join(',')
       const toList = admins.map(admin => admin.email);
 
-      await sendMail({
-        to: toList,
-        subject: `🎫 Nuevo ticket #${ticket.id} - ${ticket.title} [${finalPriority.toUpperCase()}]`,
-        html: ticketCreatedEmail(ticket, req.user)
-      });
+      try {
+        await Promise.race([
+          sendMail({
+            to: toList,
+            subject: `🎫 Nuevo ticket #${ticket.id} - ${ticket.title} [${finalPriority.toUpperCase()}]`,
+            html: ticketCreatedEmail(ticket, req.user)
+          }),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('Notificación de correo agotó el tiempo.')), 5000))
+        ]);
+      } catch (notificationError) {
+        console.error('Ticket creado, pero no se pudo notificar por correo:', notificationError.message);
+      }
 
     }
 
     res.status(201).json({
-      ticket
+      ticket,
+      priorityAnalysis: {
+        ...priorityAnalysis,
+        rules: 'urgente 1-2h · alta 4-8h · media 24-48h · baja 72-168h'
+      }
     });
 
   } catch (err) {
@@ -109,13 +157,17 @@ async function createTicket(req, res) {
 // Empleados ven solo sus tickets. Soporte/admin ven todos, con filtros opcionales.
 async function listTickets(req, res) {
   try {
-    const { status, priority, office, mine, search } = req.query;
+    const { status, priority, office, mine, search, user_id } = req.query;
     const conditions = [];
     const params = [];
 
     if (req.user.role === 'employee' || mine === 'true') {
       conditions.push('t.user_id = ?');
       params.push(req.user.id);
+    }
+    if (user_id && ['admin', 'support'].includes(req.user.role) && /^\d+$/.test(String(user_id))) {
+      conditions.push('t.user_id = ?');
+      params.push(Number(user_id));
     }
     if (status && STATUSES.includes(status)) {
       conditions.push('t.status = ?');
@@ -330,7 +382,7 @@ async function addComment(req, res) {
     }
 
     const [ticket] = await pool.query(
-      "SELECT id, status FROM tickets WHERE id = ?",
+      "SELECT id, user_id, status FROM tickets WHERE id = ?",
       [id]
     );
 
@@ -338,6 +390,14 @@ async function addComment(req, res) {
       return res.status(404).json({
         error: "Ticket no encontrado."
       });
+    }
+
+    if (req.user.role === "employee" && ticket[0].user_id !== req.user.id) {
+      return res.status(403).json({ error: "No tienes acceso a este ticket." });
+    }
+
+    if (note.length > 2000) {
+      return res.status(400).json({ error: "El comentario no puede superar 2000 caracteres." });
     }
 
     // No permitir comentarios en tickets finalizados
@@ -394,7 +454,7 @@ async function addAttachment(req, res) {
         }
 
         const [ticket] = await pool.query(
-            "SELECT id, status FROM tickets WHERE id = ?",
+            "SELECT id, user_id, status FROM tickets WHERE id = ?",
             [id]
         );
 
@@ -402,6 +462,10 @@ async function addAttachment(req, res) {
             return res.status(404).json({
                 error: "Ticket no encontrado."
             });
+        }
+
+        if (req.user.role === "employee" && ticket[0].user_id !== req.user.id) {
+            return res.status(403).json({ error: "No tienes acceso a este ticket." });
         }
 
         // ===========================
@@ -416,14 +480,34 @@ async function addAttachment(req, res) {
             });
         }
 
+        const cleanMime = String(mime_type || "").toLowerCase().trim();
+        const allowedMimeTypes = new Set([
+            "image/png", "image/jpeg", "image/gif", "image/webp",
+            "application/pdf", "text/plain",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ]);
+        if (!allowedMimeTypes.has(cleanMime)) {
+            return res.status(400).json({ error: "Tipo de archivo no permitido." });
+        }
+        if (String(file_name).length > 180) {
+            return res.status(400).json({ error: "El nombre del archivo es demasiado largo." });
+        }
+
         const base64 = String(data).replace(
             /^data:[^;]+;base64,/,
             ""
         );
 
+        if (!/^[A-Za-z0-9+/]*={0,2}$/.test(base64) || base64.length % 4 === 1) {
+            return res.status(400).json({ error: "El archivo no tiene un formato válido." });
+        }
+
         const buffer = Buffer.from(base64, "base64");
 
-        if (!buffer.length || buffer.length > 10 * 1024 * 1024) {
+        const declaredSize = Number(file_size);
+        if (!buffer.length || buffer.length > 10 * 1024 * 1024 ||
+            (Number.isFinite(declaredSize) && declaredSize > 0 && declaredSize !== buffer.length)) {
             return res.status(400).json({
                 error: "El archivo debe pesar entre 1 byte y 10 MB."
             });
@@ -463,8 +547,8 @@ async function addAttachment(req, res) {
                 req.user.id,
                 storedName,
                 file_name,
-                mime_type || "application/octet-stream",
-                file_size || buffer.length,
+                cleanMime,
+                buffer.length,
                 `/uploads/${storedName}`
             ]
         );
@@ -481,7 +565,7 @@ async function addAttachment(req, res) {
             [
                 id,
                 req.user.id,
-                `Archivo adjunto: ${file_name}`
+                `Archivo adjunto: ${safeName}`
             ]
         );
 
@@ -534,6 +618,38 @@ async function stats(req, res) {
 
   }
 
+}
+
+async function ticketRanking(req, res) {
+  if (req.user.role !== 'admin') {
+    return res.status(403).json({ error: 'Solo los administradores pueden consultar el ranking.' });
+  }
+
+  const periods = {
+    semanal: { label: 'Últimos 7 días', interval: '7 DAY' },
+    mensual: { label: 'Últimos 30 días', interval: '30 DAY' },
+    anual: { label: 'Últimos 365 días', interval: '365 DAY' }
+  };
+  const period = periods[req.query.period] || periods.mensual;
+
+  try {
+    const [rows] = await pool.query(
+      `SELECT u.id, u.name, u.email, COUNT(t.id) AS ticket_count
+       FROM users u
+       LEFT JOIN tickets t
+         ON t.user_id = u.id
+        AND t.created_at >= DATE_SUB(NOW(), INTERVAL ${period.interval})
+       WHERE u.role = 'employee' AND u.active = 1
+       GROUP BY u.id, u.name, u.email
+       ORDER BY ticket_count DESC, u.name ASC
+       LIMIT 50`
+    );
+
+    return res.json({ period: req.query.period in periods ? req.query.period : 'mensual', label: period.label, ranking: rows });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Error obteniendo el ranking de tickets.' });
+  }
 }
 async function takeTicket(req, res) {
 
@@ -836,5 +952,5 @@ async function legacyUpdateTicketStatus(req, res) {
 
 }
 
-module.exports = { createTicket, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
+module.exports = { createTicket, suggestProblems, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, ticketRanking, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
 

@@ -17,30 +17,12 @@ export async function login(credentials){
 
     );
 
-    if (response.requiresOtp) return response;
-
     Storage.setToken(response.token);
 
     Storage.setUser(response.user);
 
     return response;
 
-}
-
-export async function verifyOtp(challengeId, code) {
-
-    const response = await api.post("/auth/verify-otp", {
-        challengeId,
-        code
-    });
-
-    Storage.setToken(response.token);
-    Storage.setUser(response.user);
-
-    // NUEVO
-    Storage.setTrustedDevice(response.trustedDevice);
-
-    return response.user;
 }
 
 export async function register(data){
