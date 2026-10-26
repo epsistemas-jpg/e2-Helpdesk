@@ -59,11 +59,10 @@ app.use((err, req, res, next) => {
 
 (async () => {
   try {
-    const conn = await pool.getConnection();
-    console.log('Conectado a TiDB');
-    conn.release();
+    await pool.query('SELECT 1');
+    console.log('Conectado a PostgreSQL/Neon');
   } catch (err) {
-    console.error('Error conectando a TiDB:', err.message);
+    console.error('Error conectando a PostgreSQL/Neon:', err.message);
   }
 })();
 
