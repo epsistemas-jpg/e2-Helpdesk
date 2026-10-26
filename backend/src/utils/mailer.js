@@ -1,5 +1,8 @@
 const axios = require("axios");
 
+const frontendUrl = (process.env.FRONTEND_URL || "https://e2-helpdesk-frontend.onrender.com").replace(/\/$/, "");
+const logoUrl = `${frontendUrl}/assets/images/logo-E2.png`;
+
 // C:\Users\Charlis Vinci\e2-Helpdesk\frontend\assets\images
 
 async function sendMail({ to, subject, html }) {
@@ -59,7 +62,7 @@ function ticketCreatedEmail(ticket, user) {
             <td align="center" style="padding:35px 30px 15px;">
 
                 <img
-                    src="https://e2-helpdesk.vercel.app/images/logo-E2.png"
+                    src="${logoUrl}"
                     width="170"
                     alt="e2 Energía">
 
@@ -73,7 +76,7 @@ function ticketCreatedEmail(ticket, user) {
 
                 <h2 style="
                     margin:0;
-                    color:#ffffff;
+                    color:#0f172a;
                     text-align:center;
                     font-size:28px;
                 ">
@@ -117,7 +120,7 @@ function ticketCreatedEmail(ticket, user) {
                             Ticket
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             #${ticket.id}
                         </td>
                     </tr>
@@ -127,7 +130,7 @@ function ticketCreatedEmail(ticket, user) {
                             Solicitante
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${user.name}
                         </td>
                     </tr>
@@ -137,7 +140,7 @@ function ticketCreatedEmail(ticket, user) {
                             Oficina
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${ticket.office}
                         </td>
                     </tr>
@@ -147,7 +150,7 @@ function ticketCreatedEmail(ticket, user) {
                             Categoría
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${ticket.category}
                         </td>
                     </tr>
@@ -157,7 +160,7 @@ function ticketCreatedEmail(ticket, user) {
                             Prioridad
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${ticket.priority.toUpperCase()}
                         </td>
                     </tr>
@@ -167,7 +170,7 @@ function ticketCreatedEmail(ticket, user) {
                             Estado
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${ticket.status.replace("_"," ").toUpperCase()}
                         </td>
                     </tr>
@@ -177,7 +180,7 @@ function ticketCreatedEmail(ticket, user) {
                             Título
                         </td>
 
-                        <td style="color:#ffffff;">
+                        <td style="color:#0f172a;font-weight:600;">
                             ${ticket.title}
                         </td>
                     </tr>
@@ -201,7 +204,7 @@ function ticketCreatedEmail(ticket, user) {
                     border-radius:8px;
                 ">
 
-                    <strong style="color:#ffffff;">
+                    <strong style="color:#0f172a;">
                         Descripción del incidente
                     </strong>
 
@@ -299,7 +302,7 @@ function statusUpdatedEmail(ticket) {
                 <td align="center" style="padding:35px 30px 15px;">
 
                     <img
-                        src="https://e2-helpdesk.vercel.app/images/logo-E2.png"
+                        src="${logoUrl}"
                         width="170"
                         alt="e2 Energía">
 
@@ -311,7 +314,7 @@ function statusUpdatedEmail(ticket) {
 
                     <h2 style="
                         margin:0;
-                        color:#ffffff;
+                        color:#0f172a;
                         text-align:center;
                         font-size:28px;
                     ">
@@ -351,7 +354,7 @@ function statusUpdatedEmail(ticket) {
                                 Ticket
                             </td>
 
-                            <td style="color:#ffffff;">
+                            <td style="color:#0f172a;font-weight:600;">
                                 #${ticket.id}
                             </td>
                         </tr>
@@ -361,7 +364,7 @@ function statusUpdatedEmail(ticket) {
                                 Solicitante
                             </td>
 
-                            <td style="color:#ffffff;">
+                            <td style="color:#0f172a;font-weight:600;">
                                 ${ticket.reporter_name}
                             </td>
                         </tr>
@@ -371,7 +374,7 @@ function statusUpdatedEmail(ticket) {
                                 Estado
                             </td>
 
-                            <td style="color:#ffffff;">
+                            <td style="color:#0f172a;font-weight:600;">
                                 ${ticket.status.replace("_", " ").toUpperCase()}
                             </td>
                         </tr>
@@ -381,7 +384,7 @@ function statusUpdatedEmail(ticket) {
                                 Prioridad
                             </td>
 
-                            <td style="color:#ffffff;">
+                            <td style="color:#0f172a;font-weight:600;">
                                 ${ticket.priority.toUpperCase()}
                             </td>
                         </tr>
@@ -391,7 +394,7 @@ function statusUpdatedEmail(ticket) {
                                 Título
                             </td>
 
-                            <td style="color:#ffffff;">
+                            <td style="color:#0f172a;font-weight:600;">
                                 ${ticket.title}
                             </td>
                         </tr>
@@ -413,7 +416,7 @@ function statusUpdatedEmail(ticket) {
                         border-radius:8px;
                     ">
 
-                        <strong style="color:#ffffff;">
+                        <strong style="color:#0f172a;">
                             Descripción del incidente
                         </strong>
 
@@ -498,7 +501,7 @@ function otpEmail(code) {
               <td align="center" style="padding:35px 30px 15px;">
 
                   <img
-                      src="https://e2-helpdesk.vercel.app/images/logo-E2.png"
+                      src="${logoUrl}"
                       width="170"
                       alt="e2 Energía"
                   >
@@ -511,7 +514,7 @@ function otpEmail(code) {
 
                   <h2 style="
                       margin:0;
-                      color:#ffffff;
+                      color:#0f172a;
                       text-align:center;
                       font-size:28px;
                   ">
@@ -570,7 +573,7 @@ function otpEmail(code) {
                       text-align:center;
                   ">
                       Este código es válido durante
-                      <strong style="color:#ffffff;">5 minutos</strong>.
+                      <strong style="color:#0f172a;">5 minutos</strong>.
                   </p>
 
                   <p style="
