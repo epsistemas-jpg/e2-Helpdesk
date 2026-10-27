@@ -178,3 +178,99 @@ SETTINGS
     color:var(--text-light);
 
 }
+
+/* Refinamiento visual: se mantienen las funciones y se reemplaza el estilo oscuro heredado. */
+.settings-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:22px;
+    align-items:start;
+}
+
+.settings-grid .ticket-card{
+    padding:26px;
+    border:1px solid #e2e8f0;
+    border-radius:18px;
+    background:#fff;
+    box-shadow:0 12px 28px rgba(15,23,42,.06);
+}
+
+.settings-grid h3{
+    margin:0 0 24px;
+    padding-bottom:16px;
+    border-bottom:1px solid #eef2f7;
+    font-size:17px;
+}
+
+.settings-grid h3 i{
+    display:grid;
+    place-items:center;
+    width:34px;
+    height:34px;
+    border-radius:10px;
+    background:#eef2ff;
+    color:var(--primary);
+}
+
+#profileForm,
+#passwordForm{ gap:22px; }
+
+#profileForm .ticket-grid,
+#passwordForm .ticket-grid{ gap:16px; }
+
+#profileForm label,
+#passwordForm label{
+    color:var(--text-light);
+    font-size:12px;
+    font-weight:700;
+}
+
+#profileForm input,
+#passwordForm input{
+    background:#fff;
+    color:var(--text);
+    border:1px solid #dbe3ef;
+    border-radius:11px;
+}
+
+#profileForm input:focus,
+#passwordForm input:focus{
+    border-color:var(--primary-light);
+    box-shadow:0 0 0 3px rgba(99,102,241,.12);
+}
+
+#profileForm button,
+#passwordForm button{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    min-width:170px;
+    height:44px;
+    padding:0 18px;
+    background:var(--primary);
+    color:#fff;
+    border:1px solid var(--primary);
+    border-radius:10px;
+}
+
+#profileForm button:hover,
+#passwordForm button:hover{
+    background:var(--primary-dark);
+    border-color:var(--primary-dark);
+    transform:translateY(-1px);
+}
+
+.settings-info div{
+    background:#f8fafc;
+    border-color:#e2e8f0;
+}
+
+@media(max-width:900px){
+    .settings-grid{ grid-template-columns:1fr; }
+}
+
+@media(max-width:600px){
+    .settings-grid .ticket-card{ padding:20px; }
+    #profileForm .ticket-grid,
+    #passwordForm .ticket-grid{ grid-template-columns:1fr; }
+}
