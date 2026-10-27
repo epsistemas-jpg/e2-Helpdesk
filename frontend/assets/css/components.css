@@ -83,6 +83,16 @@
 .description-suggestion{ display:flex; gap:8px; align-items:flex-start; margin-top:10px; padding:10px 12px; border:1px solid rgba(99,102,241,.2); border-radius:var(--radius-sm); background:rgba(99,102,241,.05); color:var(--text-light); font-size:12px; line-height:1.45; }
 .description-suggestion i{ color:var(--primary-light); margin-top:2px; }
 .description-suggestion strong{ color:var(--text); }
+.ticket-attachments-form { margin-top:18px; padding:16px; border:1px solid #e8edf5; border-radius:14px; background:#fff; }
+.ticket-attachments-heading { display:flex; align-items:center; justify-content:space-between; gap:14px; }
+.ticket-attachments-heading strong { display:block; color:var(--text); font-size:13px; }
+.ticket-attachments-heading strong i { color:var(--primary-light); margin-right:6px; }
+.ticket-attachments-heading span { display:block; margin-top:5px; color:var(--text-muted); font-size:12px; }
+.attachment-picker { display:inline-flex; align-items:center; gap:7px; flex:0 0 auto; padding:9px 12px; border:1px solid #c7d2fe; border-radius:9px; color:#4f46e5; background:#eef2ff; cursor:pointer; font-size:12px; font-weight:700; }
+.attachment-picker:hover { background:#e0e7ff; border-color:#818cf8; }
+.ticket-image-preview { display:flex; flex-wrap:wrap; gap:8px; margin-top:12px; }
+.ticket-image-chip { display:inline-flex !important; align-items:center; gap:6px; margin:0 !important; padding:6px 9px; border-radius:999px; background:#f1f5f9; color:#475569 !important; font-size:11px !important; }
+.ticket-image-chip i { color:#6366f1; }
 .activity-meta .priority-badge { padding:3px 8px; font-size:10px; vertical-align:middle; }
 .status-badge,
 .priority-badge { color:#fff !important; font-weight:800; letter-spacing:.2px; border:0; box-shadow:0 5px 14px rgba(15,23,42,.12); }

@@ -1,7 +1,7 @@
 import { requireAuth } from "../../utils/router.js";
 import { renderLayout } from "../../layouts/MainLayout.js";
 import { CreateTicketPage } from "../../pages/tickets/CreateTicketPage.js";
-import { createTicket } from "../../services/ticketService.js";
+import { createTicket, uploadTicketFile } from "../../services/ticketService.js";
 import api from "../../services/api.js";
 
 
@@ -112,6 +112,8 @@ function initEvents(){
 
     const title = form.querySelector("#title");
     const description = form.querySelector("#description");
+    const imageInput = form.querySelector("#ticketImages");
+    const imagePreview = form.querySelector("#ticketImagePreview");
     const defaultDescriptionPlaceholder = description?.getAttribute("placeholder") || "Describe el problema con el mayor detalle posible...";
     const titleCount = form.querySelector("#titleCount");
     const descriptionCount = form.querySelector("#descriptionCount");
@@ -121,6 +123,24 @@ function initEvents(){
     [[title, titleCount], [description, descriptionCount]].forEach(([field, counter]) => {
         field?.addEventListener("input", () => updateCount(field, counter));
         updateCount(field, counter);
+    });
+
+    imageInput?.addEventListener("change", () => {
+        const files = Array.from(imageInput.files || []);
+        if (files.length > 5 || files.some(file => !file.type.startsWith("image/") || file.size > 10 * 1024 * 1024)) {
+            imageInput.value = "";
+            if (imagePreview) imagePreview.replaceChildren();
+            alert("Puedes adjuntar máximo 5 imágenes de hasta 10 MB cada una.");
+            return;
+        }
+        if (!imagePreview) return;
+        imagePreview.replaceChildren();
+        files.forEach(file => {
+            const item = document.createElement("span");
+            item.className = "ticket-image-chip";
+            item.innerHTML = `<i class="bi bi-image"></i><span>${file.name}</span>`;
+            imagePreview.appendChild(item);
+        });
     });
 
     const suggestionsPanel = form.querySelector("#problemSuggestions");
@@ -365,11 +385,20 @@ async function submitTicket(e){
 
         const response = await createTicket(data);
 
+        const images = Array.from(form.querySelector("#ticketImages")?.files || []);
+        if (images.length && response.ticket?.id) {
+            if (submitStatus) submitStatus.textContent = "Guardando imágenes...";
+            for (const image of images) {
+                await uploadTicketFile(response.ticket.id, image);
+            }
+        }
+
         const priority = response.ticket.priority || "media";
         const sla = response.ticket.sla_hours ? `${response.ticket.sla_hours} h` : "24 h";
         alert(`✅ Ticket #${response.ticket.id} creado correctamente. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
 
         form.reset();
+        if (imagePreview) imagePreview.replaceChildren();
         if (description) description.placeholder = defaultDescriptionPlaceholder;
 
         const category = form.querySelector("#category");

@@ -227,6 +227,19 @@ export function TicketForm(offices = []) {
                     </div>
                 </div>
 
+                <div class="ticket-attachments-form">
+                    <div class="ticket-attachments-heading">
+                        <div>
+                            <strong><i class="bi bi-images"></i> Evidencia del problema</strong>
+                            <span>Adjunta capturas de pantalla o fotos que ayuden a entender el inconveniente.</span>
+                        </div>
+                        <label class="attachment-picker" for="ticketImages"><i class="bi bi-paperclip"></i> Adjuntar imágenes</label>
+                        <input id="ticketImages" name="ticketImages" type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
+                    </div>
+                    <div id="ticketImagePreview" class="ticket-image-preview" aria-live="polite"></div>
+                    <small class="field-help">Máximo 5 imágenes de 10 MB cada una.</small>
+                </div>
+
                 <div class="actions">
 
                     <span id="ticketSubmitStatus" class="ticket-submit-status" aria-live="polite"></span>
