@@ -16,6 +16,19 @@ async function init() {
             active: "dashboard",
             content: page
         });
+
+        document.querySelectorAll(".activity-row-clickable").forEach(row => {
+            const openTicket = () => {
+                window.location.href = `/pages/tickets/ticketDetails.html?id=${encodeURIComponent(row.dataset.ticketId)}`;
+            };
+            row.addEventListener("click", openTicket);
+            row.addEventListener("keydown", event => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openTicket();
+                }
+            });
+        });
     } catch (error) {
         console.error("No se pudo cargar el dashboard:", error);
 

@@ -248,6 +248,8 @@
 .activity-list { display:flex; flex-direction:column; gap:10px; }
 .activity-row { display:grid; grid-template-columns:42px 1fr auto; gap:14px; align-items:center; padding:14px 12px; border:1px solid var(--border); border-radius:14px; transition:var(--transition); background:var(--surface); }
 .activity-row:hover { border-color:var(--primary-light); background:var(--surface-hover); transform:translateX(2px); }
+.activity-row-clickable { cursor:pointer; }
+.activity-row-clickable:focus-visible { outline:3px solid rgba(99,102,241,.28); outline-offset:2px; }
 .activity-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:rgba(194,213,0,.12); color:var(--primary); font-size:18px; }
 .activity-main { min-width:0; }
 .activity-title { display:flex; justify-content:space-between; gap:12px; align-items:center; }

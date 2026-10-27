@@ -13,7 +13,7 @@ export function RecentActivity(tickets){
 
 ${tickets.length ? tickets.map(ticket=>`
 
-<div class="activity-row">
+<div class="activity-row activity-row-clickable" data-ticket-id="${ticket.id}" role="link" tabindex="0" aria-label="Abrir Ticket #${ticket.id}">
 
 <div class="activity-icon"><i class="bi bi-ticket-perforated"></i></div>
 <div class="activity-main">
