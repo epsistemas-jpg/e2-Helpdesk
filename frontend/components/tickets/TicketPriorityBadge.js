@@ -1,22 +1,12 @@
 export function TicketPriorityBadge(priority) {
 
-    const colors = {
-
-        urgente: "danger",
-
-        alta: "warning",
-
-        media: "primary",
-
-        baja: "secondary"
-
-    };
+    const labels = { urgente: "Urgente", alta: "Alta", media: "Media", baja: "Baja" };
 
     return `
 
-        <span class="badge priority-badge ${colors[priority] || "secondary"}">
+        <span class="badge priority-badge priority-${priority || "media"}">
 
-            ${priority}
+            ${labels[priority] || String(priority || "Media")}
 
         </span>
 

@@ -1,22 +1,17 @@
 export function TicketStatusBadge(status) {
 
-    const colors = {
-
-        abierto: "warning",
-
-        en_progreso: "info",
-
-        resuelto: "success",
-
-        cerrado: "secondary"
-
+    const labels = {
+        abierto: "Abierto",
+        en_progreso: "En progreso",
+        resuelto: "Resuelto",
+        cerrado: "Cerrado"
     };
 
     return `
 
-        <span class="badge ${colors[status]}">
+        <span class="badge status-badge status-${status || "desconocido"}">
 
-            ${status.replace("_"," ")}
+            ${labels[status] || String(status || "Sin estado").replace("_", " ")}
 
         </span>
 

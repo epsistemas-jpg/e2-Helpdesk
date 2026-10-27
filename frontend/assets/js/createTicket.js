@@ -110,6 +110,7 @@ function initEvents(){
 
     const title = form.querySelector("#title");
     const description = form.querySelector("#description");
+    const defaultDescriptionPlaceholder = description?.getAttribute("placeholder") || "Describe el problema con el mayor detalle posible...";
     const titleCount = form.querySelector("#titleCount");
     const descriptionCount = form.querySelector("#descriptionCount");
     const updateCount = (field, counter) => {
@@ -176,6 +177,9 @@ function initEvents(){
                     descriptionSuggestionText.textContent = result.descriptionSuggestion;
                     if (descriptionSuggestion) descriptionSuggestion.hidden = false;
                 }
+                if (description && result.descriptionSuggestion) {
+                    description.placeholder = `Ej: ${result.descriptionSuggestion}`;
+                }
                 if (category && result.category) category.value = result.category;
                 if (categoryValue && result.category) categoryValue.value = result.category;
             } catch (error) {
@@ -185,6 +189,9 @@ function initEvents(){
                     if (descriptionSuggestionText) {
                         descriptionSuggestionText.textContent = `Describe qué ocurre con “${text}”, desde cuándo sucede, a quién afecta y qué intentaste.`;
                         if (descriptionSuggestion) descriptionSuggestion.hidden = false;
+                    }
+                    if (description) {
+                        description.placeholder = `Ej: Describe qué ocurre con “${text}”, desde cuándo sucede y qué intentaste.`;
                     }
                     if (category && fallbackCategory) category.value = fallbackCategory;
                     if (categoryValue && fallbackCategory) categoryValue.value = fallbackCategory;
@@ -355,6 +362,7 @@ async function submitTicket(e){
         alert(`✅ Ticket #${response.ticket.id} creado correctamente. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
 
         form.reset();
+        if (description) description.placeholder = defaultDescriptionPlaceholder;
 
         const category = form.querySelector("#category");
         const categoryValue = form.querySelector("#categoryValue");

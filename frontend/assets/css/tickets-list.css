@@ -20,12 +20,16 @@
 .ticket-table tr:hover td { background:#f8fafc; }
 
 /* Contraste legible para prioridades y correos en el tema claro. */
-.priority-badge { font-weight:800; letter-spacing:.2px; }
-.priority-badge.warning,
-.priority-badge.info,
-.priority-badge.primary,
-.priority-badge.secondary { color:#0f172a !important; }
-.priority-badge.danger { color:#ffffff !important; }
+.priority-badge,
+.status-badge { font-weight:800; letter-spacing:.2px; color:#ffffff !important; border:0; box-shadow:0 5px 14px rgba(15,23,42,.12); }
+.priority-urgent { background:linear-gradient(135deg,#dc2626,#b91c1c) !important; }
+.priority-alta { background:linear-gradient(135deg,#ea580c,#c2410c) !important; }
+.priority-media { background:linear-gradient(135deg,#2563eb,#1d4ed8) !important; }
+.priority-baja { background:linear-gradient(135deg,#64748b,#475569) !important; }
+.status-abierto { background:linear-gradient(135deg,#16a34a,#15803d) !important; }
+.status-en_progreso { background:linear-gradient(135deg,#0891b2,#0e7490) !important; }
+.status-resuelto { background:linear-gradient(135deg,#7c3aed,#6d28d9) !important; }
+.status-cerrado { background:linear-gradient(135deg,#475569,#334155) !important; }
 .user-email,
 .ranking-table td:nth-child(3) { color:#0f172a !important; font-weight:600; }
 

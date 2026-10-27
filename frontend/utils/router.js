@@ -42,7 +42,9 @@ export function logout() {
 }
 
 export function goTo(path) {
-
-    window.location.href = path;
+    document.body?.classList.add("is-navigating");
+    window.setTimeout(() => {
+        window.location.href = path;
+    }, 140);
 
 }

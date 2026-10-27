@@ -85,7 +85,7 @@ export function TicketForm(offices = []) {
                             rows="6"
                             maxlength="5000"
                             minlength="20"
-                            placeholder="Ej: Desde las 8:00 a. m. Outlook muestra un error y no permite enviar correos. Le ocurre a tres personas del área..."
+                            placeholder="Escribe un título y la IA te mostrará un ejemplo para completar la descripción..."
                             aria-describedby="descriptionHelp"
                             required
                         ></textarea>

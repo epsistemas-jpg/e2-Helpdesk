@@ -252,11 +252,16 @@
 .ticket-actions button > i:first-child { width:30px; height:30px; display:grid; place-items:center; flex:0 0 auto; border-radius:9px; background:#eef2ff; color:var(--primary); font-size:15px; }
 .ticket-actions button .action-arrow { width:auto; height:auto; margin-left:auto; background:transparent; color:#94a3b8; font-size:14px; }
 .ticket-actions .ticket-action-primary { background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; border-color:#6366f1; }
-.ticket-badges .priority-badge.warning,
-.ticket-badges .priority-badge.info,
-.ticket-badges .priority-badge.primary,
-.ticket-badges .priority-badge.secondary { color:#0f172a !important; }
-.ticket-badges .priority-badge.danger { color:#fff !important; }
+.ticket-badges .priority-badge { color:#fff !important; }
+.ticket-badges .priority-urgent { background:linear-gradient(135deg,#dc2626,#b91c1c) !important; }
+.ticket-badges .priority-alta { background:linear-gradient(135deg,#ea580c,#c2410c) !important; }
+.ticket-badges .priority-media { background:linear-gradient(135deg,#2563eb,#1d4ed8) !important; }
+.ticket-badges .priority-baja { background:linear-gradient(135deg,#64748b,#475569) !important; }
+.ticket-badges .status-badge { color:#fff !important; }
+.ticket-badges .status-abierto { background:linear-gradient(135deg,#16a34a,#15803d) !important; }
+.ticket-badges .status-en_progreso { background:linear-gradient(135deg,#0891b2,#0e7490) !important; }
+.ticket-badges .status-resuelto { background:linear-gradient(135deg,#7c3aed,#6d28d9) !important; }
+.ticket-badges .status-cerrado { background:linear-gradient(135deg,#475569,#334155) !important; }
 .ticket-actions .ticket-action-primary > i:first-child { background:rgba(255,255,255,.16); color:#fff; }
 .ticket-actions .ticket-action-primary .action-arrow { color:#fff; }
 .ticket-actions button:hover { background:#eef2ff; border-color:#a5b4fc; }
