@@ -114,11 +114,31 @@
 .report-bar { height:9px; border-radius:999px; background:#eef2f7; overflow:hidden; }.report-bar i { display:block; height:100%; border-radius:999px; }
 .report-count { color:var(--text-muted); font-size:13px; }
 .report-tickets { margin-top:26px; }
+.report-print-header { display:none; }
 
 @media print {
+  @page { size:A4 landscape; margin:12mm; }
+  html, body { width:100%; min-height:100%; }
   .sidebar, .header, .report-controls, .assistant-launcher { display:none !important; }
   .main, .content { width:100%; padding:0; overflow:visible; }
-  .report-toolbar { border:0; padding:0 0 18px; }
+  .report-toolbar { border:0; padding:0 0 12px; margin-bottom:12px; background:#fff; }
+  .report-toolbar h2, .report-toolbar p, .report-toolbar > div > .section-kicker { display:none; }
+  .report-print-header { display:grid; gap:3px; }
+  .report-print-header strong { color:#111827; font-size:20px; letter-spacing:.5px; }
+  .report-print-header span { color:#4f46e5; font-size:14px; font-weight:700; }
+  .report-print-header small { color:#64748b; font-size:10px; }
+  .stats-grid { grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+  .stat-card { padding:14px; border-radius:10px; }
+  .stat-card h2 { font-size:26px; }
+  .report-charts { grid-template-columns:1fr 1.5fr; gap:12px; margin-bottom:14px; }
+  .report-chart-card { padding:14px; border-radius:10px; }
+  .report-donut { width:110px; height:110px; margin-bottom:8px; }
+  .report-donut::after { inset:12px; }
+  .report-tickets { margin-top:14px; }
+  .section { padding:14px; }
+  .ticket-table th, .ticket-table td { padding:7px 8px; font-size:9px; }
+  .ranking-section { margin-bottom:14px; }
+  .ranking-header { margin-bottom:8px; }
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
   body { background:#fff !important; }
 }
