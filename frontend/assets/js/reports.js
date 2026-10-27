@@ -16,24 +16,39 @@ async function init() {
         renderLayout({
             title: "Reportes",
             active: "reports",
-            content: `
-                ${reportToolbar(report.from, report.to)}
-                <div class="stats-grid">
-                    ${stat("Total de tickets", stats.total, "bi-ticket-perforated", "primary")}
-                    ${stat("Abiertos", stats.open, "bi-inbox", "warning")}
-                    ${stat("En progreso", stats.progress, "bi-hourglass-split", "info")}
-                    ${stat("Resueltos / cerrados", Number(stats.resolved) + Number(stats.closed), "bi-check2-circle", "success")}
-                </div>
-                ${chartsMarkup(stats)}
-                ${user.role === "admin" ? adminResolutionMarkup(administrators) : ""}
-                ${ticketsMarkup(tickets)}
-            `
+            content: templateMarkup(report, user)
         });
         bindReportFilters();
         bindExports(report, user);
     } catch (error) {
         renderLayout({ title: "Reportes", active: "reports", content: `<div class="section"><h3>No fue posible cargar los reportes</h3><p>${escapeHtml(error.message)}</p></div>` });
     }
+}
+
+function templateMarkup(report, user) {
+    const s = report.stats || {};
+    const total = Number(s.total) || 0;
+    const open = Number(s.open) || 0;
+    const progress = Number(s.progress) || 0;
+    const resolved = Number(s.resolved) || 0;
+    const closed = Number(s.closed) || 0;
+    const completed = resolved + closed;
+    const pct = total ? Math.round(completed / total * 100) : 0;
+    const width = value => total ? Math.min(100, Math.round(Number(value || 0) / total * 100)) : 0;
+    const status = (value, label, cls) => `<div class="template-bar"><div class="template-bar-title"><span>${label}</span><b>${value}</b></div><div class="template-track"><span class="${cls}" style="width:${width(value)}%"></span></div></div>`;
+    const adminRows = user.role === "admin" && report.administrators.length
+        ? report.administrators.map((a, i) => `<tr><td>${i + 1}</td><td>${escapeHtml(a.name)}</td><td>${escapeHtml(a.email)}</td><td>${a.resolved_count}</td><td>${a.assigned_count}</td></tr>`).join("")
+        : `<tr><td colspan="5">No hay administradores con actividad en este periodo.</td></tr>`;
+    const ticketRows = report.tickets.length
+        ? report.tickets.map(t => `<tr><td>${t.id}</td><td>${escapeHtml(t.title)}</td><td>${escapeHtml(t.reporter_name || "-")}</td><td>${escapeHtml(t.status)}</td><td>${escapeHtml(t.priority)}</td><td>${escapeHtml(t.assigned_name || "Sin asignar")}</td><td>${new Date(t.created_at).toLocaleDateString()}</td></tr>`).join("")
+        : `<tr><td colspan="7">No hay tickets en el periodo seleccionado.</td></tr>`;
+    return `<div class="template-report">
+      <header class="template-report-header"><h1>Resumen ejecutivo | <b>E2 ENERGÍA EFICIENTE</b></h1><div class="template-report-actions"><span>Periodo: ${report.from} - ${report.to}</span><label>Desde<input id="reportFrom" type="date" value="${report.from}"></label><label>Hasta<input id="reportTo" type="date" value="${report.to}"></label><button id="applyReport" class="btn-primary">Actualizar</button><button id="exportPdf" class="report-export">PDF</button><button id="exportExcel" class="report-export">Excel</button></div></header>
+      <section class="template-card template-kpis"><div><small>Total de tickets</small><span>${total}</span></div><div><small>Abiertos</small><span>${open}</span></div><div><small>En progreso</small><span>${progress}</span></div><div><small>Resueltos / cerrados</small><span>${completed}</span></div></section>
+      <div class="template-grid2"><section class="template-card"><h2>Porcentaje de resolución</h2><div class="template-donut-wrap"><div class="template-donut" style="--done:${pct}%"><div><strong>${pct}%</strong><span>resueltos</span></div></div><div class="template-legend"><p><i class="open"></i><span>Abiertos</span><b>${open}</b></p><p><i class="progress"></i><span>En progreso</span><b>${progress}</b></p><p><i class="done"></i><span>Resueltos / cerrados</span><b>${completed}</b></p></div></div></section><section class="template-card"><h2>Distribución por estado</h2>${status(open,"Abiertos","open")}${status(progress,"En progreso","progress")}${status(resolved,"Resueltos","resolved")}${status(closed,"Cerrados","closed")}</section></div>
+      ${user.role === "admin" ? `<section class="template-card template-table-card"><h2>Tickets resueltos por administrador</h2><p class="template-note">Incluye tickets marcados como resueltos o cerrados en el periodo.</p><div class="tablewrap"><table><thead><tr><th>Puesto</th><th>Administrador</th><th>Correo</th><th>Resueltos / cerrados</th><th>Asignados</th></tr></thead><tbody>${adminRows}</tbody></table></div></section>` : ""}
+      <section class="template-card template-table-card template-ticket-table"><h2>Tickets del periodo <span class="template-period">${report.tickets.length} registros</span></h2><div class="tablewrap"><table><thead><tr><th>#</th><th>Título</th><th>Solicitante</th><th>Estado</th><th>Prioridad</th><th>Responsable</th><th>Creado</th></tr></thead><tbody>${ticketRows}</tbody></table></div></section>
+    </div>`;
 }
 
 function reportToolbar(from, to) {
