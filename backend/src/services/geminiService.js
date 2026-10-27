@@ -21,6 +21,8 @@ const COMMON_PROBLEMS = {
   pantalla: ['Pantalla sin imagen', 'Pantalla parpadea', 'Monitor no enciende'],
   computador: ['Computador no enciende', 'Computador está muy lento', 'El computador se reinicia solo'],
   computadora: ['Computador no enciende', 'Computador está muy lento', 'El computador se reinicia solo'],
+  toner: ['La impresora muestra poco tóner', 'La impresión sale clara o con manchas', 'Necesito cambiar el cartucho de tóner'],
+  tonner: ['La impresora muestra poco tóner', 'La impresión sale clara o con manchas', 'Necesito cambiar el cartucho de tóner'],
   acceso: ['No puedo acceder a un sistema', 'Necesito solicitar un permiso', 'Mi usuario está bloqueado'],
   contraseña: ['Necesito restablecer mi contraseña', 'No puedo iniciar sesión', 'Mi contraseña fue bloqueada']
 };
@@ -114,7 +116,8 @@ async function generateGeminiJson({ model, apiKey, body, timeoutMs = 5000 }) {
         body: JSON.stringify(body)
       });
       if (response.ok) return response.json();
-      if (![429, 500, 502, 503, 504].includes(response.status) || attempt === 1) {
+      // Un 429 es un límite de cuota: reintentarlo inmediatamente solo empeora el límite.
+      if (![500, 502, 503, 504].includes(response.status) || attempt === 1) {
         throw new Error(`Gemini respondió ${response.status}`);
       }
       await new Promise(resolve => setTimeout(resolve, 180));

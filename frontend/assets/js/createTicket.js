@@ -39,6 +39,8 @@ const LOCAL_PROBLEM_SUGGESTIONS = {
     correo: ["No puedo enviar correos", "No puedo recibir correos", "Outlook no abre o muestra un error"],
     outlook: ["Outlook no abre", "Outlook no sincroniza los correos", "No puedo enviar correos desde Outlook"],
     impresora: ["Impresora no imprime", "No puedo conectarme a la impresora", "La impresión sale con errores"],
+    toner: ["La impresora muestra poco tóner", "La impresión sale clara o con manchas", "Necesito cambiar el cartucho de tóner"],
+    tonner: ["La impresora muestra poco tóner", "La impresión sale clara o con manchas", "Necesito cambiar el cartucho de tóner"],
     pantalla: ["Pantalla sin imagen", "Pantalla parpadea", "Monitor no enciende"],
     acceso: ["No puedo acceder a un sistema", "Necesito solicitar un permiso", "Mi usuario está bloqueado"]
 };
@@ -124,6 +126,7 @@ function initEvents(){
     const suggestionsPanel = form.querySelector("#problemSuggestions");
     const suggestionsList = form.querySelector("#problemSuggestionsList");
     const suggestionCache = new Map();
+    let lastSuggestionQuery = "";
     let suggestionTimer;
     let suggestionController;
     const renderSuggestions = (suggestions = []) => {
@@ -150,7 +153,13 @@ function initEvents(){
         clearTimeout(suggestionTimer);
         suggestionTimer = setTimeout(async () => {
             const text = String(title?.value || "").trim();
-            if (text.length < 3) return renderSuggestions([]);
+            if (text.length < 4) {
+                lastSuggestionQuery = "";
+                return renderSuggestions([]);
+            }
+            const cacheKey = text.toLowerCase().replace(/\s+/g, " ").trim();
+            if (cacheKey === lastSuggestionQuery) return;
+            lastSuggestionQuery = cacheKey;
             const fallbackSuggestions = getLocalSuggestions(text);
             const fallbackCategory = getLocalCategory(text);
             renderSuggestions([]);
@@ -165,7 +174,6 @@ function initEvents(){
             suggestionController?.abort();
             suggestionController = new AbortController();
             try {
-                const cacheKey = text.toLowerCase().replace(/\s+/g, " ").trim();
                 let result = suggestionCache.get(cacheKey);
                 if (!result) {
                     result = await api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal });
@@ -198,7 +206,7 @@ function initEvents(){
                     console.warn("Sugerencias no disponibles:", error.message);
                 }
             }
-        }, 350);
+        }, 850);
     };
     title?.addEventListener("input", loadSuggestions);
 
