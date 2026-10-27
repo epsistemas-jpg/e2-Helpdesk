@@ -117,26 +117,30 @@
 .report-print-header { display:none; }
 
 @media print {
-  @page { size:A4 landscape; margin:12mm; }
+  @page { size:297mm 210mm; margin:10mm; }
   html, body { width:100%; min-height:100%; }
   .sidebar, .header, .report-controls, .assistant-launcher { display:none !important; }
   .main, .content { width:100%; padding:0; overflow:visible; }
   .report-toolbar { border:0; padding:0 0 12px; margin-bottom:12px; background:#fff; }
   .report-toolbar h2, .report-toolbar p, .report-toolbar > div > .section-kicker { display:none; }
-  .report-print-header { display:grid; gap:3px; }
-  .report-print-header strong { color:#111827; font-size:20px; letter-spacing:.5px; }
-  .report-print-header span { color:#4f46e5; font-size:14px; font-weight:700; }
-  .report-print-header small { color:#64748b; font-size:10px; }
-  .stats-grid { grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:14px; }
+  .report-print-header { display:flex; justify-content:space-between; align-items:flex-start; padding:2px 0 10px; border-bottom:2px solid #111827; }
+  .report-print-header strong, .report-print-header span, .report-print-header small { display:block; }
+  .report-print-header strong { color:#111827; font-size:18px; letter-spacing:.2px; }
+  .report-print-header span { margin-top:2px; color:#4f46e5; font-size:11px; font-weight:700; }
+  .report-print-header small { margin-top:5px; color:#64748b; font-size:9px; }
+  .report-print-header b { color:#111827; font-size:27px; letter-spacing:-2px; }
+  .stats-grid { grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:12px; }
   .stat-card { padding:14px; border-radius:10px; }
   .stat-card h2 { font-size:26px; }
-  .report-charts { grid-template-columns:1fr 1.5fr; gap:12px; margin-bottom:14px; }
+  .report-charts { grid-template-columns:1.05fr 1.7fr; gap:10px; margin-bottom:12px; }
   .report-chart-card { padding:14px; border-radius:10px; }
   .report-donut { width:110px; height:110px; margin-bottom:8px; }
   .report-donut::after { inset:12px; }
-  .report-tickets { margin-top:14px; }
+  .report-tickets { margin-top:14px; page-break-before:always; }
+  .ranking-section { page-break-before:always; }
   .section { padding:14px; }
-  .ticket-table th, .ticket-table td { padding:7px 8px; font-size:9px; }
+  .ticket-table { min-width:0 !important; width:100%; }
+  .ticket-table th, .ticket-table td { padding:6px 7px; font-size:8px; }
   .ranking-section { margin-bottom:14px; }
   .ranking-header { margin-bottom:8px; }
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
