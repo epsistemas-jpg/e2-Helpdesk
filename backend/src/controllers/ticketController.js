@@ -593,15 +593,15 @@ async function stats(req, res) {
             SELECT
                 COUNT(*) AS total,
 
-                COALESCE(SUM(status = 'abierto'), 0) AS open,
-                COALESCE(SUM(status = 'en_progreso'), 0) AS progress,
-                COALESCE(SUM(status = 'resuelto'), 0) AS resolved,
-                COALESCE(SUM(status = 'cerrado'), 0) AS closed,
+                COALESCE(SUM(CASE WHEN status = 'abierto' THEN 1 ELSE 0 END), 0) AS open,
+                COALESCE(SUM(CASE WHEN status = 'en_progreso' THEN 1 ELSE 0 END), 0) AS progress,
+                COALESCE(SUM(CASE WHEN status = 'resuelto' THEN 1 ELSE 0 END), 0) AS resolved,
+                COALESCE(SUM(CASE WHEN status = 'cerrado' THEN 1 ELSE 0 END), 0) AS closed,
 
-                COALESCE(SUM(priority = 'urgente'), 0) AS urgent,
-                COALESCE(SUM(priority = 'alta'), 0) AS high,
-                COALESCE(SUM(priority = 'media'), 0) AS medium,
-                COALESCE(SUM(priority = 'baja'), 0) AS low
+                COALESCE(SUM(CASE WHEN priority = 'urgente' THEN 1 ELSE 0 END), 0) AS urgent,
+                COALESCE(SUM(CASE WHEN priority = 'alta' THEN 1 ELSE 0 END), 0) AS high,
+                COALESCE(SUM(CASE WHEN priority = 'media' THEN 1 ELSE 0 END), 0) AS medium,
+                COALESCE(SUM(CASE WHEN priority = 'baja' THEN 1 ELSE 0 END), 0) AS low
 
             FROM tickets ${condition}
         `, params);
