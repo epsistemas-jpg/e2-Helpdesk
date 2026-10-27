@@ -122,12 +122,13 @@ function initEvents(){
 
     const suggestionsPanel = form.querySelector("#problemSuggestions");
     const suggestionsList = form.querySelector("#problemSuggestionsList");
+    const suggestionCache = new Map();
     let suggestionTimer;
     let suggestionController;
     const renderSuggestions = (suggestions = []) => {
         if (!suggestionsPanel || !suggestionsList) return;
         suggestionsList.replaceChildren();
-        suggestions.slice(0, 5).forEach((suggestion) => {
+        suggestions.slice(0, 8).forEach((suggestion) => {
             const button = document.createElement("button");
             button.type = "button";
             button.className = "problem-suggestion";
@@ -163,7 +164,12 @@ function initEvents(){
             suggestionController?.abort();
             suggestionController = new AbortController();
             try {
-                const result = await api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal });
+                const cacheKey = text.toLowerCase().replace(/\s+/g, " ").trim();
+                let result = suggestionCache.get(cacheKey);
+                if (!result) {
+                    result = await api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal });
+                    suggestionCache.set(cacheKey, result);
+                }
                 renderSuggestions(result.suggestions || []);
                 if (heading) heading.textContent = "Sugerencias disponibles";
                 if (descriptionSuggestionText && result.descriptionSuggestion) {
@@ -185,7 +191,7 @@ function initEvents(){
                     console.warn("Sugerencias no disponibles:", error.message);
                 }
             }
-        }, 600);
+        }, 350);
     };
     title?.addEventListener("input", loadSuggestions);
 
