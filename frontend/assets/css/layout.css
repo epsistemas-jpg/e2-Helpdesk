@@ -79,7 +79,7 @@ body.is-navigating::before {
     background:linear-gradient(90deg,#6366f1,#22c55e,#6366f1);
     background-size:200% 100%;
     box-shadow:0 2px 12px rgba(99,102,241,.35);
-    animation:navigationProgress .9s ease-in-out infinite;
+    animation:navigationProgress .9s linear infinite;
 }
 
 body.is-navigating::after {
@@ -92,7 +92,7 @@ body.is-navigating::after {
     padding:7px 12px 9px;
     border:1px solid #e0e7ff;
     border-radius:999px;
-    background:rgba(255,255,255,.96);
+    background:#ffffff;
     color:#6366f1;
     box-shadow:0 8px 24px rgba(15,23,42,.12);
     font-size:16px;
@@ -103,13 +103,12 @@ body.is-navigating::after {
 }
 
 @keyframes navigationProgress {
-    0% { background-position:100% 0; opacity:.65; }
-    50% { opacity:1; }
-    100% { background-position:-100% 0; opacity:.65; }
+    0% { background-position:100% 0; }
+    100% { background-position:-100% 0; }
 }
 @keyframes navigationDots {
-    0%,100% { transform:translateY(0); opacity:.55; }
-    50% { transform:translateY(2px); opacity:1; }
+    0%,100% { transform:translateY(0); color:#6366f1; }
+    50% { transform:translateY(2px); color:#22c55e; }
 }
 
 @media(max-width:600px){
