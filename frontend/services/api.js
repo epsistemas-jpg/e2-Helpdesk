@@ -47,11 +47,19 @@ async function request(endpoint, options = {}) {
         clearTimeout(timeout);
     }
 
-    const data = response.status === 204 ? {} : await response.json();
+    let data = {};
+    if (response.status !== 204) {
+        const contentType = response.headers.get("content-type") || "";
+        data = contentType.includes("application/json")
+            ? await response.json()
+            : { error: await response.text() };
+    }
 
     if (!response.ok) {
 
-        throw new Error(data.error || "Error del servidor");
+        const error = new Error(data.error || "Error del servidor");
+        error.status = response.status;
+        throw error;
 
     }
 

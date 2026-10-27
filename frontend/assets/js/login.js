@@ -4,8 +4,6 @@ import CONFIG from "../../config/config.js";
 import { Storage } from "../../utils/storage.js";
 import { requireGuest } from "../../utils/router.js";
 
-requireGuest();
-
 const canvas = document.getElementById("canvas");
 const authLoader = document.getElementById("authLoader");
 const googleLoginButton = document.getElementById("googleLoginButton");
@@ -54,4 +52,12 @@ googleLoginButton?.addEventListener("click", () => {
     window.location.href = `${CONFIG.API_URL}/auth/google`;
 });
 
-handleGoogleCallback();
+// El callback de Google puede llegar con un token antiguo guardado en el
+// navegador. Primero procesamos el token nuevo; de lo contrario requireGuest
+// podría redirigir al dashboard antes de completar el acceso actual.
+const callbackHash = new URLSearchParams(window.location.hash.slice(1));
+if (callbackHash.has("google_token") || callbackHash.has("google_error")) {
+    handleGoogleCallback();
+} else {
+    requireGuest();
+}
