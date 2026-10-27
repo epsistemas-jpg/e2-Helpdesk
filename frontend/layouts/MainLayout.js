@@ -51,8 +51,30 @@ ${AssistantChat()}
 function initLayoutEvents() {
 
     const logoutBtn = document.querySelector("#logoutBtn");
+    const headerUser = document.querySelector(".header-user");
+    const headerMenu = document.querySelector("#headerUserMenu");
+    const headerDropdown = document.querySelector("#headerUserDropdown");
+    const headerLogoutBtn = document.querySelector("#headerLogoutBtn");
 
     if (logoutBtn) logoutBtn.addEventListener("click", logout);
+    if (headerMenu && headerDropdown) {
+        headerMenu.addEventListener("click", event => {
+            event.stopPropagation();
+            const isOpen = headerMenu.getAttribute("aria-expanded") === "true";
+            headerMenu.setAttribute("aria-expanded", String(!isOpen));
+            headerDropdown.hidden = isOpen;
+        });
+
+        headerDropdown.addEventListener("click", event => event.stopPropagation());
+
+        document.addEventListener("click", event => {
+            if (headerUser && !headerUser.contains(event.target)) {
+                headerMenu.setAttribute("aria-expanded", "false");
+                headerDropdown.hidden = true;
+            }
+        });
+    }
+    if (headerLogoutBtn) headerLogoutBtn.addEventListener("click", logout);
     initAssistantChat();
 
     if (!window.__helpdeskContextMenuBlocked) {

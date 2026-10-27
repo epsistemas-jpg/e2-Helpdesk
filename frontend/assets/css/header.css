@@ -30,6 +30,79 @@
   display:flex;
   align-items:center;
   gap:15px;
+  border:0;
+  padding:0;
+  background:transparent;
+  color:inherit;
+  font:inherit;
+  cursor:pointer;
+  border-radius:12px;
+}
+
+.user-box:focus-visible{
+  outline:3px solid rgba(99,102,241,.28);
+  outline-offset:5px;
+}
+
+.header-user{
+  position:relative;
+}
+
+.header-user-dropdown{
+  position:absolute;
+  top:calc(100% + 10px);
+  right:0;
+  z-index:50;
+  width:210px;
+  padding:10px;
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:14px;
+  box-shadow:0 16px 35px rgba(15,23,42,.16);
+}
+
+.header-user-summary{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  padding:7px 9px 10px;
+  border-bottom:1px solid #eef2f7;
+}
+
+.header-user-summary strong{
+  color:var(--text);
+  font-size:13px;
+}
+
+.header-user-summary small{
+  color:var(--text-muted);
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.header-logout-btn{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  width:100%;
+  margin-top:7px;
+  padding:10px 9px;
+  border:0;
+  border-radius:9px;
+  background:transparent;
+  color:#b91c1c;
+  font:inherit;
+  font-size:13px;
+  font-weight:700;
+  text-align:left;
+  cursor:pointer;
+}
+
+.header-logout-btn:hover,
+.header-logout-btn:focus-visible{
+  background:#fef2f2;
+  outline:none;
 }
 
 .user-avatar{
@@ -51,4 +124,5 @@
   .header-kicker { display:none; }
   .header-title { font-size:16px; }
   .user-box > div:first-child { display:none; }
+  .header-user-dropdown { right:-4px; }
 }

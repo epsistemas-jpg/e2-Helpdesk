@@ -8,19 +8,37 @@ export function Header(title,user){
         <h2 class="header-title">${title}</h2>
     </div>
 
-    <div class="user-box">
+    <div class="header-user">
 
-        <div>
+        <button id="headerUserMenu" class="user-box" type="button" aria-expanded="false" aria-controls="headerUserDropdown" aria-label="Abrir menú de usuario">
 
-            <strong>${user.name}</strong><br>
+            <div>
 
-            <small class="role-badge">${user.role}</small>
+                <strong>${user.name}</strong><br>
 
-        </div>
+                <small class="role-badge">${user.role}</small>
 
-        <div class="user-avatar">
+            </div>
 
-            ${user.name.charAt(0)}
+            <div class="user-avatar">
+
+                ${user.name.charAt(0)}
+
+            </div>
+
+        </button>
+
+        <div id="headerUserDropdown" class="header-user-dropdown" hidden>
+
+            <div class="header-user-summary">
+                <strong>${user.name}</strong>
+                <small>${user.role}</small>
+            </div>
+
+            <button id="headerLogoutBtn" type="button" class="header-logout-btn">
+                <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i>
+                <span>Cerrar sesión</span>
+            </button>
 
         </div>
 
