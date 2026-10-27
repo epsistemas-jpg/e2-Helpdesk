@@ -51,9 +51,29 @@ ${AssistantChat()}
 function initLayoutEvents() {
 
     const logoutBtn = document.querySelector("#logoutBtn");
+    const headerUser = document.querySelector(".header-user");
+    const headerMenu = document.querySelector("#headerUserMenu");
+    const headerDropdown = document.querySelector("#headerUserDropdown");
     const headerLogoutBtn = document.querySelector("#headerLogoutBtn");
 
     if (logoutBtn) logoutBtn.addEventListener("click", logout);
+    if (headerMenu && headerDropdown) {
+        const closeHeaderMenu = () => {
+            headerMenu.setAttribute("aria-expanded", "false");
+            headerDropdown.setAttribute("aria-hidden", "true");
+            headerDropdown.classList.remove("is-open");
+        };
+        headerMenu.addEventListener("click", event => {
+            event.stopPropagation();
+            const isOpen = headerDropdown.classList.toggle("is-open");
+            headerMenu.setAttribute("aria-expanded", String(isOpen));
+            headerDropdown.setAttribute("aria-hidden", String(!isOpen));
+        });
+        headerDropdown.addEventListener("click", event => event.stopPropagation());
+        document.addEventListener("click", event => {
+            if (headerUser && !headerUser.contains(event.target)) closeHeaderMenu();
+        });
+    }
     if (headerLogoutBtn) headerLogoutBtn.addEventListener("click", logout);
     initAssistantChat();
 
