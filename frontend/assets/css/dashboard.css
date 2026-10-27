@@ -137,6 +137,7 @@
 .template-ticket-description { display:block; max-width:360px; margin-top:4px; color:#7b8394; font-size:11px; line-height:1.35; white-space:normal; }
 .template-ticket-table { page-break-before:always; break-before:page; }
 .template-print-break { display:none; }
+.template-ticket-page { display:block; }
 
 @media print {
   @page { size:297mm 210mm; margin:10mm; }
@@ -168,7 +169,19 @@
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
   body { background:#fff !important; }
   .template-report { max-width:none; padding:0; }
-  .template-print-break { display:block; height:0; page-break-before:always !important; break-before:page !important; }
+  .template-print-break { display:none !important; }
+  .template-ticket-page {
+    display:block;
+    min-height:170mm;
+    page-break-before:always !important;
+    break-before:page !important;
+    page-break-inside:auto !important;
+    break-inside:auto !important;
+  }
+  .template-ticket-page .template-ticket-table {
+    page-break-before:auto !important;
+    break-before:auto !important;
+  }
   .template-report-header { margin-bottom:10px; }
   .template-report-actions > span, .template-report-actions label, .template-report-actions button { display:none !important; }
   .template-kpis { grid-template-columns:repeat(4,1fr); margin-bottom:12px; }
