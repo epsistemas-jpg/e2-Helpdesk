@@ -42,14 +42,43 @@ const LOCAL_PROBLEM_SUGGESTIONS = {
     toner: ["La impresora muestra poco tóner", "La impresión sale clara o con manchas", "Necesito cambiar el cartucho de tóner"],
     tonner: ["La impresora muestra poco tóner", "La impresión sale clara o con manchas", "Necesito cambiar el cartucho de tóner"],
     pantalla: ["Pantalla sin imagen", "Pantalla parpadea", "Monitor no enciende"],
-    acceso: ["No puedo acceder a un sistema", "Necesito solicitar un permiso", "Mi usuario está bloqueado"]
+    acceso: ["No puedo acceder a un sistema", "Necesito solicitar un permiso", "Mi usuario está bloqueado"],
+    sap: ["SAP no abre o no inicia correctamente", "SAP muestra un error", "No puedo completar una tarea en SAP"],
+    "power bi": ["Power BI no carga el informe", "Power BI muestra un error", "No puedo actualizar un informe en Power BI"],
+    teams: ["Microsoft Teams no abre", "No puedo entrar a una reunión en Teams", "Teams no permite enviar mensajes"],
+    sharepoint: ["SharePoint no carga", "No puedo abrir un archivo en SharePoint", "SharePoint muestra un error"],
+    excel: ["Excel no abre", "Excel muestra un error al abrir el archivo", "No puedo guardar un archivo de Excel"],
+    word: ["Word no abre", "Word muestra un error", "No puedo guardar un documento de Word"]
 };
 
+function normalizeTitle(text) {
+    return String(text || "").toLowerCase()
+        .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+        .replace(/\s+/g, " ").trim();
+}
+
+function getUnknownSoftwareSuggestions(text) {
+    const cleanText = String(text || "").trim().replace(/[.!?]+$/, "");
+    if (!cleanText) return [];
+    const subject = cleanText.replace(/^(problema con|error en|falla|fallo|no funciona|no abre)\s+/i, "").trim();
+    if (!subject) return [];
+    return [
+        `${subject}: no abre o no inicia correctamente`,
+        `${subject}: muestra un error al utilizarlo`,
+        `${subject}: dejó de funcionar o responde lentamente`,
+        `No puedo completar una tarea en ${subject}`
+    ];
+}
+
 function getLocalSuggestions(text) {
-    const normalized = String(text || "").toLowerCase();
-    return [...new Set(Object.entries(LOCAL_PROBLEM_SUGGESTIONS)
+    const normalized = normalizeTitle(text);
+    const matches = [...new Set(Object.entries(LOCAL_PROBLEM_SUGGESTIONS)
         .filter(([keyword]) => normalized.includes(keyword))
-        .flatMap(([, suggestions]) => suggestions))].slice(0, 5);
+        .flatMap(([, suggestions]) => suggestions))];
+    if (matches.length < 5 && (normalized.length >= 4 || /programa|aplicacion|software|sistema|plataforma|modulo|app|no abre|error|falla|fallo|no funciona|no inicia|lento/.test(normalized))) {
+        matches.push(...getUnknownSoftwareSuggestions(text));
+    }
+    return [...new Set(matches)].slice(0, 5);
 }
 
 function getLocalCategory(text) {
@@ -182,10 +211,12 @@ function initEvents(){
             lastSuggestionQuery = cacheKey;
             const fallbackSuggestions = getLocalSuggestions(text);
             const fallbackCategory = getLocalCategory(text);
-            renderSuggestions([]);
+            // Mostrar una respuesta inmediata para que un nombre de programa
+            // desconocido nunca deje el formulario en estado de espera.
+            renderSuggestions(fallbackSuggestions);
             if (suggestionsPanel) suggestionsPanel.hidden = false;
             const heading = suggestionsPanel?.querySelector(".suggestions-heading span");
-            if (heading) heading.textContent = "Cargando sugerencias...";
+            if (heading) heading.textContent = fallbackSuggestions.length ? "Sugerencias disponibles" : "Analizando título...";
             const descriptionSuggestion = form.querySelector("#descriptionSuggestion");
             const descriptionSuggestionText = form.querySelector("#descriptionSuggestionText");
             if (descriptionSuggestion) descriptionSuggestion.hidden = true;
@@ -196,7 +227,23 @@ function initEvents(){
             try {
                 let result = suggestionCache.get(cacheKey);
                 if (!result) {
-                    result = await api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal });
+                    let timeoutId;
+                    const suggestionTimeout = new Promise((_, reject) => {
+                        timeoutId = setTimeout(() => {
+                            const error = new Error("La IA tardó demasiado en responder.");
+                            error.name = "SuggestionTimeoutError";
+                            reject(error);
+                        }, 6000);
+                        suggestionController.signal.addEventListener("abort", () => clearTimeout(timeoutId), { once: true });
+                    });
+                    try {
+                        result = await Promise.race([
+                            api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal }),
+                            suggestionTimeout
+                        ]);
+                    } finally {
+                        clearTimeout(timeoutId);
+                    }
                     suggestionCache.set(cacheKey, result);
                 }
                 renderSuggestions(result.suggestions || []);
@@ -213,7 +260,7 @@ function initEvents(){
             } catch (error) {
                 if (error.name !== "AbortError") {
                     renderSuggestions(fallbackSuggestions);
-                    if (heading) heading.textContent = "Sugerencias de respaldo";
+                    if (heading) heading.textContent = fallbackSuggestions.length ? "Sugerencias disponibles" : "Completa el título para sugerir problemas";
                     if (descriptionSuggestionText) {
                         descriptionSuggestionText.textContent = `Describe qué ocurre con “${text}”, desde cuándo sucede, a quién afecta y qué intentaste.`;
                         if (descriptionSuggestion) descriptionSuggestion.hidden = false;
