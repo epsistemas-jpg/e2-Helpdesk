@@ -57,7 +57,7 @@ function getLocalCategory(text) {
     if (/teclado|mouse|pantalla|monitor|computador|computadora/.test(normalized)) return "hardware";
     if (/internet|wifi|wi-fi|red|conexión|conexion/.test(normalized)) return "red_internet";
     if (/correo|outlook|email|e-mail/.test(normalized)) return "correo";
-    if (/impresora|imprimir|impresión|impresion/.test(normalized)) return "impresora";
+    if (/impresora|imprimir|impresión|impresion|toner|tonner/.test(normalized)) return "impresora";
     if (/contraseña|contrasena|acceso|permiso|usuario bloqueado|iniciar sesión|iniciar sesion/.test(normalized)) return "acceso_permisos";
     if (/programa|aplicación|aplicacion|software|sistema|error al abrir/.test(normalized)) return "software";
     return "otro";

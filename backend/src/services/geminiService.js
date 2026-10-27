@@ -39,7 +39,7 @@ function localCategory(text) {
   const normalized = String(text || '').toLowerCase();
   const rules = [
     ['correo', /correo|outlook|email|e-mail|buzón|buzon|enviar mensajes|recibir mensajes/],
-    ['impresora', /impresora|imprimir|impresión|impresion|toner|cartucho/],
+    ['impresora', /impresora|imprimir|impresión|impresion|toner|tonner|cartucho/],
     ['red_internet', /internet|wifi|wi-fi|red|conexión|conexion|vpn|carpeta compartida|servidor/],
     ['acceso_permisos', /contraseña|contrasena|acceso|permiso|usuario bloqueado|iniciar sesión|iniciar sesion|cuenta|credencial/],
     ['hardware', /teclado|mouse|pantalla|monitor|computador|computadora|portátil|portatil|cargador|disco duro|cámara|camara|micrófono|microfono/],
