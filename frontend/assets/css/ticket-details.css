@@ -270,3 +270,21 @@
 .ticket-actions .danger:hover { background:#fef2f2; border-color:#fca5a5; }
 .ticket-actions button:focus, .ticket-actions button:active { outline:none; border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,.14); }
 .ticket-actions button:disabled, .ticket-actions button:disabled:hover { opacity:.55; cursor:not-allowed; transform:none; background:#f1f5f9; border-color:#e2e8f0; }
+
+/* Refinamiento visual de la ficha del ticket */
+.ticket-card { padding:30px; background:#fff; border-color:#e2e8f0; box-shadow:0 12px 30px rgba(15,23,42,.06); }
+.ticket-card-header { margin-bottom:28px; padding-bottom:22px; border-bottom:1px solid #eef2f7; }
+.ticket-card-kicker { display:flex; align-items:center; gap:7px; margin-bottom:9px; color:#6366f1; font-size:12px; font-weight:800; letter-spacing:.5px; text-transform:uppercase; }
+.ticket-card-kicker i { font-size:14px; }
+.ticket-card-header h3 { font-size:25px; line-height:1.25; }
+.ticket-description { margin-top:0; padding:20px; border:1px solid #e8edf5; border-radius:14px; background:#f8fafc; }
+.ticket-section-heading { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.ticket-section-icon { width:30px; height:30px; display:grid; place-items:center; border-radius:9px; background:#eef2ff; color:#6366f1; }
+.ticket-description h4 { margin-bottom:0; font-size:14px; }
+.ticket-description p { color:#475569; font-size:15px; white-space:pre-wrap; }
+.ticket-grid { gap:12px; margin-top:20px; }
+.ticket-grid > div { padding:15px 16px; border:1px solid #edf1f6; border-radius:12px; background:#fff; }
+.ticket-grid > div.ticket-data-highlight { background:#f7f8ff; border-color:#e0e7ff; }
+.ticket-grid span { display:flex; align-items:center; gap:6px; }
+.ticket-grid span i { color:#818cf8; font-size:13px; }
+.ticket-grid .not-assigned { color:#94a3b8; font-style:italic; }

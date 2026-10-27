@@ -3,6 +3,12 @@ import { TicketPriorityBadge } from "./TicketPriorityBadge.js";
 
 export function TicketInfo(ticket) {
 
+    const categoryLabels = {
+        hardware: "Hardware", software: "Software", red_internet: "Red / Internet",
+        correo: "Correo", impresora: "Impresora", acceso_permisos: "Accesos / Permisos", otro: "Otro"
+    };
+    const category = categoryLabels[ticket.category] || ticket.category || "Otro";
+
     return `
 
     <div class="ticket-card">
@@ -11,11 +17,7 @@ export function TicketInfo(ticket) {
 
             <div>
 
-                <h2>
-
-                    Ticket #${ticket.id}
-
-                </h2>
+                <span class="ticket-card-kicker"><i class="bi bi-ticket-perforated"></i> Solicitud de soporte · #${ticket.id}</span>
 
                 <h3>
 
@@ -37,7 +39,7 @@ export function TicketInfo(ticket) {
 
         <div class="ticket-description">
 
-            <h4>Descripción</h4>
+            <div class="ticket-section-heading"><span class="ticket-section-icon"><i class="bi bi-chat-square-text"></i></span><h4>Descripción del incidente</h4></div>
 
             <p>
 
@@ -58,25 +60,8 @@ export function TicketInfo(ticket) {
             </div>
             <div>
 
-    <span>Asignado a</span>
-
-    <div>
-
-    <span>Asignado a</span>
-
-    <strong class="${ticket.assigned_name
-            ? ""
-            : "not-assigned"
-        }">
-
-        ${ticket.assigned_name
-            ? ticket.assigned_name
-            : "Sin asignar"
-        }
-
-    </strong>
-
-</div>
+    <span>Responsable</span>
+    <strong class="${ticket.assigned_name ? "" : "not-assigned"}">${ticket.assigned_name || "Sin asignar"}</strong>
 
 </div>
 
@@ -92,25 +77,13 @@ export function TicketInfo(ticket) {
 
                 <span>Categoría</span>
 
-                <strong>${ticket.category}</strong>
+                <strong>${category}</strong>
 
             </div>
 
-            <div>
+            <div class="ticket-data-highlight">
                 <span>SLA</span>
                 <strong>${ticket.sla_due_at ? new Date(ticket.sla_due_at).toLocaleString() : "Pendiente"}</strong>
-            </div>
-
-            <div>
-
-                <span>Asignado a</span>
-
-                <strong>
-
-                    ${ticket.assigned_name || "Sin asignar"}
-
-                </strong>
-
             </div>
 
             <div>
