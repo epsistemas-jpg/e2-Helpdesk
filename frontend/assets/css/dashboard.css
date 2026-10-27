@@ -136,6 +136,7 @@
 .template-note,.template-period { color:#7b8394; font-size:12px; font-weight:400; }.template-table-card table { width:100%; border-collapse:collapse; font-size:13px; }.template-table-card th { text-align:left; font-weight:600; color:#7b8394; padding:9px 10px; border-bottom:1px solid #e2e5ea; background:#f4f5f7; }.template-table-card td { padding:9px 10px; border-bottom:1px solid #e2e5ea; }
 .template-ticket-description { display:block; max-width:360px; margin-top:4px; color:#7b8394; font-size:11px; line-height:1.35; white-space:normal; }
 .template-ticket-table { page-break-before:always; break-before:page; }
+.template-print-break { display:none; }
 
 @media print {
   @page { size:297mm 210mm; margin:10mm; }
@@ -167,6 +168,7 @@
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
   body { background:#fff !important; }
   .template-report { max-width:none; padding:0; }
+  .template-print-break { display:block; height:0; page-break-before:always !important; break-before:page !important; }
   .template-report-header { margin-bottom:10px; }
   .template-report-actions > span, .template-report-actions label, .template-report-actions button { display:none !important; }
   .template-kpis { grid-template-columns:repeat(4,1fr); margin-bottom:12px; }
