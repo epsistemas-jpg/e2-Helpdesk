@@ -46,7 +46,6 @@ export function goTo(path) {
         document.body.insertAdjacentHTML("beforeend", `
             <div class="navigation-skeleton" aria-live="polite" aria-label="Cargando sección">
                 <aside class="skeleton-sidebar">
-                    <div class="skeleton-logo skeleton-block"></div>
                     <div class="skeleton-user skeleton-row"><span class="skeleton-avatar skeleton-block"></span><span class="skeleton-lines"><i class="skeleton-block"></i><i class="skeleton-block"></i></span></div>
                     <div class="skeleton-menu"><i class="skeleton-block"></i><i class="skeleton-block"></i><i class="skeleton-block"></i><i class="skeleton-block"></i><i class="skeleton-block"></i></div>
                 </aside>
