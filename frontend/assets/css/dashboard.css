@@ -174,7 +174,16 @@
   .template-grid2 { grid-template-columns:1fr 1.6fr; gap:10px; margin-bottom:12px; }
   .template-card { padding:12px 14px; margin-bottom:12px; }
   .template-table-card { break-inside:avoid; }
-  .template-ticket-table { page-break-before:always; break-before:page; }
+  /* La tabla de tickets debe iniciar una página propia y poder continuar en páginas siguientes. */
+  .template-ticket-table {
+    display:block;
+    overflow:visible;
+    page-break-before:always !important;
+    break-before:page !important;
+    page-break-inside:auto !important;
+    break-inside:auto !important;
+  }
+  .template-ticket-table table { page-break-inside:auto; break-inside:auto; }
   .template-ticket-table thead { display:table-header-group; }
   .template-ticket-table tr { break-inside:avoid; }
   .template-table-card table { font-size:9px; }
