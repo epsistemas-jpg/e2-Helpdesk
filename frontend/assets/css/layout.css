@@ -70,31 +70,47 @@ CONTENT
 body.is-navigating::before {
     content:"";
     position:fixed;
-    inset:0;
+    top:0;
+    left:0;
+    right:0;
+    height:4px;
     z-index:9999;
     pointer-events:none;
-    background:rgba(248,250,252,.78);
-    backdrop-filter:blur(2px);
-    animation:navigationFade .14s ease-out forwards;
+    background:linear-gradient(90deg,#6366f1,#22c55e,#6366f1);
+    background-size:200% 100%;
+    box-shadow:0 2px 12px rgba(99,102,241,.35);
+    animation:navigationProgress .9s ease-in-out infinite;
 }
 
 body.is-navigating::after {
-    content:"";
+    content:"•••";
     position:fixed;
-    top:50%;
-    left:50%;
+    top:18px;
+    right:22px;
     z-index:10000;
-    width:34px;
-    height:34px;
-    margin:-17px 0 0 -17px;
-    border:3px solid rgba(99,102,241,.2);
-    border-top-color:#6366f1;
-    border-radius:50%;
-    animation:navigationSpin .65s linear infinite;
+    min-width:54px;
+    padding:7px 12px 9px;
+    border:1px solid #e0e7ff;
+    border-radius:999px;
+    background:rgba(255,255,255,.96);
+    color:#6366f1;
+    box-shadow:0 8px 24px rgba(15,23,42,.12);
+    font-size:16px;
+    line-height:12px;
+    letter-spacing:4px;
+    text-align:center;
+    animation:navigationDots 1s ease-in-out infinite;
 }
 
-@keyframes navigationFade { from { opacity:0; } to { opacity:1; } }
-@keyframes navigationSpin { to { transform:rotate(360deg); } }
+@keyframes navigationProgress {
+    0% { background-position:100% 0; opacity:.65; }
+    50% { opacity:1; }
+    100% { background-position:-100% 0; opacity:.65; }
+}
+@keyframes navigationDots {
+    0%,100% { transform:translateY(0); opacity:.55; }
+    50% { transform:translateY(2px); opacity:1; }
+}
 
 @media(max-width:600px){
     .content { padding:20px 14px; }
