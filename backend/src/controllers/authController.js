@@ -20,11 +20,15 @@ const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const GOOGLE_USERINFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo';
 
 function frontendUrl() {
-  return (process.env.FRONTEND_URL || 'http://localhost:5173').replace(/\/$/, '');
+  return (process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production'
+    ? 'https://e2-helpdesk-frontend.onrender.com'
+    : 'http://localhost:5173')).replace(/\/$/, '');
 }
 
 function googleRedirectUri() {
-  return process.env.GOOGLE_REDIRECT_URI || 'http://localhost:4000/api/auth/google/callback';
+  return process.env.GOOGLE_REDIRECT_URI || (process.env.NODE_ENV === 'production'
+    ? 'https://e2-helpdesk-1.onrender.com/api/auth/google/callback'
+    : 'http://localhost:4000/api/auth/google/callback');
 }
 
 function readCookie(req, name) {
