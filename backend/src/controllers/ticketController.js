@@ -647,6 +647,49 @@ async function ticketRanking(req, res) {
     return res.status(500).json({ error: 'Error obteniendo el ranking de tickets.' });
   }
 }
+
+async function report(req, res) {
+  try {
+    const today = new Date().toISOString().slice(0, 10);
+    const defaultFrom = new Date(Date.now() - 29 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const from = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.from || '')) ? String(req.query.from) : defaultFrom;
+    const to = /^\d{4}-\d{2}-\d{2}$/.test(String(req.query.to || '')) ? String(req.query.to) : today;
+    if (from > to) return res.status(400).json({ error: 'La fecha inicial no puede ser posterior a la fecha final.' });
+    const range = `t.created_at >= ?::date AND t.created_at < (?::date + INTERVAL '1 day')`;
+
+    const [statsRows] = await pool.query(`
+      SELECT COUNT(*)::int AS total,
+        COUNT(*) FILTER (WHERE status = 'abierto')::int AS open,
+        COUNT(*) FILTER (WHERE status = 'en_progreso')::int AS progress,
+        COUNT(*) FILTER (WHERE status = 'resuelto')::int AS resolved,
+        COUNT(*) FILTER (WHERE status = 'cerrado')::int AS closed,
+        COUNT(*) FILTER (WHERE priority = 'urgente')::int AS urgent,
+        COUNT(*) FILTER (WHERE priority = 'alta')::int AS high,
+        COUNT(*) FILTER (WHERE priority = 'media')::int AS medium,
+        COUNT(*) FILTER (WHERE priority = 'baja')::int AS low
+      FROM tickets t WHERE ${range}`, [from, to]);
+
+    const [tickets] = await pool.query(`
+      SELECT t.id, t.title, t.status, t.priority, t.category, t.office, t.created_at,
+        t.sla_due_at, u.name AS reporter_name, a.name AS assigned_name
+      FROM tickets t JOIN users u ON u.id = t.user_id
+      LEFT JOIN users a ON a.id = t.assigned_to
+      WHERE ${range} ORDER BY t.created_at DESC`, [from, to]);
+
+    const [administrators] = await pool.query(`
+      SELECT u.id, u.name, u.email, COUNT(t.id)::int AS assigned_count,
+        COUNT(t.id) FILTER (WHERE t.status IN ('resuelto','cerrado'))::int AS resolved_count
+      FROM users u LEFT JOIN tickets t ON t.assigned_to = u.id AND ${range}
+      WHERE u.role = 'admin' AND u.active = 1
+      GROUP BY u.id, u.name, u.email
+      ORDER BY resolved_count DESC, assigned_count DESC, u.name ASC`, [from, to]);
+
+    return res.json({ from, to, stats: statsRows[0], tickets, administrators });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: 'Error generando el reporte.' });
+  }
+}
 async function takeTicket(req, res) {
 
   try {
@@ -948,5 +991,5 @@ async function legacyUpdateTicketStatus(req, res) {
 
 }
 
-module.exports = { createTicket, suggestProblems, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, ticketRanking, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
+module.exports = { createTicket, suggestProblems, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, report, ticketRanking, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
 

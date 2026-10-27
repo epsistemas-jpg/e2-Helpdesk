@@ -11,6 +11,7 @@ const {
     takeTicket,
     assignTicket,
     stats,
+    report,
     ticketRanking,
     suggestProblems
 } = require("../controllers/ticketController");
@@ -37,6 +38,9 @@ router.post("/suggestions", suggestProblems);
 
 // Dashboard estadísticas
 router.get("/stats", stats);
+
+// Reporte consolidado por rango de fechas.
+router.get("/report", requireRole("support", "admin"), report);
 
 // Ranking de tickets creados, exclusivo para administradores.
 router.get("/ranking", requireRole("admin"), ticketRanking);
