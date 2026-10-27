@@ -172,14 +172,6 @@ export function TicketForm(offices = []) {
 
                 </div>
 
-                <div class="priority-ai-note" role="status">
-                    <i class="bi bi-stars"></i>
-                    <div>
-                        <strong>Prioridad y SLA automáticos</strong>
-                        <span>La asistencia inteligente analizará el título y la descripción para proponer la prioridad y el tiempo de atención según las reglas corporativas.</span>
-                    </div>
-                </div>
-
                 <div class="remote-access-section">
                     <div class="remote-access-heading">
                         <div>
