@@ -96,6 +96,11 @@ export function TicketForm(offices = []) {
 
                     <small id="descriptionHelp" class="field-help"><span id="descriptionCount">0</span>/5000 caracteres · mínimo 20</small>
 
+                    <div id="descriptionSuggestion" class="description-suggestion" aria-live="polite" hidden>
+                        <i class="bi bi-stars"></i>
+                        <span><strong>Guía para describirlo:</strong> <span id="descriptionSuggestionText"></span></span>
+                    </div>
+
                 </div>
 
                 <div class="ticket-options-grid">

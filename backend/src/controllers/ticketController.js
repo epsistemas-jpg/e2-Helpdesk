@@ -3,7 +3,7 @@ const fs = require('fs/promises');
 const path = require('path');
 const { sendMail, ticketCreatedEmail, statusUpdatedEmail } = require('../utils/mailer');
 const { enviarNuevoTicket } = require('../services/telegramService');
-const { suggestPriority, suggestTicketProblems, inferCategory } = require('../services/geminiService');
+const { suggestPriority, suggestTicketProblems } = require('../services/geminiService');
 const CATEGORIES = ['hardware', 'software', 'red_internet', 'correo', 'impresora', 'acceso_permisos', 'otro'];
 const PRIORITIES = ['baja', 'media', 'alta', 'urgente'];
 const STATUSES = ['abierto', 'en_progreso', 'resuelto', 'cerrado'];
@@ -61,12 +61,8 @@ async function createTicket(req, res) {
 
     // La categoría se determina en el backend. El valor enviado por el navegador
     // no se considera una fuente confiable porque el control es automático.
-    const ticketText = `${cleanTitle} ${cleanDescription}`;
-    let automaticCategory = inferCategory(ticketText);
-    if (automaticCategory === 'otro') {
-      const categoryAnalysis = await suggestTicketProblems({ text: cleanTitle, description: cleanDescription });
-      automaticCategory = categoryAnalysis.category;
-    }
+    const categoryAnalysis = await suggestTicketProblems({ text: cleanTitle, description: cleanDescription });
+    const automaticCategory = categoryAnalysis.category;
     const finalCategory = CATEGORIES.includes(automaticCategory)
       ? automaticCategory
       : 'otro';

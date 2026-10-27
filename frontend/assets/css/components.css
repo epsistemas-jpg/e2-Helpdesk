@@ -80,6 +80,9 @@
 .suggestions-list{ display:flex; flex-wrap:wrap; gap:7px; }
 .problem-suggestion{ border:1px solid var(--border); border-radius:999px; padding:7px 11px; background:var(--surface); color:var(--text); cursor:pointer; font-size:12px; text-align:left; }
 .problem-suggestion:hover,.problem-suggestion:focus{ border-color:var(--primary); color:var(--primary-light); outline:none; }
+.description-suggestion{ display:flex; gap:8px; align-items:flex-start; margin-top:10px; padding:10px 12px; border:1px solid rgba(99,102,241,.2); border-radius:var(--radius-sm); background:rgba(99,102,241,.05); color:var(--text-light); font-size:12px; line-height:1.45; }
+.description-suggestion i{ color:var(--primary-light); margin-top:2px; }
+.description-suggestion strong{ color:var(--text); }
 
 @media (max-width:600px){
   .toast{ left:12px; right:12px; width:auto; text-align:center; }

@@ -147,8 +147,6 @@ function initEvents(){
     const loadSuggestions = () => {
         clearTimeout(suggestionTimer);
         suggestionTimer = setTimeout(async () => {
-            // Las sugerencias y la categoría se basan exclusivamente en el título.
-            // La descripción queda reservada para el análisis de prioridad y SLA al crear.
             const text = String(title?.value || "").trim();
             if (text.length < 3) return renderSuggestions([]);
             const fallbackSuggestions = getLocalSuggestions(text);
@@ -157,6 +155,9 @@ function initEvents(){
             if (suggestionsPanel) suggestionsPanel.hidden = false;
             const heading = suggestionsPanel?.querySelector(".suggestions-heading span");
             if (heading) heading.textContent = "Cargando sugerencias...";
+            const descriptionSuggestion = form.querySelector("#descriptionSuggestion");
+            const descriptionSuggestionText = form.querySelector("#descriptionSuggestionText");
+            if (descriptionSuggestion) descriptionSuggestion.hidden = true;
             const category = form.querySelector("#category");
             const categoryValue = form.querySelector("#categoryValue");
             suggestionController?.abort();
@@ -165,12 +166,20 @@ function initEvents(){
                 const result = await api.post("/tickets/suggestions", { text }, { signal: suggestionController.signal });
                 renderSuggestions(result.suggestions || []);
                 if (heading) heading.textContent = "Sugerencias disponibles";
+                if (descriptionSuggestionText && result.descriptionSuggestion) {
+                    descriptionSuggestionText.textContent = result.descriptionSuggestion;
+                    if (descriptionSuggestion) descriptionSuggestion.hidden = false;
+                }
                 if (category && result.category) category.value = result.category;
                 if (categoryValue && result.category) categoryValue.value = result.category;
             } catch (error) {
                 if (error.name !== "AbortError") {
                     renderSuggestions(fallbackSuggestions);
                     if (heading) heading.textContent = "Sugerencias de respaldo";
+                    if (descriptionSuggestionText) {
+                        descriptionSuggestionText.textContent = `Describe qué ocurre con “${text}”, desde cuándo sucede, a quién afecta y qué intentaste.`;
+                        if (descriptionSuggestion) descriptionSuggestion.hidden = false;
+                    }
                     if (category && fallbackCategory) category.value = fallbackCategory;
                     if (categoryValue && fallbackCategory) categoryValue.value = fallbackCategory;
                     console.warn("Sugerencias no disponibles:", error.message);

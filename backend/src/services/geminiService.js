@@ -83,6 +83,13 @@ function fallback(reason, priority = 'media') {
   };
 }
 
+function localDescriptionSuggestion(title) {
+  const cleanTitle = String(title || '').trim();
+  return cleanTitle
+    ? `Describe qué ocurre con “${cleanTitle}”, desde cuándo sucede, a quién afecta y qué mensaje o solución intentaste.`
+    : 'Describe qué ocurrió, desde cuándo sucede, a quién afecta y qué intentaste hacer.';
+}
+
 function parseJson(text) {
   const clean = String(text || '')
     .replace(/^```json\s*/i, '')
@@ -176,7 +183,7 @@ async function suggestTicketProblems({ text, description = '' }) {
   const local = localSuggestions(text);
   const apiKey = process.env.GEMINI_API_KEY;
   const fallbackCategory = localCategory(combinedText);
-  if (!apiKey || String(text || '').trim().length < 3) return { suggestions: local, category: fallbackCategory, source: 'local' };
+  if (!apiKey || String(text || '').trim().length < 3) return { suggestions: local, category: fallbackCategory, descriptionSuggestion: localDescriptionSuggestion(text), source: 'local' };
 
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
   let timeout;
@@ -192,7 +199,8 @@ async function suggestTicketProblems({ text, description = '' }) {
 Infiere qué problema concreto podría estar describiendo la persona, aunque mencione una aplicación, proceso, equipo o sistema que no esté en ejemplos previos.
 Genera hasta 5 sugerencias de títulos específicos y distintos que ayuden a precisar el incidente. No devuelvas una lista genérica por palabra clave, no repitas el título sin aportar contexto y no inventes nombres de aplicaciones, errores o hechos que no se desprendan del texto. Si el título es muy corto o ambiguo, devuelve sugerencias prudentes y relacionadas.
 Clasifica la categoría usando el significado combinado del título y la descripción, dando más peso a la evidencia concreta del problema que a una palabra aislada. Categorías permitidas: hardware, software, red_internet, correo, impresora, acceso_permisos, otro.
-Devuelve únicamente JSON con suggestions (máximo 5 textos en español, máximo 90 caracteres cada uno) y category.
+Además, crea description_suggestion: una guía breve y concreta en español para que la persona complete la descripción según el título. No inventes hechos; pide datos útiles como desde cuándo ocurre, a quién afecta, mensaje de error y qué intentó hacer. Máximo 300 caracteres.
+Devuelve únicamente JSON con suggestions (máximo 5 textos en español, máximo 90 caracteres cada uno), category y description_suggestion.
 <titulo>${String(text).slice(0, 300)}</titulo>
 <descripcion>${String(description).slice(0, 1200)}</descripcion>` }] }],
         generationConfig: {
@@ -202,9 +210,10 @@ Devuelve únicamente JSON con suggestions (máximo 5 textos en español, máximo
             type: 'OBJECT',
             properties: {
               suggestions: { type: 'ARRAY', items: { type: 'STRING' } },
-              category: { type: 'STRING', enum: ['hardware', 'software', 'red_internet', 'correo', 'impresora', 'acceso_permisos', 'otro'] }
+                category: { type: 'STRING', enum: ['hardware', 'software', 'red_internet', 'correo', 'impresora', 'acceso_permisos', 'otro'] },
+                description_suggestion: { type: 'STRING' }
             },
-            required: ['suggestions', 'category']
+            required: ['suggestions', 'category', 'description_suggestion']
           }
         }
       })
@@ -217,10 +226,11 @@ Devuelve únicamente JSON con suggestions (máximo 5 textos en español, máximo
       : [];
     const allowedCategories = ['hardware', 'software', 'red_internet', 'correo', 'impresora', 'acceso_permisos', 'otro'];
     const category = allowedCategories.includes(result.category) ? result.category : fallbackCategory;
-    return { suggestions: [...new Set(suggestions)].slice(0, 5), category, source: 'gemini' };
+    const descriptionSuggestion = String(result.description_suggestion || '').trim().slice(0, 500) || localDescriptionSuggestion(text);
+    return { suggestions: [...new Set(suggestions)].slice(0, 5), category, descriptionSuggestion, source: 'gemini' };
   } catch (error) {
     console.error('No se pudieron generar sugerencias:', error.message);
-    return { suggestions: local, category: fallbackCategory, source: 'local' };
+    return { suggestions: local, category: fallbackCategory, descriptionSuggestion: localDescriptionSuggestion(text), source: 'local' };
   } finally {
     clearTimeout(timeout);
   }
