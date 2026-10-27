@@ -99,6 +99,12 @@
   cursor:pointer;
 }
 
+.header-logout-icon{
+  width:17px;
+  height:17px;
+  flex:0 0 17px;
+}
+
 .header-logout-btn:hover,
 .header-logout-btn:focus-visible{
   background:#fef2f2;
