@@ -10,6 +10,9 @@
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(18px);
   -webkit-backdrop-filter:blur(18px);
+  position:relative;
+  z-index:20;
+  overflow:visible;
 }
 
 .header { background:#ffffff; padding:0 32px; }

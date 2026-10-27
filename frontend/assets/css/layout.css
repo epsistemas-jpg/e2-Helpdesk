@@ -47,7 +47,7 @@ MAIN
 
     height:100vh;
     min-width:0;
-    overflow:hidden;
+    overflow:visible;
 
 }
 
