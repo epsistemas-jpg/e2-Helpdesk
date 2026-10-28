@@ -110,6 +110,8 @@ async function exportExcel(report) {
     const closed = Number(stats.closed) || 0;
     const completed = resolved + closed;
     const resolutionPercent = total ? `${Math.round((completed / total) * 100)}%` : "0%";
+    const chartBar = value => total ? "█".repeat(Math.max(value ? 1 : 0, Math.round((value / total) * 20))) : "";
+    const chartPercent = value => total ? `${Math.round((value / total) * 100)}%` : "0%";
     const statusLabel = { abierto: "Abierto", en_progreso: "En progreso", resuelto: "Resuelto", cerrado: "Cerrado" };
     const priorityLabel = { urgente: "Urgente", alta: "Alta", media: "Media", baja: "Baja" };
     const categoryLabel = { hardware: "Hardware", software: "Software", red_internet: "Red / Internet", correo: "Correo", impresora: "Impresora", acceso_permisos: "Accesos / Permisos", otro: "Otro" };
@@ -139,7 +141,21 @@ async function exportExcel(report) {
         ["Abiertos", Number(stats.open) || 0],
         ["En progreso", Number(stats.progress) || 0],
         ["Resueltos", resolved],
-        ["Cerrados", closed]
+        ["Cerrados", closed],
+        [],
+        ["GRÁFICA · ESTADO DE TICKETS", "", "", ""],
+        ["Estado", "Cantidad", "%", "Distribución"],
+        ["Abiertos", Number(stats.open) || 0, chartPercent(Number(stats.open) || 0), chartBar(Number(stats.open) || 0)],
+        ["En progreso", Number(stats.progress) || 0, chartPercent(Number(stats.progress) || 0), chartBar(Number(stats.progress) || 0)],
+        ["Resueltos", resolved, chartPercent(resolved), chartBar(resolved)],
+        ["Cerrados", closed, chartPercent(closed), chartBar(closed)],
+        [],
+        ["GRÁFICA · PRIORIDAD", "", "", ""],
+        ["Prioridad", "Cantidad", "%", "Distribución"],
+        ["Urgente", Number(stats.urgent) || 0, chartPercent(Number(stats.urgent) || 0), chartBar(Number(stats.urgent) || 0)],
+        ["Alta", Number(stats.high) || 0, chartPercent(Number(stats.high) || 0), chartBar(Number(stats.high) || 0)],
+        ["Media", Number(stats.medium) || 0, chartPercent(Number(stats.medium) || 0), chartBar(Number(stats.medium) || 0)],
+        ["Baja", Number(stats.low) || 0, chartPercent(Number(stats.low) || 0), chartBar(Number(stats.low) || 0)]
     ];
 
     const ticketRows = report.tickets.map(ticket => ({
@@ -169,7 +185,7 @@ async function exportExcel(report) {
 
     const workbook = XLSX.utils.book_new();
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
-    summarySheet["!cols"] = [{ wch: 30 }, { wch: 28 }];
+    summarySheet["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 12 }, { wch: 24 }];
     const ticketSheet = XLSX.utils.json_to_sheet(ticketRows.length ? ticketRows : [{ "Información": "No hay tickets en el periodo seleccionado." }]);
     ticketSheet["!cols"] = [
         { wch: 10 }, { wch: 32 }, { wch: 60 }, { wch: 24 }, { wch: 34 }, { wch: 18 },
@@ -225,9 +241,24 @@ async function exportExcel(report) {
                 const cell = summarySheet[address];
                 if (!cell) continue;
                 const value = String(cell.v || "");
-                const isSection = row === 0 || value === "INDICADORES" || value === "DISTRIBUCIÓN POR PRIORIDAD" || value === "DISTRIBUCIÓN POR ESTADO";
+                const isSection = row === 0 || value === "INDICADORES" || value === "DISTRIBUCIÓN POR PRIORIDAD" || value === "DISTRIBUCIÓN POR ESTADO" || value.startsWith("GRÁFICA ·");
                 const isHeader = value === "CANTIDAD";
                 cell.s = isSection ? (row === 0 ? titleStyle : headerStyle) : (isHeader ? headerStyle : (row % 2 ? alternateStyle : bodyStyle));
+            }
+        }
+        for (let row = range.s.r; row <= range.e.r; row += 1) {
+            const label = String(summarySheet[XLSX.utils.encode_cell({ r: row, c: 0 })]?.v || "");
+            if (label === "Estado" || label === "Prioridad") {
+                for (let col = 0; col < 4; col += 1) {
+                    const cell = summarySheet[XLSX.utils.encode_cell({ r: row, c: col })];
+                    if (cell) cell.s = headerStyle;
+                }
+            }
+            if (["Abiertos", "En progreso", "Resueltos", "Cerrados", "Urgente", "Alta", "Media", "Baja"].includes(label)) {
+                const barCell = summarySheet[XLSX.utils.encode_cell({ r: row, c: 3 })];
+                if (barCell) {
+                    barCell.s = { ...bodyStyle, font: { bold: true, color: { rgb: label === "Urgente" ? "DC2626" : label === "Alta" ? "EA580C" : label === "En progreso" ? "0891B2" : label === "Resueltos" ? "6366F1" : "22A06B" } } };
+                }
             }
         }
     };
