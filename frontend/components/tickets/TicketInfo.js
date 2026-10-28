@@ -1,5 +1,6 @@
 import { TicketStatusBadge } from "./TicketStatusBadge.js";
 import { TicketPriorityBadge } from "./TicketPriorityBadge.js";
+import { ResolutionEstimate } from "./ResolutionEstimate.js";
 
 export function TicketInfo(ticket) {
 
@@ -84,6 +85,11 @@ export function TicketInfo(ticket) {
             <div class="ticket-data-highlight">
                 <span>SLA</span>
                 <strong>${ticket.sla_due_at ? new Date(ticket.sla_due_at).toLocaleString() : "Pendiente"}</strong>
+            </div>
+
+            <div class="ticket-data-highlight ticket-resolution-estimate">
+                <span>Tiempo estimado de solución</span>
+                ${ResolutionEstimate({ ticket })}
             </div>
 
             <div>

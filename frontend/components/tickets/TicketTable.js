@@ -46,6 +46,8 @@ export function TicketTable(tickets = []) {
 
                     <th>Prioridad</th>
 
+                    <th>Tiempo estimado</th>
+
                     <th>Estado</th>
 
                     <th>Asignado a</th>

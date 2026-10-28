@@ -94,6 +94,10 @@
 .ticket-image-chip { display:inline-flex !important; align-items:center; gap:6px; margin:0 !important; padding:6px 9px; border-radius:999px; background:#f1f5f9; color:#475569 !important; font-size:11px !important; }
 .ticket-image-chip i { color:#6366f1; }
 .activity-meta .priority-badge { padding:3px 8px; font-size:10px; vertical-align:middle; }
+.resolution-estimate { display:inline-flex; align-items:center; gap:6px; color:#475569; font-size:12px; line-height:1.35; }
+.resolution-estimate i { color:#6366f1; }
+.resolution-estimate-compact { white-space:nowrap; font-size:11px; }
+.ticket-resolution-estimate .resolution-estimate { margin-top:5px; color:var(--text); font-weight:700; }
 .status-badge,
 .priority-badge { color:#fff !important; font-weight:800; letter-spacing:.2px; border:0; box-shadow:0 5px 14px rgba(15,23,42,.12); }
 .priority-urgent { background:linear-gradient(135deg,#dc2626,#b91c1c) !important; }

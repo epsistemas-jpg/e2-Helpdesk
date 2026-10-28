@@ -1,5 +1,6 @@
 import { TicketStatusBadge } from "../tickets/TicketStatusBadge.js";
 import { TicketPriorityBadge } from "../tickets/TicketPriorityBadge.js";
+import { ResolutionEstimate } from "../tickets/ResolutionEstimate.js";
 
 export function RecentActivity(tickets){
 
@@ -20,7 +21,7 @@ ${tickets.length ? tickets.map(ticket=>`
 
 <div class="activity-title"><strong>Ticket #${ticket.id}</strong><span>${new Date(ticket.created_at).toLocaleDateString()}</span></div>
 <div class="activity-description">${ticket.title}</div>
-<div class="activity-meta"><span><i class="bi bi-building"></i>${ticket.office || "Sin oficina"}</span><span><i class="bi bi-flag"></i>${TicketPriorityBadge(ticket.priority || "media")}</span></div>
+<div class="activity-meta"><span><i class="bi bi-building"></i>${ticket.office || "Sin oficina"}</span><span><i class="bi bi-flag"></i>${TicketPriorityBadge(ticket.priority || "media")}</span>${ResolutionEstimate({ ticket, compact: true })}</div>
 
 </div>
 

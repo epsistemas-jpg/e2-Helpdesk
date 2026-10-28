@@ -1,5 +1,6 @@
 import { TicketStatusBadge } from "./TicketStatusBadge.js";
 import { TicketPriorityBadge } from "./TicketPriorityBadge.js";
+import { ResolutionEstimate } from "./ResolutionEstimate.js";
 
 export function TicketRow(ticket) {
 
@@ -22,6 +23,8 @@ export function TicketRow(ticket) {
             <td>${ticket.category}</td>
 
             <td>${TicketPriorityBadge(ticket.priority)}</td>
+
+            <td>${ResolutionEstimate({ ticket, compact: true })}</td>
 
             <td>${TicketStatusBadge(ticket.status)}</td>
 
