@@ -135,11 +135,10 @@
 .template-bar { margin-bottom:12px; font-size:13px; }.template-bar-title { display:flex; justify-content:space-between; }.template-track { height:7px; border-radius:4px; background:#eef0f3; margin-top:4px; overflow:hidden; }.template-track span { display:block; height:100%; border-radius:4px; }
 .template-note,.template-period { color:#7b8394; font-size:12px; font-weight:400; }.template-table-card table { width:100%; border-collapse:collapse; font-size:13px; }.template-table-card th { text-align:left; font-weight:600; color:#7b8394; padding:9px 10px; border-bottom:1px solid #e2e5ea; background:#f4f5f7; }.template-table-card td { padding:9px 10px; border-bottom:1px solid #e2e5ea; }
 .template-ticket-description { display:block; max-width:360px; margin-top:4px; color:#7b8394; font-size:11px; line-height:1.35; white-space:normal; }
-.template-ticket-table { page-break-before:always; break-before:page; }
+.template-ticket-table { page-break-before:auto; break-before:auto; }
 .template-print-break { display:none; }
 .template-ticket-page { display:block; }
 .template-ticket-pages { display:block; }
-.template-hard-page-break { display:none; }
 
 @media print {
   @page { size:297mm 210mm; margin:10mm; }
@@ -174,16 +173,14 @@
   body { background:#fff !important; }
   .template-report { max-width:none; padding:0; }
   .template-ticket-pages { page-break-before:auto !important; break-before:auto !important; }
-  .template-print-break { display:none !important; }
-  .template-hard-page-break { display:block !important; height:1px; page-break-before:always !important; break-before:page !important; }
   .template-ticket-page {
     display:block;
     height:178mm;
     min-height:178mm;
     margin:0;
-    page-break-before:auto !important;
+    page-break-before:always !important;
     page-break-after:auto !important;
-    break-before:auto !important;
+    break-before:page !important;
     break-after:auto !important;
     page-break-inside:auto !important;
     break-inside:auto !important;
