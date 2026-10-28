@@ -158,6 +158,9 @@
 .ticket-form .form-group input:focus,
 .ticket-form .form-group textarea:focus,
 .ticket-form .form-group select:focus { background:#fff; border-color:#818cf8; box-shadow:0 0 0 4px rgba(99,102,241,.12); }
+.ticket-form .field-invalid { border-color:#e11d48 !important; background:#fff8fa !important; box-shadow:0 0 0 4px rgba(225,29,72,.10) !important; }
+.field-validation-error { display:flex; align-items:center; gap:6px; margin-top:7px; color:#be123c; font-size:12px; line-height:1.35; font-weight:600; }
+.field-validation-error i { font-size:13px; }
 
 .form-group {
     display: flex;

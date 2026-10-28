@@ -150,9 +150,14 @@ function initEvents(){
         if (field && counter) counter.textContent = String(field.value.length);
     };
     [[title, titleCount], [description, descriptionCount]].forEach(([field, counter]) => {
-        field?.addEventListener("input", () => updateCount(field, counter));
+        field?.addEventListener("input", () => {
+            updateCount(field, counter);
+            clearFieldError(field);
+        });
         updateCount(field, counter);
     });
+    form.querySelector("#office")?.addEventListener("change", (event) => clearFieldError(event.currentTarget));
+    form.querySelector("#anydesk_code")?.addEventListener("input", (event) => clearFieldError(event.currentTarget));
 
     imageInput?.addEventListener("change", () => {
         const files = Array.from(imageInput.files || []);
@@ -281,6 +286,61 @@ function initEvents(){
 
 }
 
+function clearFieldError(field) {
+    if (!field) return;
+    field.classList.remove("field-invalid");
+    field.removeAttribute("aria-invalid");
+    field.parentElement?.querySelector(".field-validation-error")?.remove();
+}
+
+function showFieldError(field, message) {
+    if (!field) return;
+    clearFieldError(field);
+    field.classList.add("field-invalid");
+    field.setAttribute("aria-invalid", "true");
+    const error = document.createElement("small");
+    error.className = "field-validation-error";
+    error.setAttribute("role", "alert");
+    error.innerHTML = `<i class="bi bi-exclamation-circle-fill"></i><span>${message}</span>`;
+    field.parentElement?.appendChild(error);
+}
+
+function validateTicketForm(form, data) {
+    const fields = ["title", "description", "office", "anydesk_code"]
+        .map(id => form.querySelector(`#${id}`));
+    fields.forEach(clearFieldError);
+    const errors = [];
+    const title = form.querySelector("#title");
+    const description = form.querySelector("#description");
+    const office = form.querySelector("#office");
+    const anydesk = form.querySelector("#anydesk_code");
+
+    if (!data.title) {
+        errors.push([title, "Escribe un título para identificar el problema."]);
+    } else if (data.title.length < 5) {
+        errors.push([title, "El título debe tener al menos 5 caracteres."]);
+    }
+    if (!data.description) {
+        errors.push([description, "Describe qué ocurrió para que podamos ayudarte."]);
+    } else if (data.description.length < 20) {
+        errors.push([description, "Agrega un poco más de detalle (mínimo 20 caracteres)."]);
+    }
+    const hasOfficeOptions = office && Array.from(office.options).some(option => option.value);
+    if (hasOfficeOptions && !data.office) {
+        errors.push([office, "Selecciona la oficina donde necesitas atención."]);
+    }
+    if (data.is_remote && !data.anydesk_code) {
+        errors.push([anydesk, "Escribe el código AnyDesk para solicitar atención remota."]);
+    }
+    errors.forEach(([field, message]) => showFieldError(field, message));
+    if (errors.length) {
+        errors[0][0]?.focus({ preventScroll: false });
+        alert(errors.length === 1 ? errors[0][1] : `Revisa ${errors.length} campos marcados para continuar.`);
+        return false;
+    }
+    return true;
+}
+
 function setupVoiceInputs(form, title, description) {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     const buttons = form.querySelectorAll("[data-voice-target]");
@@ -389,43 +449,11 @@ async function submitTicket(e){
         anydesk_code: value("anydesk_code")
     };
 
-    if(data.title.length < 5){
-
-        alert("El título debe tener al menos 5 caracteres.");
-
+    if (!validateTicketForm(form, data)) {
         btn.disabled=false;
-
         btn.innerText="Crear Ticket";
         if (submitStatus) submitStatus.textContent = "";
-
         return;
-
-    }
-
-    if(data.description.length < 20){
-
-        alert("La descripción debe tener al menos 20 caracteres.");
-
-        btn.disabled=false;
-
-        btn.innerText="Crear Ticket";
-        if (submitStatus) submitStatus.textContent = "";
-
-        return;
-
-    }
-
-    if(data.is_remote && !data.anydesk_code){
-
-        alert("Debe ingresar el código AnyDesk.");
-
-        btn.disabled=false;
-
-        btn.innerText="Crear Ticket";
-        if (submitStatus) submitStatus.textContent = "";
-
-        return;
-
     }
 
     try{

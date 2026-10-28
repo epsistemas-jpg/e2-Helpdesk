@@ -20,7 +20,7 @@ export function TicketForm(offices = []) {
 
             <div class="ticket-layout">
 
-            <form id="ticketForm" class="ticket-form">
+            <form id="ticketForm" class="ticket-form" novalidate>
 
                 <div class="ticket-form-banner">
                     <div class="ticket-form-banner-icon"><i class="bi bi-stars"></i></div>
