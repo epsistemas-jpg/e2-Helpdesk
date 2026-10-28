@@ -95,7 +95,7 @@
 .ticket-image-chip i { color:#6366f1; }
 .activity-meta .priority-badge { padding:3px 8px; font-size:10px; vertical-align:middle; }
 .resolution-estimate { display:inline-flex; align-items:center; gap:6px; color:#475569; font-size:12px; line-height:1.35; }
-.resolution-estimate i { color:#6366f1; }
+.resolution-estimate-label { color:#6366f1; font-weight:700; }
 .resolution-estimate-compact { white-space:nowrap; font-size:11px; }
 .ticket-resolution-estimate .resolution-estimate { margin-top:5px; color:var(--text); font-weight:700; }
 .status-badge,

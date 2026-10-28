@@ -54,5 +54,5 @@ export function getResolutionEstimate(ticket = {}) {
 
 export function ResolutionEstimate({ ticket, compact = false } = {}) {
     const estimate = getResolutionEstimate(ticket);
-    return `<span class="resolution-estimate${compact ? " resolution-estimate-compact" : ""}" title="Estimación inicial de tiempo de solución"><i class="bi bi-clock-history"></i><span>${compact ? estimate : `Tiempo estimado: ${estimate}`}</span></span>`;
+    return `<span class="resolution-estimate${compact ? " resolution-estimate-compact" : ""}" title="Estimación inicial de tiempo de solución"><span class="resolution-estimate-label">Tiempo estimado:</span><span>${estimate}</span></span>`;
 }
