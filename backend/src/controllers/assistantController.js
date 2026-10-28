@@ -16,7 +16,7 @@ async function askAssistant(req, res) {
       [req.user.id]
     );
     const answer = await answerHelpdeskQuestion({ question, tickets, history });
-    return res.json({ reply: answer.reply, source: answer.source, needsTicket: Boolean(answer.needsTicket) });
+    return res.json({ reply: answer.reply, source: answer.source, needsTicket: Boolean(answer.needsTicket), suggestedQuestions: answer.suggestedQuestions || [] });
   } catch (error) {
     console.error('Error respondiendo desde el asistente:', error.message);
     return res.status(500).json({ error: 'No fue posible responder en este momento.' });

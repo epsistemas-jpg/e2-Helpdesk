@@ -20,6 +20,22 @@ function appendCreateTicketLink(container) {
     container.scrollTop = container.scrollHeight;
 }
 
+function appendSuggestedQuestions(container, questions, ask) {
+    if (!container || !Array.isArray(questions) || !questions.length) return;
+    const group = document.createElement('div');
+    group.className = 'assistant-followups';
+    questions.slice(0, 3).forEach(question => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'assistant-followup';
+        button.textContent = question;
+        button.addEventListener('click', () => ask(question));
+        group.appendChild(button);
+    });
+    container.appendChild(group);
+    container.scrollTop = container.scrollHeight;
+}
+
 export function initAssistantChat() {
     const launcher = document.querySelector('#assistantLauncher');
     const panel = document.querySelector('#assistantPanel');
@@ -49,6 +65,7 @@ export function initAssistantChat() {
             if (response.needsTicket || /crear un ticket|crea un ticket|registra un ticket/i.test(response.reply)) {
                 appendCreateTicketLink(messages);
             }
+            appendSuggestedQuestions(messages, response.suggestedQuestions, ask);
         } catch (error) {
             messages.querySelector('.assistant-message-loading')?.remove();
             appendMessage(messages, error.message || 'No fue posible responder ahora.', 'bot');

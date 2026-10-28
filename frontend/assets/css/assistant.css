@@ -18,6 +18,9 @@
 .assistant-message-loading { opacity:.7; font-style:italic; }
 .assistant-create-ticket { align-self:flex-start; display:inline-flex; align-items:center; gap:7px; padding:8px 12px; border:1px solid #6366f1; border-radius:999px; color:#4f46e5; font-size:12px; font-weight:700; text-decoration:none; }
 .assistant-create-ticket:hover { background:#6366f1; color:#fff; }
+.assistant-followups { align-self:flex-start; display:flex; flex-wrap:wrap; gap:6px; max-width:92%; }
+.assistant-followup { padding:7px 10px; border:1px solid #c7d2fe; border-radius:999px; background:#fff; color:#4f46e5; font-size:11px; cursor:pointer; }
+.assistant-followup:hover { background:#eef2ff; border-color:#818cf8; }
 .assistant-form { display:flex; gap:8px; padding:12px; border-top:1px solid #e2e8f0; background:#fff; }
 .assistant-form input { min-width:0; flex:1; padding:11px 12px; border:1px solid #dbe3ef; border-radius:10px; outline:none; color:#0f172a; }
 .assistant-form input:focus { border-color:#818cf8; box-shadow:0 0 0 3px rgba(99,102,241,.12); }
