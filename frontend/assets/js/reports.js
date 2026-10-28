@@ -96,7 +96,7 @@ async function exportExcel(report) {
     if (!window.XLSX) {
         await new Promise((resolve, reject) => {
             const script = document.createElement("script");
-            script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+            script.src = "https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js";
             script.onload = resolve;
             script.onerror = reject;
             document.head.appendChild(script);
@@ -178,6 +178,62 @@ async function exportExcel(report) {
     ticketSheet["!freeze"] = { xSplit: 0, ySplit: 1 };
     const adminSheet = XLSX.utils.json_to_sheet(administratorRows.length ? administratorRows : [{ "Información": "No hay administradores con actividad en el periodo." }]);
     adminSheet["!cols"] = [{ wch: 10 }, { wch: 28 }, { wch: 36 }, { wch: 22 }, { wch: 20 }];
+
+    const border = { style: "thin", color: { rgb: "D9E2F3" } };
+    const cellBorder = { top: border, bottom: border, left: border, right: border };
+    const headerStyle = {
+        fill: { fgColor: { rgb: "4F46E5" } },
+        font: { bold: true, color: { rgb: "FFFFFF" } },
+        alignment: { horizontal: "center", vertical: "center", wrapText: true },
+        border: cellBorder
+    };
+    const titleStyle = {
+        fill: { fgColor: { rgb: "172554" } },
+        font: { bold: true, color: { rgb: "FFFFFF" }, sz: 14 },
+        alignment: { vertical: "center" },
+        border: cellBorder
+    };
+    const bodyStyle = {
+        alignment: { vertical: "top", wrapText: true },
+        border: cellBorder
+    };
+    const alternateStyle = {
+        fill: { fgColor: { rgb: "F8FAFC" } },
+        alignment: { vertical: "top", wrapText: true },
+        border: cellBorder
+    };
+    const styleRange = (sheet, headerRow = 0, titleRow = -1) => {
+        if (!sheet["!ref"]) return;
+        const range = XLSX.utils.decode_range(sheet["!ref"]);
+        for (let row = range.s.r; row <= range.e.r; row += 1) {
+            for (let col = range.s.c; col <= range.e.c; col += 1) {
+                const address = XLSX.utils.encode_cell({ r: row, c: col });
+                const cell = sheet[address];
+                if (!cell) continue;
+                cell.s = row === titleRow ? titleStyle : row === headerRow ? headerStyle : (row % 2 ? alternateStyle : bodyStyle);
+            }
+        }
+        sheet["!autofilter"] = { ref: sheet["!ref"] };
+        sheet["!rows"] = sheet["!rows"] || [];
+        if (sheet["!rows"][headerRow]) sheet["!rows"][headerRow].hpt = 30;
+    };
+    const styleSummary = () => {
+        const range = XLSX.utils.decode_range(summarySheet["!ref"]);
+        for (let row = range.s.r; row <= range.e.r; row += 1) {
+            for (let col = range.s.c; col <= range.e.c; col += 1) {
+                const address = XLSX.utils.encode_cell({ r: row, c: col });
+                const cell = summarySheet[address];
+                if (!cell) continue;
+                const value = String(cell.v || "");
+                const isSection = row === 0 || value === "INDICADORES" || value === "DISTRIBUCIÓN POR PRIORIDAD" || value === "DISTRIBUCIÓN POR ESTADO";
+                const isHeader = value === "CANTIDAD";
+                cell.s = isSection ? (row === 0 ? titleStyle : headerStyle) : (isHeader ? headerStyle : (row % 2 ? alternateStyle : bodyStyle));
+            }
+        }
+    };
+    styleSummary();
+    styleRange(ticketSheet, 0);
+    styleRange(adminSheet, 0);
 
     XLSX.utils.book_append_sheet(workbook, summarySheet, "Resumen");
     XLSX.utils.book_append_sheet(workbook, ticketSheet, "Tickets");
