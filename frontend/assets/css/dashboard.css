@@ -138,6 +138,7 @@
 .template-ticket-table { page-break-before:always; break-before:page; }
 .template-print-break { display:none; }
 .template-ticket-page { display:block; }
+.template-ticket-pages { display:block; }
 .template-hard-page-break { display:none; }
 
 @media print {
@@ -170,6 +171,7 @@
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
   body { background:#fff !important; }
   .template-report { max-width:none; padding:0; }
+  .template-ticket-pages { page-break-before:always !important; break-before:page !important; }
   .template-print-break { display:none !important; }
   .template-hard-page-break { display:block !important; height:1px; page-break-before:always !important; break-before:page !important; }
   .template-ticket-page {

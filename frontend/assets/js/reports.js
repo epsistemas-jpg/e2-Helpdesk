@@ -57,8 +57,7 @@ function templateMarkup(report, user) {
       <section class="template-card template-kpis"><div><small>Total de tickets</small><span>${total}</span></div><div><small>Abiertos</small><span>${open}</span></div><div><small>En progreso</small><span>${progress}</span></div><div><small>Resueltos / cerrados</small><span>${completed}</span></div></section>
       <div class="template-grid2"><section class="template-card"><h2>Porcentaje de resolución</h2><div class="template-donut-wrap"><div class="template-donut" style="--done:${pct}%"><div><strong>${pct}%</strong><span>resueltos</span></div></div><div class="template-legend"><p><i class="open"></i><span>Abiertos</span><b>${open}</b></p><p><i class="progress"></i><span>En progreso</span><b>${progress}</b></p><p><i class="done"></i><span>Resueltos / cerrados</span><b>${completed}</b></p></div></div></section><section class="template-card"><h2>Distribución por estado</h2>${status(open,"Abiertos","open")}${status(progress,"En progreso","progress")}${status(resolved,"Resueltos","resolved")}${status(closed,"Cerrados","closed")}</section></div>
       ${user.role === "admin" ? `<section class="template-card template-table-card"><h2>Tickets resueltos por administrador</h2><p class="template-note">Incluye tickets marcados como resueltos o cerrados en el periodo.</p><div class="tablewrap"><table><thead><tr><th>Puesto</th><th>Administrador</th><th>Correo</th><th>Resueltos / cerrados</th><th>Asignados</th></tr></thead><tbody>${adminRows}</tbody></table></div></section>` : ""}
-       ${ticketPagesMarkup}
-    </div>`;
+    </div><div class="template-ticket-pages">${ticketPagesMarkup}</div>`;
 }
 
 function reportToolbar(from, to) {
