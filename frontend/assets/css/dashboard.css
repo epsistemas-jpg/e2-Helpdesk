@@ -144,6 +144,8 @@
 @media print {
   @page { size:297mm 210mm; margin:10mm; }
   html, body { width:100%; min-height:100%; }
+  .app { display:block !important; height:auto !important; min-height:0 !important; overflow:visible !important; }
+  #page-content { height:auto !important; min-height:0 !important; overflow:visible !important; }
   .sidebar, .header, .report-controls, .assistant-launcher { display:none !important; }
   .main, .content { width:100%; padding:0; overflow:visible; }
   .report-toolbar { border:0; padding:0 0 12px; margin-bottom:12px; background:#fff; }
