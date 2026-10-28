@@ -7,6 +7,7 @@ import {
     changeTicketStatus,
     addTicketComment,
     uploadTicketFile,
+    openTicketFile,
     closeTicket
 } from "../../services/ticketService.js";
 
@@ -40,6 +41,11 @@ async function init() {
     });
 
     const commentBtn = document.querySelector("#commentTicket");
+    document.querySelectorAll(".ticket-file-link").forEach(link => link.addEventListener("click", async event => {
+        event.preventDefault();
+        try { await openTicketFile(link.dataset.ticketId, link.dataset.fileId); }
+        catch (error) { Swal.fire({ icon: "error", title: error.message || "No fue posible abrir el archivo" }); }
+    }));
     if (commentBtn) commentBtn.addEventListener("click", async () => {
         const { value: note } = await Swal.fire({ title: "Agregar comentario", input: "textarea", inputPlaceholder: "Escribe tu comentario...", inputValidator: value => !value.trim() ? "Escribe un comentario" : undefined, showCancelButton: true, confirmButtonText: "Guardar", cancelButtonText: "Cancelar" });
         if (!note) return;

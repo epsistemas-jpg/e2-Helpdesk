@@ -250,6 +250,43 @@ async function getTicket(req, res) {
   }
 }
 
+async function getTicketAttachment(req, res) {
+  try {
+    const ticketId = Number(req.params.id);
+    const fileId = Number(req.params.fileId);
+    if (!Number.isInteger(ticketId) || !Number.isInteger(fileId)) {
+      return res.status(400).json({ error: 'Archivo inválido.' });
+    }
+
+    const [rows] = await pool.query(
+      `SELECT f.*, t.user_id AS ticket_user_id
+       FROM ticket_files f
+       JOIN tickets t ON t.id = f.ticket_id
+       WHERE f.id = ? AND f.ticket_id = ?
+       LIMIT 1`,
+      [fileId, ticketId]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Archivo no encontrado.' });
+    const file = rows[0];
+    if (req.user.role === 'employee' && file.ticket_user_id !== req.user.id) {
+      return res.status(403).json({ error: 'No tienes acceso a este archivo.' });
+    }
+
+    const storedName = path.basename(String(file.storage_path || file.file_name || ''));
+    if (!storedName || storedName === '.' || storedName === '..') {
+      return res.status(404).json({ error: 'Archivo no disponible.' });
+    }
+    const filePath = path.join(__dirname, '../../uploads', storedName);
+    await fs.access(filePath);
+    res.type(file.mime_type || 'application/octet-stream');
+    return res.sendFile(filePath);
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'Archivo no disponible.' });
+    console.error('Error descargando archivo:', err.message);
+    return res.status(500).json({ error: 'Error descargando el archivo.' });
+  }
+}
+
 // Solo soporte/admin pueden cambiar estado o asignarse el ticket
 async function updateTicketStatus(req, res) {
   try {
@@ -991,5 +1028,5 @@ async function legacyUpdateTicketStatus(req, res) {
 
 }
 
-module.exports = { createTicket, suggestProblems, listTickets, getTicket, updateTicketStatus, addComment, addAttachment, stats, report, ticketRanking, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
+module.exports = { createTicket, suggestProblems, listTickets, getTicket, getTicketAttachment, updateTicketStatus, addComment, addAttachment, stats, report, ticketRanking, takeTicket, assignTicket, CATEGORIES, PRIORITIES, STATUSES };
 

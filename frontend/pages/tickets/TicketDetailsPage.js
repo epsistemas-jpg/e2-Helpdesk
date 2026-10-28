@@ -17,7 +17,7 @@ export async function TicketDetailsPage(id) {
 
                 <br>
 
-                ${TicketTimeline(data.events, data.files)}
+                ${TicketTimeline(data.events, data.files, id)}
 
             </div>
 

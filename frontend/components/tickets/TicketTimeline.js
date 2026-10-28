@@ -1,11 +1,16 @@
-import CONFIG from "../../config/config.js";
+export function TicketTimeline(events = [], files = [], ticketId = "") {
 
-export function TicketTimeline(events = [], files = []) {
+    const escapeHtml = value => String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
     const attachments = files.length ? `
         <div class="ticket-attachments">
             <h4>Archivos adjuntos</h4>
-            ${files.map(file => `<p><a href="${CONFIG.API_URL.replace(/\/api$/, "")}${file.storage_path}" target="_blank" rel="noopener">📎 ${file.original_name}</a> <small>(${Math.ceil(file.file_size / 1024)} KB)</small></p>`).join("")}
+            ${files.map(file => `<p><a href="#" class="ticket-file-link" data-ticket-id="${escapeHtml(ticketId)}" data-file-id="${escapeHtml(file.id)}">📎 ${escapeHtml(file.original_name)}</a> <small>(${Math.ceil(Number(file.file_size) / 1024)} KB)</small></p>`).join("")}
         </div>` : "";
 
     if (!events.length) {
@@ -35,11 +40,11 @@ export function TicketTimeline(events = [], files = []) {
 
                 <div class="timeline-item">
 
-                    <strong>${event.user_name}</strong>
+                    <strong>${escapeHtml(event.user_name || "Usuario")}</strong>
 
                     <span>${event.status || ""}</span>
 
-                    <p>${event.note || "Sin comentario"}</p>
+                    <p>${escapeHtml(event.note || "Sin comentario")}</p>
 
                     <small>${new Date(event.created_at).toLocaleString()}</small>
 

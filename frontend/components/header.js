@@ -1,5 +1,14 @@
 export function Header(title,user){
 
+    const escapeHtml = value => String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/\"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    const safeName = escapeHtml(user?.name || "Usuario");
+    const safeRole = escapeHtml(user?.role || "employee");
+
     return `
 
 <header class="header">
@@ -14,15 +23,15 @@ export function Header(title,user){
 
             <div>
 
-                <strong>${user.name}</strong><br>
+                <strong>${safeName}</strong><br>
 
-                <small class="role-badge">${user.role}</small>
+                <small class="role-badge">${safeRole}</small>
 
             </div>
 
             <div class="user-avatar">
 
-                ${user.name.charAt(0)}
+                ${escapeHtml((user?.name || "U").charAt(0))}
 
             </div>
 
@@ -30,8 +39,8 @@ export function Header(title,user){
 
         <div id="headerUserDropdown" class="header-user-dropdown" aria-hidden="true">
             <div class="header-user-summary">
-                <strong>${user.name}</strong>
-                <small>${user.role}</small>
+                <strong>${safeName}</strong>
+                <small>${safeRole}</small>
             </div>
             <button id="headerLogoutBtn" type="button" class="header-logout-btn">
                 <svg class="header-logout-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">

@@ -29,8 +29,11 @@ app.use(cors({
   origin: allowedOrigins.length ? allowedOrigins : false,
   credentials: false
 }));
-app.use(express.json({ limit: '12mb' }));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Los adjuntos no se publican como carpeta estática: cada descarga pasa por
+// autenticación y autorización en la ruta de tickets.
+const ticketLimiter = rateLimit({ windowMs: 60 * 1000, limit: 120, standardHeaders: 'draft-7', legacyHeaders: false });
+app.use('/api/tickets', ticketLimiter, ticketRoutes);
+app.use(express.json({ limit: '1mb' }));
 
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
 const serveFrontend = process.env.SERVE_FRONTEND === 'true' && fs.existsSync(frontendDist);
@@ -46,7 +49,6 @@ app.get('/', (req, res) => {
 
 app.get('/api/health', (req, res) => res.json({ ok: true, service: 'helpdesk-backend' }));
 app.use('/api/auth', authLimiter, authRoutes);
-app.use('/api/tickets', ticketRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/google-chat', googleChatRoutes);
 app.use('/api/assistant', assistantLimiter, assistantRoutes);

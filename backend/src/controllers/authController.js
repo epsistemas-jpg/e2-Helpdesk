@@ -114,7 +114,8 @@ function startGoogleLogin(req, res) {
   }
 
   const state = crypto.randomBytes(24).toString('hex');
-  res.setHeader('Set-Cookie', `oauth_state=${encodeURIComponent(state)}; HttpOnly; SameSite=Lax; Max-Age=600; Path=/`);
+  const secureCookie = process.env.NODE_ENV === 'production' ? '; Secure' : '';
+  res.setHeader('Set-Cookie', `oauth_state=${encodeURIComponent(state)}; HttpOnly; SameSite=Lax; Max-Age=600; Path=/${secureCookie}`);
 
   const params = new URLSearchParams({
     client_id: process.env.GOOGLE_CLIENT_ID,
@@ -195,7 +196,9 @@ async function updateProfile(req, res) {
   try {
     const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
     const office = typeof req.body.office === 'string' ? req.body.office.trim() : '';
-    if (!name || !office) return res.status(400).json({ error: 'Nombre y oficina son obligatorios.' });
+    if (name.length < 2 || name.length > 150 || !OFFICES.includes(office)) {
+      return res.status(400).json({ error: 'El nombre u oficina no son válidos.' });
+    }
     await pool.query('UPDATE users SET name = ?, office = ? WHERE id = ?', [name, office, req.user.id]);
     const [rows] = await pool.query('SELECT id, name, email, role, office FROM users WHERE id = ?', [req.user.id]);
     res.json({ user: rows[0] });
@@ -209,7 +212,7 @@ async function updatePassword(req, res) {
   try {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !validPassword(newPassword)) {
-      return res.status(400).json({ error: 'La contraseña nueva debe tener al menos 6 caracteres.' });
+      return res.status(400).json({ error: 'La contraseña nueva debe tener 8-64 caracteres, mayúscula, minúscula, número y símbolo.' });
     }
     const [rows] = await pool.query('SELECT password_hash FROM users WHERE id = ?', [req.user.id]);
     if (!rows.length || !(await bcrypt.compare(currentPassword, rows[0].password_hash))) {

@@ -26,12 +26,21 @@ async function updateUser(req, res) {
   try {
     const { id } = req.params;
     const { role, active } = req.body;
+    if (!/^\d+$/.test(String(id))) {
+      return res.status(400).json({ error: 'Usuario inválido.' });
+    }
     const roles = ['employee', 'support', 'admin'];
     if (role !== undefined && !roles.includes(role)) {
       return res.status(400).json({ error: 'Rol inválido.' });
     }
     if (Number(id) === req.user.id && active === false) {
       return res.status(400).json({ error: 'No puedes desactivar tu propia cuenta.' });
+    }
+    if (active !== undefined && ![true, false, 0, 1].includes(active)) {
+      return res.status(400).json({ error: 'El estado activo es inválido.' });
+    }
+    if (Number(id) === req.user.id && role !== undefined && role !== 'admin') {
+      return res.status(400).json({ error: 'No puedes quitarte tu propio rol de administrador.' });
     }
     const fields = [];
     const values = [];

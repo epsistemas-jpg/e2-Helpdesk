@@ -1,4 +1,6 @@
 import api from "./api.js";
+import CONFIG from "../config/config.js";
+import { Storage } from "../utils/storage.js";
 
 export async function createTicket(data) {
 
@@ -83,6 +85,20 @@ export async function uploadTicketFile(id, file) {
         file_size: file.size,
         data
     });
+}
+
+export async function openTicketFile(ticketId, fileId) {
+    const response = await fetch(`${CONFIG.API_URL}/tickets/${encodeURIComponent(ticketId)}/files/${encodeURIComponent(fileId)}`, {
+        headers: { Authorization: `Bearer ${Storage.getToken()}` }
+    });
+    if (!response.ok) {
+        let message = "No fue posible abrir el archivo.";
+        try { message = (await response.json()).error || message; } catch (_) { /* respuesta no JSON */ }
+        throw new Error(message);
+    }
+    const blobUrl = URL.createObjectURL(await response.blob());
+    window.open(blobUrl, "_blank", "noopener,noreferrer");
+    window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 }
 
 export async function closeTicket(id, note) {

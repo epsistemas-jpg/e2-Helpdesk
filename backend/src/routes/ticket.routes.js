@@ -5,6 +5,7 @@ const {
     createTicket,
     listTickets,
     getTicket,
+    getTicketAttachment,
     updateTicketStatus,
     addComment,
     addAttachment,
@@ -25,6 +26,11 @@ const {
 // TODAS LAS RUTAS REQUIEREN AUTENTICACIÓN
 // ======================================================
 router.use(requireAuth);
+
+// El endpoint de adjuntos necesita más capacidad por el contenido base64,
+// pero sigue pasando primero por autenticación y por el límite de tickets.
+router.post("/:id/files", express.json({ limit: "15mb" }), addAttachment);
+router.use(express.json({ limit: "1mb" }));
 
 // ======================================================
 // EMPLEADOS / SOPORTE / ADMIN
@@ -48,14 +54,14 @@ router.get("/ranking", requireRole("admin"), ticketRanking);
 // Listar tickets
 router.get("/", listTickets);
 
+// Descarga protegida: el usuario solo puede ver archivos de tickets autorizados.
+router.get("/:id/files/:fileId", getTicketAttachment);
+
 // Ver un ticket
 router.get("/:id", getTicket);
 
 // Agregar comentario
 router.post("/:id/comments", addComment);
-
-// Adjuntar archivo
-router.post("/:id/files", addAttachment);
 
 // ======================================================
 // SOPORTE Y ADMIN
