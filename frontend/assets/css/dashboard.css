@@ -172,12 +172,18 @@
   .template-print-break { display:none !important; }
   .template-ticket-page {
     display:block;
-    min-height:170mm;
+    height:178mm;
+    min-height:178mm;
+    margin:0;
     page-break-before:always !important;
+    page-break-after:always !important;
     break-before:page !important;
+    break-after:page !important;
     page-break-inside:auto !important;
     break-inside:auto !important;
+    overflow:visible;
   }
+  .template-ticket-page:last-child { page-break-after:auto !important; break-after:auto !important; }
   .template-ticket-page .template-ticket-table { page-break-before:auto !important; break-before:auto !important; }
   .template-report-header { margin-bottom:10px; }
   .template-report-actions > span, .template-report-actions label, .template-report-actions button { display:none !important; }
