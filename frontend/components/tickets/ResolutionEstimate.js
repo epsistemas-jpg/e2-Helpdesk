@@ -1,12 +1,12 @@
 const TITLE_ESTIMATES = [
-    [/contrase[nñ]a|acceso|permiso|usuario bloqueado|desbloquear/, [0.5, 2]],
-    [/teclado|mouse|rat[oó]n|monitor|pantalla|micr[oó]fono|c[aá]mara/, [1, 3]],
-    [/impresora|imprimir|impresi[oó]n|t[oó]ner|tonner/, [1, 3]],
-    [/correo|outlook|email|e-mail/, [1, 3]],
-    [/internet|wifi|wi-fi|red|vpn|conexi[oó]n|conectar/, [1, 4]],
-    [/reuni[oó]n|teams|zoom|meet/, [0.5, 2]],
-    [/sap|power\s*bi|sharepoint|excel|word/, [2, 6]],
-    [/no abre|no inicia|error|falla|fall[oó]|no funciona|lento|bloquea/, [1, 4]]
+    [/contrase[nñ]a|acceso|permiso|usuario bloqueado|desbloquear/, [0.5, 2], ["acceso_permisos"]],
+    [/teclado|mouse|rat[oó]n|monitor|pantalla|micr[oó]fono|c[aá]mara/, [1, 3], ["hardware"]],
+    [/impresora|imprimir|impresi[oó]n|t[oó]ner|tonner/, [1, 3], ["impresora"]],
+    [/correo|outlook|email|e-mail/, [1, 3], ["correo"]],
+    [/internet|wifi|wi-fi|red|vpn|conexi[oó]n|conectar/, [1, 4], ["red_internet"]],
+    [/reuni[oó]n|teams|zoom|meet/, [0.5, 2], ["software", "otro"]],
+    [/sap|power\s*bi|sharepoint|excel|word/, [2, 6], ["software"]],
+    [/no abre|no inicia|error|falla|fall[oó]|no funciona|lento|bloquea/, [1, 4], ["*"]]
 ];
 
 const CATEGORY_ESTIMATES = {
@@ -34,8 +34,12 @@ function formatDuration(hours) {
 export function getResolutionEstimate(ticket = {}) {
     if (ticket.estimated_resolution_label) return ticket.estimated_resolution_label;
     const title = normalize(ticket.title);
-    const titleMatch = TITLE_ESTIMATES.find(([pattern]) => pattern.test(title));
-    const [baseMin, baseMax] = titleMatch?.[1] || CATEGORY_ESTIMATES[ticket.category] || CATEGORY_ESTIMATES.otro;
+    const category = ticket.category || "otro";
+    const categoryRange = CATEGORY_ESTIMATES[category] || CATEGORY_ESTIMATES.otro;
+    const titleMatch = TITLE_ESTIMATES.find(([pattern, , categories]) =>
+        pattern.test(title) && (categories.includes("*") || categories.includes(category))
+    );
+    const [baseMin, baseMax] = titleMatch?.[1] || categoryRange;
     const priority = ticket.priority || "media";
     const multiplier = {
         urgente: [0.5, 0.75],
