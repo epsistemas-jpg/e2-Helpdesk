@@ -1,10 +1,10 @@
 export function TicketForm(offices = []) {
 
-    const officeOptions = offices.map(office => `
+    const officeOptions = `<option value="">Selecciona la ubicación</option>${offices.map(office => `
         <option value="${office}">
             ${office}
         </option>
-    `).join("");
+    `).join("")}`;
 
     return `
 

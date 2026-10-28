@@ -13,7 +13,8 @@ function publicUser(user) {
   return { id: user.id, name: user.name, email: user.email, role: user.role, office: user.office };
 }
 
-const OFFICES = ['América 2', 'Sede Norte', 'Sede Centro', 'Sede Sur', 'Otra / Remoto'];
+const OFFICES = ['Oficina 205', 'Oficina 204', 'Oficina 206', 'Oficina 1107', 'Oficina 1109', 'Otra'];
+const LEGACY_OFFICES = ['América 2', 'Sede Norte', 'Sede Centro', 'Sede Sur', 'Otra / Remoto'];
 
 const GOOGLE_AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const GOOGLE_TOKEN_URL = 'https://oauth2.googleapis.com/token';
@@ -196,7 +197,7 @@ async function updateProfile(req, res) {
   try {
     const name = typeof req.body.name === 'string' ? req.body.name.trim() : '';
     const office = typeof req.body.office === 'string' ? req.body.office.trim() : '';
-    if (name.length < 2 || name.length > 150 || !OFFICES.includes(office)) {
+    if (name.length < 2 || name.length > 150 || ![...OFFICES, ...LEGACY_OFFICES].includes(office)) {
       return res.status(400).json({ error: 'El nombre u oficina no son válidos.' });
     }
     await pool.query('UPDATE users SET name = ?, office = ? WHERE id = ?', [name, office, req.user.id]);
