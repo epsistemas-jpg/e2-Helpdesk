@@ -8,9 +8,12 @@ export function DashboardInsights(stats = {}) {
     const completed = resolved + closed;
     const completion = total ? Math.round((completed / total) * 100) : 0;
     const active = open + progress;
-    const resolvedPercent = total ? Math.round((resolved / total) * 100) : 0;
-    const activePercent = total ? Math.round((active / total) * 100) : 0;
-    const urgentPercent = total ? Math.max(4, Math.round((urgent / total) * 100)) : 4;
+    const urgentActive = Math.min(urgent, active);
+    const activeRegular = Math.max(active - urgentActive, 0);
+    const completedPercent = total ? Math.round((completed / total) * 100) : 0;
+    const activeRegularPercent = total ? Math.round((activeRegular / total) * 100) : 0;
+    const urgentPercent = total ? Math.round((urgentActive / total) * 100) : 0;
+    const otherPercent = Math.max(0, 100 - completedPercent - activeRegularPercent - urgentPercent);
 
     return `
         <section class="dashboard-insights" aria-label="Resumen inteligente de soporte">
@@ -35,13 +38,13 @@ export function DashboardInsights(stats = {}) {
                 </div>
 
                 <div class="insight-chart-row">
-                    <div class="insight-donut" style="--resolved:${resolvedPercent}%;--active:${activePercent}%;--urgent:${urgentPercent}%" aria-label="${completion}% de tickets completados">
+                    <div class="insight-donut" style="--resolved:${completedPercent}%;--active:${activeRegularPercent}%;--urgent:${urgentPercent}%;--other:${otherPercent}%" aria-label="${completion}% de tickets completados">
                         <div><strong>${completion}%</strong><span>resueltos</span></div>
                     </div>
                     <div class="insight-legend">
                         <span><i class="legend-dot resolved"></i>Resueltos y cerrados <b>${completed}</b></span>
-                        <span><i class="legend-dot active"></i>En atención <b>${active}</b></span>
-                        <span><i class="legend-dot urgent"></i>Urgentes <b>${urgent}</b></span>
+                        <span><i class="legend-dot active"></i>En atención <b>${activeRegular}</b></span>
+                        <span><i class="legend-dot urgent"></i>Urgentes <b>${urgentActive}</b></span>
                     </div>
                 </div>
             </div>
