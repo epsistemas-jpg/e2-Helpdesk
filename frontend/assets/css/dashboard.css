@@ -178,10 +178,7 @@
     page-break-inside:auto !important;
     break-inside:auto !important;
   }
-  .template-ticket-page .template-ticket-table {
-    page-break-before:auto !important;
-    break-before:auto !important;
-  }
+  .template-ticket-page .template-ticket-table { page-break-before:auto !important; break-before:auto !important; }
   .template-report-header { margin-bottom:10px; }
   .template-report-actions > span, .template-report-actions label, .template-report-actions button { display:none !important; }
   .template-kpis { grid-template-columns:repeat(4,1fr); margin-bottom:12px; }
