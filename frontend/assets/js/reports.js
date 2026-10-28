@@ -141,21 +141,7 @@ async function exportExcel(report) {
         ["Abiertos", Number(stats.open) || 0],
         ["En progreso", Number(stats.progress) || 0],
         ["Resueltos", resolved],
-        ["Cerrados", closed],
-        [],
-        ["GRÁFICA · ESTADO DE TICKETS", "", "", ""],
-        ["Estado", "Cantidad", "%", "Distribución"],
-        ["Abiertos", Number(stats.open) || 0, chartPercent(Number(stats.open) || 0), chartBar(Number(stats.open) || 0)],
-        ["En progreso", Number(stats.progress) || 0, chartPercent(Number(stats.progress) || 0), chartBar(Number(stats.progress) || 0)],
-        ["Resueltos", resolved, chartPercent(resolved), chartBar(resolved)],
-        ["Cerrados", closed, chartPercent(closed), chartBar(closed)],
-        [],
-        ["GRÁFICA · PRIORIDAD", "", "", ""],
-        ["Prioridad", "Cantidad", "%", "Distribución"],
-        ["Urgente", Number(stats.urgent) || 0, chartPercent(Number(stats.urgent) || 0), chartBar(Number(stats.urgent) || 0)],
-        ["Alta", Number(stats.high) || 0, chartPercent(Number(stats.high) || 0), chartBar(Number(stats.high) || 0)],
-        ["Media", Number(stats.medium) || 0, chartPercent(Number(stats.medium) || 0), chartBar(Number(stats.medium) || 0)],
-        ["Baja", Number(stats.low) || 0, chartPercent(Number(stats.low) || 0), chartBar(Number(stats.low) || 0)]
+        ["Cerrados", closed]
     ];
 
     const ticketRows = report.tickets.map(ticket => ({
@@ -185,7 +171,23 @@ async function exportExcel(report) {
 
     const workbook = XLSX.utils.book_new();
     const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
-    summarySheet["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 12 }, { wch: 24 }];
+    summarySheet["!cols"] = [{ wch: 32 }, { wch: 18 }, { wch: 3 }, { wch: 3 }, { wch: 3 }, { wch: 28 }, { wch: 14 }, { wch: 12 }, { wch: 26 }];
+    const chartBlocks = [
+        ["GRÁFICA · ESTADO DE TICKETS", "", "", ""],
+        ["Estado", "Cantidad", "%", "Distribución"],
+        ["Abiertos", Number(stats.open) || 0, chartPercent(Number(stats.open) || 0), chartBar(Number(stats.open) || 0)],
+        ["En progreso", Number(stats.progress) || 0, chartPercent(Number(stats.progress) || 0), chartBar(Number(stats.progress) || 0)],
+        ["Resueltos", resolved, chartPercent(resolved), chartBar(resolved)],
+        ["Cerrados", closed, chartPercent(closed), chartBar(closed)],
+        [],
+        ["GRÁFICA · PRIORIDAD", "", "", ""],
+        ["Prioridad", "Cantidad", "%", "Distribución"],
+        ["Urgente", Number(stats.urgent) || 0, chartPercent(Number(stats.urgent) || 0), chartBar(Number(stats.urgent) || 0)],
+        ["Alta", Number(stats.high) || 0, chartPercent(Number(stats.high) || 0), chartBar(Number(stats.high) || 0)],
+        ["Media", Number(stats.medium) || 0, chartPercent(Number(stats.medium) || 0), chartBar(Number(stats.medium) || 0)],
+        ["Baja", Number(stats.low) || 0, chartPercent(Number(stats.low) || 0), chartBar(Number(stats.low) || 0)]
+    ];
+    XLSX.utils.sheet_add_aoa(summarySheet, chartBlocks, { origin: "F1" });
     const ticketSheet = XLSX.utils.json_to_sheet(ticketRows.length ? ticketRows : [{ "Información": "No hay tickets en el periodo seleccionado." }]);
     ticketSheet["!cols"] = [
         { wch: 10 }, { wch: 32 }, { wch: 60 }, { wch: 24 }, { wch: 34 }, { wch: 18 },
@@ -241,7 +243,7 @@ async function exportExcel(report) {
                 const cell = summarySheet[address];
                 if (!cell) continue;
                 const value = String(cell.v || "");
-                const isSection = row === 0 || value === "INDICADORES" || value === "DISTRIBUCIÓN POR PRIORIDAD" || value === "DISTRIBUCIÓN POR ESTADO" || value.startsWith("GRÁFICA ·");
+                const isSection = row === 0 || value === "INDICADORES" || value === "DISTRIBUCIÓN POR PRIORIDAD" || value === "DISTRIBUCIÓN POR ESTADO";
                 const isHeader = value === "CANTIDAD";
                 cell.s = isSection ? (row === 0 ? titleStyle : headerStyle) : (isHeader ? headerStyle : (row % 2 ? alternateStyle : bodyStyle));
             }
@@ -262,7 +264,22 @@ async function exportExcel(report) {
             }
         }
     };
+    const styleChartBlock = (startRow, colors) => {
+        for (let row = startRow; row < startRow + 6; row += 1) {
+            for (let col = 5; col < 9; col += 1) {
+                const cell = summarySheet[XLSX.utils.encode_cell({ r: row, c: col })];
+                if (!cell) continue;
+                cell.s = row === startRow ? titleStyle : row === startRow + 1 ? headerStyle : (row % 2 ? alternateStyle : bodyStyle);
+            }
+        }
+        for (let row = startRow + 2; row < startRow + 6; row += 1) {
+            const barCell = summarySheet[XLSX.utils.encode_cell({ r: row, c: 8 })];
+            if (barCell) barCell.s = { ...bodyStyle, font: { bold: true, color: { rgb: colors[row - startRow - 2] } } };
+        }
+    };
     styleSummary();
+    styleChartBlock(0, ["22A06B", "0891B2", "6366F1", "64748B"]);
+    styleChartBlock(7, ["DC2626", "EA580C", "2563EB", "64748B"]);
     styleRange(ticketSheet, 0);
     styleRange(adminSheet, 0);
 
