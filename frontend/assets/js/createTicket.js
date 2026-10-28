@@ -144,6 +144,7 @@ function initEvents(){
     const imageInput = form.querySelector("#ticketImages");
     const imagePreview = form.querySelector("#ticketImagePreview");
     const defaultDescriptionPlaceholder = description?.getAttribute("placeholder") || "Describe el problema con el mayor detalle posible...";
+    if (description) description.dataset.defaultPlaceholder = defaultDescriptionPlaceholder;
     const titleCount = form.querySelector("#titleCount");
     const descriptionCount = form.querySelector("#descriptionCount");
     const updateCount = (field, counter) => {
@@ -172,7 +173,11 @@ function initEvents(){
         files.forEach(file => {
             const item = document.createElement("span");
             item.className = "ticket-image-chip";
-            item.innerHTML = `<i class="bi bi-image"></i><span>${file.name}</span>`;
+            const icon = document.createElement("i");
+            icon.className = "bi bi-image";
+            const name = document.createElement("span");
+            name.textContent = file.name;
+            item.append(icon, name);
             imagePreview.appendChild(item);
         });
     });
@@ -423,6 +428,12 @@ async function submitTicket(e){
 
     const form = e.currentTarget || e.target;
     const btn = form.querySelector("button[type='submit']");
+    const description = form.querySelector("#description");
+    const imageInput = form.querySelector("#ticketImages");
+    const imagePreview = form.querySelector("#ticketImagePreview");
+    const defaultDescriptionPlaceholder = description?.dataset.defaultPlaceholder
+        || description?.getAttribute("placeholder")
+        || "Escribe un título y la IA te mostrará un ejemplo para completar la descripción...";
 
     if (!form || !btn) {
         console.error("El formulario de tickets está incompleto.");
@@ -456,21 +467,25 @@ async function submitTicket(e){
         return;
     }
 
+    let createdTicketId = null;
     try{
 
         const response = await createTicket(data);
+        const ticket = response?.ticket;
+        if (!ticket?.id) throw new Error("El ticket se creó sin un identificador válido.");
+        createdTicketId = ticket.id;
 
-        const images = Array.from(form.querySelector("#ticketImages")?.files || []);
-        if (images.length && response.ticket?.id) {
+        const images = Array.from(imageInput?.files || []);
+        if (images.length) {
             if (submitStatus) submitStatus.textContent = "Guardando imágenes...";
             for (const image of images) {
-                await uploadTicketFile(response.ticket.id, image);
+                await uploadTicketFile(ticket.id, image);
             }
         }
 
-        const priority = response.ticket.priority || "media";
-        const sla = response.ticket.sla_hours ? `${response.ticket.sla_hours} h` : "24 h";
-        alert(`✅ Ticket #${response.ticket.id} creado correctamente. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
+        const priority = ticket.priority || "media";
+        const sla = ticket.sla_hours ? `${ticket.sla_hours} h` : "24 h";
+        alert(`✅ Ticket #${ticket.id} creado correctamente${images.length ? ` con ${images.length} imagen${images.length === 1 ? "" : "es"} adjunta${images.length === 1 ? "" : "s"}` : ""}. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
 
         form.reset();
         if (imagePreview) imagePreview.replaceChildren();
@@ -488,7 +503,9 @@ async function submitTicket(e){
 
         console.error(err);
 
-        alert(err.message || "No fue posible crear el ticket.");
+        alert(createdTicketId
+            ? `El ticket #${createdTicketId} se creó, pero no se pudieron guardar las imágenes. Puedes adjuntarlas desde el detalle del ticket.`
+            : (err.message || "No fue posible crear el ticket."));
 
     }
 
