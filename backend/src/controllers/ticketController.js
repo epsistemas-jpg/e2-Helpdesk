@@ -708,7 +708,7 @@ async function report(req, res) {
 
     const [tickets] = await pool.query(`
       SELECT t.id, t.title, t.description, t.status, t.priority, t.category, t.office, t.created_at,
-        t.sla_due_at, u.name AS reporter_name, a.name AS assigned_name
+        t.sla_hours, t.sla_due_at, u.name AS reporter_name, u.email AS reporter_email, a.name AS assigned_name
       FROM tickets t JOIN users u ON u.id = t.user_id
       LEFT JOIN users a ON a.id = t.assigned_to
       WHERE ${range} ORDER BY t.created_at DESC`, [from, to]);

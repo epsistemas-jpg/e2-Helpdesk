@@ -2,6 +2,7 @@ import { requireAuth } from "../../utils/router.js";
 import { renderLayout } from "../../layouts/MainLayout.js";
 import { getReport } from "../../services/reportService.js";
 import { Storage } from "../../utils/storage.js";
+import { getResolutionEstimate } from "../../components/tickets/ResolutionEstimate.js";
 if (requireAuth()) init();
 async function init() {
     const user = Storage.getUser() || {};
@@ -90,7 +91,99 @@ function rankingRows(ranking, resolvedOnly = false) {
 function toDate(date) { return date.toISOString().slice(0, 10); }
 function bindReportFilters() { document.querySelector("#applyReport")?.addEventListener("click", () => { const from = document.querySelector("#reportFrom")?.value; const to = document.querySelector("#reportTo")?.value; if (from && to) window.location.search = `?from=${from}&to=${to}`; }); }
 function bindExports(report) { document.querySelector("#exportPdf")?.addEventListener("click", () => window.print()); document.querySelector("#exportExcel")?.addEventListener("click", () => exportExcel(report)); }
-async function exportExcel(report) { if (!window.XLSX) { await new Promise((resolve, reject) => { const script = document.createElement("script"); script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"; script.onload = resolve; script.onerror = reject; document.head.appendChild(script); }); } const rows = report.tickets.map(t => ({ Ticket: t.id, Título: t.title, Descripción: t.description || "", Solicitante: t.reporter_name, Estado: t.status, Prioridad: t.priority, Categoría: t.category, Responsable: t.assigned_name || "Sin asignar", Oficina: t.office, Creado: new Date(t.created_at).toLocaleString() })); const admins = report.administrators.map(a => ({ Administrador: a.name, Correo: a.email, Resueltos: a.resolved_count, Asignados: a.assigned_count })); const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet([report.stats]), "Resumen"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(rows), "Tickets"); XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(admins), "Administradores"); XLSX.writeFile(wb, `reporte-helpdesk-${report.from}-${report.to}.xlsx`); }
+
+async function exportExcel(report) {
+    if (!window.XLSX) {
+        await new Promise((resolve, reject) => {
+            const script = document.createElement("script");
+            script.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+            script.onload = resolve;
+            script.onerror = reject;
+            document.head.appendChild(script);
+        });
+    }
+
+    const XLSX = window.XLSX;
+    const stats = report.stats || {};
+    const total = Number(stats.total) || 0;
+    const resolved = Number(stats.resolved) || 0;
+    const closed = Number(stats.closed) || 0;
+    const completed = resolved + closed;
+    const resolutionPercent = total ? `${Math.round((completed / total) * 100)}%` : "0%";
+    const statusLabel = { abierto: "Abierto", en_progreso: "En progreso", resuelto: "Resuelto", cerrado: "Cerrado" };
+    const priorityLabel = { urgente: "Urgente", alta: "Alta", media: "Media", baja: "Baja" };
+    const categoryLabel = { hardware: "Hardware", software: "Software", red_internet: "Red / Internet", correo: "Correo", impresora: "Impresora", acceso_permisos: "Accesos / Permisos", otro: "Otro" };
+    const dateTime = value => value ? new Date(value).toLocaleString("es-CO") : "-";
+
+    const summaryRows = [
+        ["REPORTE DE SOPORTE", "E2 ENERGÍA EFICIENTE"],
+        ["Periodo", `${report.from} al ${report.to}`],
+        ["Generado", dateTime(new Date())],
+        [],
+        ["INDICADORES", "CANTIDAD"],
+        ["Total de tickets", total],
+        ["Abiertos", Number(stats.open) || 0],
+        ["En progreso", Number(stats.progress) || 0],
+        ["Resueltos", resolved],
+        ["Cerrados", closed],
+        ["Resueltos / cerrados", completed],
+        ["Porcentaje de resolución", resolutionPercent],
+        [],
+        ["DISTRIBUCIÓN POR PRIORIDAD", "CANTIDAD"],
+        ["Urgente", Number(stats.urgent) || 0],
+        ["Alta", Number(stats.high) || 0],
+        ["Media", Number(stats.medium) || 0],
+        ["Baja", Number(stats.low) || 0],
+        [],
+        ["DISTRIBUCIÓN POR ESTADO", "CANTIDAD"],
+        ["Abiertos", Number(stats.open) || 0],
+        ["En progreso", Number(stats.progress) || 0],
+        ["Resueltos", resolved],
+        ["Cerrados", closed]
+    ];
+
+    const ticketRows = report.tickets.map(ticket => ({
+        "Ticket": ticket.id,
+        "Título": ticket.title || "",
+        "Descripción": ticket.description || "Sin descripción",
+        "Solicitante": ticket.reporter_name || "-",
+        "Correo del solicitante": ticket.reporter_email || "-",
+        "Oficina": ticket.office || "-",
+        "Categoría": categoryLabel[ticket.category] || ticket.category || "Otro",
+        "Estado": statusLabel[ticket.status] || ticket.status || "-",
+        "Prioridad": priorityLabel[ticket.priority] || ticket.priority || "-",
+        "Tiempo estimado de solución": getResolutionEstimate(ticket),
+        "SLA (horas)": ticket.sla_hours ?? "-",
+        "Vencimiento del SLA": dateTime(ticket.sla_due_at),
+        "Responsable": ticket.assigned_name || "Sin asignar",
+        "Creado": dateTime(ticket.created_at)
+    }));
+
+    const administratorRows = report.administrators.map((admin, index) => ({
+        "Puesto": index + 1,
+        "Administrador": admin.name,
+        "Correo": admin.email,
+        "Resueltos / cerrados": Number(admin.resolved_count) || 0,
+        "Tickets asignados": Number(admin.assigned_count) || 0
+    }));
+
+    const workbook = XLSX.utils.book_new();
+    const summarySheet = XLSX.utils.aoa_to_sheet(summaryRows);
+    summarySheet["!cols"] = [{ wch: 30 }, { wch: 28 }];
+    const ticketSheet = XLSX.utils.json_to_sheet(ticketRows.length ? ticketRows : [{ "Información": "No hay tickets en el periodo seleccionado." }]);
+    ticketSheet["!cols"] = [
+        { wch: 10 }, { wch: 32 }, { wch: 60 }, { wch: 24 }, { wch: 34 }, { wch: 18 },
+        { wch: 22 }, { wch: 16 }, { wch: 14 }, { wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 24 }, { wch: 24 }
+    ];
+    ticketSheet["!freeze"] = { xSplit: 0, ySplit: 1 };
+    const adminSheet = XLSX.utils.json_to_sheet(administratorRows.length ? administratorRows : [{ "Información": "No hay administradores con actividad en el periodo." }]);
+    adminSheet["!cols"] = [{ wch: 10 }, { wch: 28 }, { wch: 36 }, { wch: 22 }, { wch: 20 }];
+
+    XLSX.utils.book_append_sheet(workbook, summarySheet, "Resumen");
+    XLSX.utils.book_append_sheet(workbook, ticketSheet, "Tickets");
+    XLSX.utils.book_append_sheet(workbook, adminSheet, "Administradores");
+    XLSX.writeFile(workbook, `reporte-helpdesk-${report.from}-${report.to}.xlsx`);
+}
 
 function bindRanking() {
     const select = document.querySelector("#rankingPeriod");
