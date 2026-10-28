@@ -27,29 +27,38 @@ export function initAssistantChat() {
     const form = document.querySelector('#assistantForm');
     const input = document.querySelector('#assistantQuestion');
     const messages = document.querySelector('#assistantMessages');
+    const quickActions = document.querySelector('#assistantQuickActions');
     if (!launcher || !panel || !close || !form || !input || !messages) return;
+    const history = [];
     const open = () => { panel.hidden = false; input.focus(); };
     launcher.addEventListener('click', open);
     close.addEventListener('click', () => { panel.hidden = true; });
     document.querySelectorAll('[data-open-assistant]').forEach(button => button.addEventListener('click', event => { event.preventDefault(); open(); }));
-    form.addEventListener('submit', async event => {
-        event.preventDefault();
-        const question = input.value.trim();
+    const ask = async question => {
         if (!question) return;
         appendMessage(messages, question, 'user');
+        history.push({ role: 'user', text: question });
         input.value = '';
         input.disabled = true;
         appendMessage(messages, 'Estoy revisando tu consulta...', 'bot assistant-message-loading');
         try {
-            const response = await api.post('/assistant/chat', { question });
+            const response = await api.post('/assistant/chat', { question, history });
             messages.querySelector('.assistant-message-loading')?.remove();
             appendMessage(messages, response.reply, 'bot');
-            if (/crear un ticket|crea un ticket|registra un ticket/i.test(response.reply)) {
+            history.push({ role: 'assistant', text: response.reply });
+            if (response.needsTicket || /crear un ticket|crea un ticket|registra un ticket/i.test(response.reply)) {
                 appendCreateTicketLink(messages);
             }
         } catch (error) {
             messages.querySelector('.assistant-message-loading')?.remove();
             appendMessage(messages, error.message || 'No fue posible responder ahora.', 'bot');
         } finally { input.disabled = false; input.focus(); }
+    };
+    form.addEventListener('submit', async event => {
+        event.preventDefault();
+        await ask(input.value.trim());
+    });
+    quickActions?.querySelectorAll('[data-assistant-question]').forEach(button => {
+        button.addEventListener('click', () => ask(button.dataset.assistantQuestion || ''));
     });
 }
