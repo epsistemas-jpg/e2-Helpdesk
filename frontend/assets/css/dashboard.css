@@ -173,7 +173,7 @@
   .report-chart-card, .section, .stats-grid .stat-card { break-inside:avoid; box-shadow:none; }
   body { background:#fff !important; }
   .template-report { max-width:none; padding:0; }
-  .template-ticket-pages { page-break-before:always !important; break-before:page !important; }
+  .template-ticket-pages { page-break-before:auto !important; break-before:auto !important; }
   .template-print-break { display:none !important; }
   .template-hard-page-break { display:block !important; height:1px; page-break-before:always !important; break-before:page !important; }
   .template-ticket-page {
@@ -181,10 +181,10 @@
     height:178mm;
     min-height:178mm;
     margin:0;
-    page-break-before:always !important;
-    page-break-after:always !important;
-    break-before:page !important;
-    break-after:page !important;
+    page-break-before:auto !important;
+    page-break-after:auto !important;
+    break-before:auto !important;
+    break-after:auto !important;
     page-break-inside:auto !important;
     break-inside:auto !important;
     overflow:visible;
