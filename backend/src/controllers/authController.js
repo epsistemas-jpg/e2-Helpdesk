@@ -27,6 +27,8 @@ function frontendUrl() {
 }
 
 function googleRedirectUri() {
+  const isHostinger = process.env.HOSTINGER === 'true' || Boolean(process.env.PORT);
+  if (isHostinger) return 'https://e2tickets.e2energiaeficiente.com/api/auth/google/callback';
   return process.env.GOOGLE_REDIRECT_URI || (process.env.NODE_ENV === 'production'
     ? (process.env.HOSTINGER === 'true' ? 'https://e2tickets.e2energiaeficiente.com/api/auth/google/callback' : 'https://e2-helpdesk-1.onrender.com/api/auth/google/callback')
     : 'http://localhost:4000/api/auth/google/callback');
