@@ -137,7 +137,7 @@ async function createTicket(req, res) {
       ticket,
       priorityAnalysis: {
         ...priorityAnalysis,
-        rules: 'urgente 1-2h · alta 4-8h · media 24-48h · baja 72-168h'
+        rules: 'reunión bloqueada en 10 min o menos: urgente · SLA 1h; urgente general 1-2h · alta 4-8h · media 24-48h · baja 72-168h'
       }
     });
 
