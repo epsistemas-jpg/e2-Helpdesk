@@ -1,4 +1,3 @@
-import TubesCursor from "https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js";
 import { currentUser } from "../../services/authService.js";
 import CONFIG from "../../config/config.js";
 import { Storage } from "../../utils/storage.js";
@@ -8,13 +7,16 @@ const canvas = document.getElementById("canvas");
 const authLoader = document.getElementById("authLoader");
 const googleLoginButton = document.getElementById("googleLoginButton");
 
+// La animación es decorativa: si la CDN no responde no debe bloquear el login.
 if (canvas) {
-    TubesCursor(canvas, {
-        tubes: {
-            colors: ["#c2d500", "#9db100", "#d4ea1c"],
-            lights: { intensity: 200, colors: ["#c2d500", "#d4ea1c", "#8ea300", "#ffffff"] }
-        }
-    });
+    import("https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js")
+        .then(({ default: TubesCursor }) => TubesCursor(canvas, {
+            tubes: {
+                colors: ["#c2d500", "#9db100", "#d4ea1c"],
+                lights: { intensity: 200, colors: ["#c2d500", "#d4ea1c", "#8ea300", "#ffffff"] }
+            }
+        }))
+        .catch(() => canvas.classList.add("animation-unavailable"));
 }
 
 function showLoader(active) {
