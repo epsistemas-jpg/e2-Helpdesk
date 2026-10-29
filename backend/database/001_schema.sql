@@ -64,6 +64,7 @@ CREATE TABLE tickets (
     ) DEFAULT 'media',
 
     sla_hours INT NULL,
+    sla_minutes INT NULL,
 
     sla_due_at DATETIME NULL,
 

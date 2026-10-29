@@ -19,6 +19,7 @@ CREATE TABLE tickets (
     category VARCHAR(30) NOT NULL DEFAULT 'otro' CHECK (category IN ('hardware','software','red_internet','correo','impresora','acceso_permisos','otro')),
     priority VARCHAR(20) NOT NULL DEFAULT 'media' CHECK (priority IN ('baja','media','alta','urgente')),
     sla_hours INTEGER,
+    sla_minutes INTEGER,
     sla_due_at TIMESTAMP,
     status VARCHAR(20) NOT NULL DEFAULT 'abierto' CHECK (status IN ('abierto','en_progreso','resuelto','cerrado')),
     office VARCHAR(100),

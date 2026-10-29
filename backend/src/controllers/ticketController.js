@@ -69,8 +69,9 @@ async function createTicket(req, res) {
 
     const priorityAnalysis = await suggestPriority({ title: cleanTitle, description: cleanDescription, category: finalCategory });
     const finalPriority = priorityAnalysis.priority;
-    const slaHours = priorityAnalysis.slaHours;
-    const slaDueAt = new Date(Date.now() + slaHours * 60 * 60 * 1000);
+    const slaMinutes = Number(priorityAnalysis.slaMinutes) || Number(priorityAnalysis.slaHours || 24) * 60;
+    const slaHours = Math.ceil(slaMinutes / 60);
+    const slaDueAt = new Date(Date.now() + slaMinutes * 60 * 1000);
 
     const [result] = await pool.query(
       `INSERT INTO tickets
@@ -81,12 +82,13 @@ async function createTicket(req, res) {
         category,
         priority,
         sla_hours,
+        sla_minutes,
         sla_due_at,
         office,
         is_remote,
         anydesk_code
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         req.user.id,
         cleanTitle,
@@ -94,6 +96,7 @@ async function createTicket(req, res) {
         finalCategory,
         finalPriority,
         slaHours,
+        slaMinutes,
         slaDueAt,
         typeof office === 'string' && office.trim() ? office.trim().slice(0, 100) : (req.user.office || "América 2"),
         remote ? 1 : 0,
@@ -137,7 +140,7 @@ async function createTicket(req, res) {
       ticket,
       priorityAnalysis: {
         ...priorityAnalysis,
-        rules: 'reunión bloqueada en 10 min o menos: urgente · SLA 1h; urgente general 1-2h · alta 4-8h · media 24-48h · baja 72-168h'
+        rules: 'reunión bloqueada en 5 min: urgente · SLA 15 min; en 10 min: urgente · SLA 30 min; urgente general 1-2h · alta 4-8h · media 24-48h · baja 72-168h'
       }
     });
 
@@ -708,7 +711,7 @@ async function report(req, res) {
 
     const [tickets] = await pool.query(`
       SELECT t.id, t.title, t.description, t.status, t.priority, t.category, t.office, t.created_at,
-        t.sla_hours, t.sla_due_at, u.name AS reporter_name, u.email AS reporter_email, a.name AS assigned_name
+        t.sla_hours, t.sla_minutes, t.sla_due_at, u.name AS reporter_name, u.email AS reporter_email, a.name AS assigned_name
       FROM tickets t JOIN users u ON u.id = t.user_id
       LEFT JOIN users a ON a.id = t.assigned_to
       WHERE ${range} ORDER BY t.created_at DESC`, [from, to]);

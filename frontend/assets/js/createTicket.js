@@ -484,7 +484,8 @@ async function submitTicket(e){
         }
 
         const priority = ticket.priority || "media";
-        const sla = ticket.sla_hours ? `${ticket.sla_hours} h` : "24 h";
+        const slaMinutes = Number(ticket.sla_minutes) || Number(ticket.sla_hours || 24) * 60;
+        const sla = slaMinutes < 60 ? `${slaMinutes} min` : `${Math.ceil(slaMinutes / 60)} h`;
         alert(`✅ Ticket #${ticket.id} creado correctamente${images.length ? ` con ${images.length} imagen${images.length === 1 ? "" : "es"} adjunta${images.length === 1 ? "" : "s"}` : ""}. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
 
         form.reset();

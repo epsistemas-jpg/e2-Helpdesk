@@ -84,6 +84,13 @@ function hasImminentMeeting(title, description) {
   return meeting && blocked && imminent;
 }
 
+function imminentMeetingSlaMinutes(title, description) {
+  const text = normalizeText(`${title || ''} ${description || ''}`);
+  const minutes = text.match(/(?:en|dentro de)\s+(\d+)\s*min(?:utos?)?/);
+  if (minutes) return Number(minutes[1]) <= 5 ? 15 : 30;
+  return /ahora|ya comenzo|en curso|en unos minutos|inmediatamente|inmediato/.test(text) ? 15 : null;
+}
+
 function localPriority(title, description) {
   const text = normalizeText(`${title || ''} ${description || ''}`);
   const meeting = /reunion|videollamada|teams|meet|zoom|presentacion|junta/.test(text);
@@ -110,13 +117,16 @@ function enforcePriorityFloor(geminiPriority, localPriorityValue) {
     : geminiPriority;
 }
 
-function fallback(reason, priority = 'media', slaHoursOverride = null) {
-  const slaHours = Number.isInteger(slaHoursOverride) ? slaHoursOverride : SLA_RULES[priority].fallback;
+function fallback(reason, priority = 'media', slaMinutesOverride = null) {
+  const slaMinutes = Number.isInteger(slaMinutesOverride) ? slaMinutesOverride : SLA_RULES[priority].fallback * 60;
+  const slaHours = Math.ceil(slaMinutes / 60);
+  const slaLabel = slaMinutes < 60 ? `${slaMinutes} minutos` : `${slaHours} horas`;
   return {
     priority,
     slaHours,
+    slaMinutes,
     reason,
-    slaReason: `Se aplicó el SLA local definido para prioridad ${priority}: ${slaHours} hora${slaHours === 1 ? '' : 's'}.`,
+    slaReason: `Se aplicó el SLA local definido para prioridad ${priority}: ${slaLabel}.`,
     source: 'fallback'
   };
 }
@@ -211,7 +221,8 @@ async function suggestPriority({ title, description, category }) {
   const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
   const localFallbackPriority = localPriority(title, description);
   const imminentMeeting = hasImminentMeeting(title, description);
-  if (!apiKey) return fallback('Gemini no está configurado; se aplicó la clasificación local.', localFallbackPriority, imminentMeeting ? 1 : null);
+  const imminentSlaMinutes = imminentMeetingSlaMinutes(title, description);
+  if (!apiKey) return fallback('Gemini no está configurado; se aplicó la clasificación local.', localFallbackPriority, imminentSlaMinutes);
 
   const safeTitle = String(title || '').slice(0, 200);
   const safeDescription = String(description || '').slice(0, 5000);
@@ -268,8 +279,9 @@ Categoría: ${safeCategory}
       return {
         priority: 'urgente',
         slaHours: 1,
+        slaMinutes: imminentSlaMinutes || 30,
         reason: 'La incidencia bloquea una reunión o presentación que comienza en 10 minutos o menos.',
-        slaReason: 'Se asignó un SLA de atención de 1 hora por la inmediatez del compromiso.',
+        slaReason: `Se asignó un SLA de atención de ${imminentSlaMinutes || 30} minutos por la inmediatez del compromiso.`,
         source: 'rules+gemini'
       };
     }
@@ -284,13 +296,14 @@ Categoría: ${safeCategory}
     return {
       priority,
       slaHours,
+      slaMinutes: slaHours * 60,
       reason: String(result.reason || '').slice(0, 500),
       slaReason: String(result.sla_reason || '').slice(0, 500),
       source: 'gemini'
     };
   } catch (error) {
     console.error('No se pudo clasificar la prioridad con Gemini:', error.message);
-    return fallback('No fue posible analizar el ticket; se aplicó la clasificación local.', localFallbackPriority, imminentMeeting ? 1 : null);
+    return fallback('No fue posible analizar el ticket; se aplicó la clasificación local.', localFallbackPriority, imminentSlaMinutes);
   } finally {
     clearTimeout(timeout);
   }

@@ -156,6 +156,7 @@ async function exportExcel(report) {
         "Prioridad": priorityLabel[ticket.priority] || ticket.priority || "-",
         "Tiempo estimado de solución": getResolutionEstimate(ticket),
         "SLA (horas)": ticket.sla_hours ?? "-",
+        "SLA (minutos)": ticket.sla_minutes ?? (ticket.sla_hours ? Number(ticket.sla_hours) * 60 : "-"),
         "Vencimiento del SLA": dateTime(ticket.sla_due_at),
         "Responsable": ticket.assigned_name || "Sin asignar",
         "Creado": dateTime(ticket.created_at)
@@ -191,7 +192,7 @@ async function exportExcel(report) {
     const ticketSheet = XLSX.utils.json_to_sheet(ticketRows.length ? ticketRows : [{ "Información": "No hay tickets en el periodo seleccionado." }]);
     ticketSheet["!cols"] = [
         { wch: 10 }, { wch: 32 }, { wch: 60 }, { wch: 24 }, { wch: 34 }, { wch: 18 },
-        { wch: 22 }, { wch: 16 }, { wch: 14 }, { wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 24 }, { wch: 24 }
+        { wch: 22 }, { wch: 16 }, { wch: 14 }, { wch: 28 }, { wch: 14 }, { wch: 14 }, { wch: 24 }, { wch: 24 }, { wch: 24 }
     ];
     ticketSheet["!freeze"] = { xSplit: 0, ySplit: 1 };
     const adminSheet = XLSX.utils.json_to_sheet(administratorRows.length ? administratorRows : [{ "Información": "No hay administradores con actividad en el periodo." }]);

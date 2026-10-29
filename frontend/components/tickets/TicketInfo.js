@@ -9,6 +9,8 @@ export function TicketInfo(ticket) {
         correo: "Correo", impresora: "Impresora", acceso_permisos: "Accesos / Permisos", otro: "Otro"
     };
     const category = categoryLabels[ticket.category] || ticket.category || "Otro";
+    const slaMinutes = Number(ticket.sla_minutes) || Number(ticket.sla_hours || 0) * 60;
+    const slaLabel = slaMinutes ? (slaMinutes < 60 ? `${slaMinutes} minutos` : `${Math.ceil(slaMinutes / 60)} horas`) : "Pendiente";
 
     return `
 
@@ -83,8 +85,8 @@ export function TicketInfo(ticket) {
             </div>
 
             <div class="ticket-data-highlight">
-                <span>SLA</span>
-                <strong>${ticket.sla_due_at ? new Date(ticket.sla_due_at).toLocaleString() : "Pendiente"}</strong>
+                <span>SLA de atención</span>
+                <strong>${slaLabel}${ticket.sla_due_at ? ` · vence ${new Date(ticket.sla_due_at).toLocaleString()}` : ""}</strong>
             </div>
 
             <div class="ticket-data-highlight ticket-resolution-estimate">
