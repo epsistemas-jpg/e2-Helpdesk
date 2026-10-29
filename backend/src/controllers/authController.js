@@ -22,13 +22,13 @@ const GOOGLE_USERINFO_URL = 'https://openidconnect.googleapis.com/v1/userinfo';
 
 function frontendUrl() {
   return (process.env.FRONTEND_URL || (process.env.NODE_ENV === 'production'
-    ? 'https://e2-helpdesk-frontend.onrender.com'
+    ? (process.env.HOSTINGER === 'true' ? 'https://e2tickets.e2energiaeficiente.com' : 'https://e2-helpdesk-frontend.onrender.com')
     : 'http://localhost:5173')).replace(/\/$/, '');
 }
 
 function googleRedirectUri() {
   return process.env.GOOGLE_REDIRECT_URI || (process.env.NODE_ENV === 'production'
-    ? 'https://e2-helpdesk-1.onrender.com/api/auth/google/callback'
+    ? (process.env.HOSTINGER === 'true' ? 'https://e2tickets.e2energiaeficiente.com/api/auth/google/callback' : 'https://e2-helpdesk-1.onrender.com/api/auth/google/callback')
     : 'http://localhost:4000/api/auth/google/callback');
 }
 
