@@ -36,7 +36,11 @@ app.use('/api/tickets', ticketLimiter, ticketRoutes);
 app.use(express.json({ limit: '1mb' }));
 
 const frontendDist = path.join(__dirname, '..', 'frontend', 'dist');
-const serveFrontend = process.env.SERVE_FRONTEND === 'true' && fs.existsSync(frontendDist);
+const isProduction = process.env.NODE_ENV === 'production'
+  || process.env.HOSTINGER === 'true'
+  || Boolean(process.env.PORT);
+const serveFrontend = (process.env.SERVE_FRONTEND === 'true' || isProduction)
+  && fs.existsSync(frontendDist);
 if (serveFrontend) app.use(express.static(frontendDist));
 
 app.get('/', (req, res) => {

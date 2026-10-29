@@ -64,7 +64,7 @@ Build command: npm run build
 Start command: npm run hostinger:start
 ```
 
-Configura `SERVE_FRONTEND=true`. El backend servirá el contenido generado en `frontend/dist` y también las rutas `/api`.
+Configura `SERVE_FRONTEND=true`. El backend servirá el contenido generado en `frontend/dist` y también las rutas `/api`. El arranque detecta automáticamente el `PORT` asignado por Hostinger.
 
 En Render configura `CORS_ORIGIN` y `FRONTEND_URL` con la URL real de Vercel. Configura también `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `GOOGLE_REDIRECT_URI` con la URL pública del backend:
 

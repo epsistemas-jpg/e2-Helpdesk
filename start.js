@@ -1,7 +1,11 @@
 const net = require('node:net');
 const { spawn } = require('node:child_process');
 
-const production = process.env.NODE_ENV === 'production' || process.env.HOSTINGER === 'true';
+// Hostinger asigna PORT aunque no siempre inyecte NODE_ENV/HOSTINGER.
+// Si existe ese puerto externo, debemos arrancar una sola aplicación Node.
+const production = process.env.NODE_ENV === 'production'
+  || process.env.HOSTINGER === 'true'
+  || Boolean(process.env.PORT);
 
 if (production) {
   // En Hostinger se expone un solo puerto: Express sirve el frontend compilado
