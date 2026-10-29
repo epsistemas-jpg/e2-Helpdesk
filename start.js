@@ -1,6 +1,13 @@
 const net = require('node:net');
 const { spawn } = require('node:child_process');
 
+const production = process.env.NODE_ENV === 'production' || process.env.HOSTINGER === 'true';
+
+if (production) {
+  // En Hostinger se expone un solo puerto: Express sirve el frontend compilado
+  // desde frontend/dist y atiende la API bajo /api.
+  require('./backend/server');
+} else {
 const services = [
   ['backend', 4000, ['--prefix', 'backend', 'start']],
   ['frontend', 5173, ['--prefix', 'frontend', 'run', 'dev', '--', '--host', 'localhost']]
@@ -59,3 +66,4 @@ start().catch(error => {
   console.error('No fue posible iniciar los servicios:', error);
   process.exitCode = 1;
 });
+}
