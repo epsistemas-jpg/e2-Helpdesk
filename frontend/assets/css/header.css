@@ -18,15 +18,31 @@
 .header { background:#ffffff; padding:0 32px; }
 .header-heading { display:flex; flex-direction:column; gap:2px; }
 .header-kicker { color:var(--text-muted); font-size:10px; font-weight:700; letter-spacing:1.4px; }
-.header-title { font-size:19px; }
+.header-title { font-family:"Inter",sans-serif; font-size:21px; line-height:1.15; letter-spacing:-.025em; }
 .user-box > div:first-child { text-align:right; }
 .user-box strong { color:var(--text); font-size:13px; }
 .role-badge { display:inline-block; margin-top:3px; padding:3px 7px; border-radius:5px; background:rgba(99,102,241,.12); border:1px solid rgba(129,140,248,.24); color:var(--primary-light); font-size:10px; text-transform:uppercase; letter-spacing:1px; font-weight:700; }
 
 .header-title{
-  font-size:26px;
+  font-size:23px;
   font-weight:700;
   color:var(--text);
+}
+
+.header-title-ticket {
+  display:flex;
+  align-items:center;
+  gap:11px;
+  letter-spacing:-.035em;
+}
+
+.header-title-ticket::before {
+  content:"";
+  width:4px;
+  height:25px;
+  flex:0 0 4px;
+  border-radius:999px;
+  background:linear-gradient(180deg,#818cf8,#4f46e5);
 }
 
 .user-box{
@@ -136,7 +152,8 @@
 @media(max-width:600px){
   .header { padding:0 18px; }
   .header-kicker { display:none; }
-  .header-title { font-size:16px; }
+  .header-title { font-size:18px; }
+  .header-title-ticket::before { height:21px; }
   .user-box > div:first-child { display:none; }
   .header-user-dropdown { right:-4px; }
 }

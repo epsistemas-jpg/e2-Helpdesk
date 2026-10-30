@@ -8,13 +8,15 @@ export function Header(title,user){
         .replace(/'/g, "&#039;");
     const safeName = escapeHtml(user?.name || "Usuario");
     const safeRole = escapeHtml(user?.role || "employee");
+    const safeTitle = escapeHtml(title || "Helpdesk");
+    const isTicketTitle = /^Ticket\s+#/i.test(String(title || ""));
 
     return `
 
 <header class="header">
 
     <div class="header-heading">
-        <h2 class="header-title">${title}</h2>
+        <h2 class="header-title${isTicketTitle ? " header-title-ticket" : ""}">${safeTitle}</h2>
     </div>
 
     <div class="header-user">
