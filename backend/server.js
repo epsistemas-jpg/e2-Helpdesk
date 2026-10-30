@@ -67,6 +67,7 @@ app.use((err, req, res, next) => {
   try {
     await pool.query('SELECT 1');
     await pool.query('ALTER TABLE tickets ADD COLUMN IF NOT EXISTS sla_minutes INTEGER NULL');
+    await pool.query('ALTER TABLE ticket_files ADD COLUMN IF NOT EXISTS file_data BYTEA NULL');
     console.log('Conectado a PostgreSQL/Neon');
   } catch (err) {
     console.error('Error conectando a PostgreSQL/Neon:', err.message);

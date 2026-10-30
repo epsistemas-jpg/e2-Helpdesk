@@ -1,0 +1,2 @@
+ALTER TABLE ticket_files
+    ADD COLUMN IF NOT EXISTS file_data BYTEA NULL;

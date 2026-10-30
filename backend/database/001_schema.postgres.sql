@@ -52,6 +52,7 @@ CREATE TABLE ticket_files (
     mime_type VARCHAR(100),
     file_size BIGINT,
     storage_path VARCHAR(500),
+    file_data BYTEA,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 

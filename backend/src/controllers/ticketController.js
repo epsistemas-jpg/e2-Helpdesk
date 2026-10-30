@@ -279,9 +279,10 @@ async function getTicketAttachment(req, res) {
     if (!storedName || storedName === '.' || storedName === '..') {
       return res.status(404).json({ error: 'Archivo no disponible.' });
     }
+    res.type(file.mime_type || 'application/octet-stream');
+    if (file.file_data) return res.send(file.file_data);
     const filePath = path.join(__dirname, '../../uploads', storedName);
     await fs.access(filePath);
-    res.type(file.mime_type || 'application/octet-stream');
     return res.sendFile(filePath);
   } catch (err) {
     if (err.code === 'ENOENT') return res.status(404).json({ error: 'Archivo no disponible.' });
@@ -575,9 +576,10 @@ async function addAttachment(req, res) {
                 original_name,
                 mime_type,
                 file_size,
-                storage_path
+                storage_path,
+                file_data
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?)`,
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
             [
                 id,
                 req.user.id,
@@ -585,7 +587,8 @@ async function addAttachment(req, res) {
                 file_name,
                 cleanMime,
                 buffer.length,
-                `/uploads/${storedName}`
+                `/uploads/${storedName}`,
+                buffer
             ]
         );
 
