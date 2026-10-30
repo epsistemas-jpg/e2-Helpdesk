@@ -243,13 +243,46 @@
 }
 
 .category-help {
-    min-height: 30px;
+    min-height: 26px;
 }
 
 .category-help i {
     color: var(--primary-light);
     margin-right: 4px;
 }
+
+.ticket-sla-info {
+    display: flex;
+    gap: 14px;
+    margin: 4px 30px 24px;
+    padding: 16px 18px;
+    border: 1px solid #dbeafe;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f5f9ff, #ffffff);
+}
+.ticket-sla-icon {
+    display: grid;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    place-items: center;
+    border-radius: 11px;
+    background: #e0edff;
+    color: #2563eb;
+    font-size: 18px;
+}
+.ticket-sla-content { display: grid; gap: 6px; min-width: 0; }
+.ticket-sla-content > strong { color: #0f172a; font-size: 14px; }
+.ticket-sla-content p { margin: 0; color: #475569; font-size: 12px; line-height: 1.45; }
+.ticket-sla-ranges { display: flex; flex-wrap: wrap; gap: 8px 16px; color: #334155; font-size: 11px; }
+.ticket-sla-ranges span { display: inline-flex; align-items: center; gap: 5px; }
+.ticket-sla-ranges strong { font-weight: 800; }
+.ticket-sla-content > small { color: #64748b; font-size: 11px; line-height: 1.4; }
+.sla-dot { width: 7px; height: 7px; border-radius: 50%; }
+.sla-dot-urgent { background: #dc2626; }
+.sla-dot-high { background: #ea580c; }
+.sla-dot-medium { background: #2563eb; }
+.sla-dot-low { background: #64748b; }
 
 .form-group select:disabled {
     opacity: .82;
@@ -423,6 +456,7 @@
     .ticket-form > .priority-ai-note,
     .ticket-form > .remote-access-section,
     .ticket-form > .actions { margin-left:20px; margin-right:20px; }
+    .ticket-sla-info { margin-left:20px; margin-right:20px; }
 
     .page-title h2{ font-size:24px; }
     .page-title{ margin-bottom:20px; }

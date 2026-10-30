@@ -146,7 +146,7 @@ export function TicketForm(offices = []) {
                         </select>
 
                         <input type="hidden" id="categoryValue" name="category" value="otro">
-                        <small id="categoryHelp" class="field-help category-help"><i class="bi bi-lock-fill"></i> Se asigna automáticamente según el título y no se puede editar.</small>
+                        <small id="categoryHelp" class="field-help category-help"><i class="bi bi-stars"></i> Se asigna automáticamente.</small>
 
                     </div>
 
@@ -171,6 +171,21 @@ export function TicketForm(offices = []) {
                     </div>
 
                 </div>
+
+                <section class="ticket-sla-info" role="note" aria-label="Información del SLA">
+                    <div class="ticket-sla-icon"><i class="bi bi-clock-history"></i></div>
+                    <div class="ticket-sla-content">
+                        <strong>¿Cuánto puede tardar la atención?</strong>
+                        <p>El sistema analiza el título y la descripción y asigna automáticamente el tiempo de atención. El conteo empieza cuando se crea el ticket.</p>
+                        <div class="ticket-sla-ranges">
+                            <span><b class="sla-dot sla-dot-urgent"></b><strong>Urgente:</strong> 1–2 horas</span>
+                            <span><b class="sla-dot sla-dot-high"></b><strong>Alta:</strong> 4–8 horas</span>
+                            <span><b class="sla-dot sla-dot-medium"></b><strong>Media:</strong> 24–48 horas</span>
+                            <span><b class="sla-dot sla-dot-low"></b><strong>Baja:</strong> 72–168 horas</span>
+                        </div>
+                        <small>Si existe una reunión bloqueada en los próximos 10 minutos, el sistema puede asignar un SLA especial de 15 o 30 minutos.</small>
+                    </div>
+                </section>
 
                 <div class="remote-access-section">
                     <div class="remote-access-heading">
@@ -236,7 +251,7 @@ export function TicketForm(offices = []) {
                         <label class="attachment-picker" for="ticketImages"><i class="bi bi-paperclip"></i> Adjuntar imágenes</label>
                         <input id="ticketImages" name="ticketImages" type="file" accept="image/png,image/jpeg,image/gif,image/webp" multiple hidden>
                     </div>
-                    <div id="ticketImagePreview" class="ticket-image-preview" aria-live="polite"></div>
+                    <div id="ticketImagePreview" class="ticket-image-preview" aria-live="polite" hidden></div>
                     <small class="field-help">Máximo 5 imágenes de 10 MB cada una.</small>
                 </div>
 

@@ -4,6 +4,7 @@ import { CreateTicketPage } from "../../pages/tickets/CreateTicketPage.js";
 import { createTicket, uploadTicketFile } from "../../services/ticketService.js";
 import api from "../../services/api.js";
 
+let selectedImageFiles = [];
 
 
 window.alert = (message) => {
@@ -160,26 +161,71 @@ function initEvents(){
     form.querySelector("#office")?.addEventListener("change", (event) => clearFieldError(event.currentTarget));
     form.querySelector("#anydesk_code")?.addEventListener("input", (event) => clearFieldError(event.currentTarget));
 
-    imageInput?.addEventListener("change", () => {
-        const files = Array.from(imageInput.files || []);
-        if (files.length > 5 || files.some(file => !file.type.startsWith("image/") || file.size > 10 * 1024 * 1024)) {
-            imageInput.value = "";
-            if (imagePreview) imagePreview.replaceChildren();
-            alert("Puedes adjuntar máximo 5 imágenes de hasta 10 MB cada una.");
-            return;
-        }
+    const syncImageInput = () => {
+        if (!imageInput || typeof DataTransfer === "undefined") return;
+        const transfer = new DataTransfer();
+        selectedImageFiles.forEach(file => transfer.items.add(file));
+        imageInput.files = transfer.files;
+    };
+
+    const formatFileSize = (bytes) => bytes < 1024 * 1024
+        ? `${Math.max(1, Math.round(bytes / 1024))} KB`
+        : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+
+    const renderImagePreview = () => {
         if (!imagePreview) return;
         imagePreview.replaceChildren();
-        files.forEach(file => {
-            const item = document.createElement("span");
-            item.className = "ticket-image-chip";
-            const icon = document.createElement("i");
-            icon.className = "bi bi-image";
-            const name = document.createElement("span");
+        selectedImageFiles.forEach((file, index) => {
+            const item = document.createElement("article");
+            item.className = "ticket-image-card";
+
+            const image = document.createElement("img");
+            image.className = "ticket-image-thumb";
+            image.alt = `Vista previa de ${file.name}`;
+            image.src = URL.createObjectURL(file);
+            image.onload = () => URL.revokeObjectURL(image.src);
+
+            const details = document.createElement("div");
+            details.className = "ticket-image-details";
+            const name = document.createElement("strong");
             name.textContent = file.name;
-            item.append(icon, name);
+            const size = document.createElement("small");
+            size.textContent = formatFileSize(file.size);
+            details.append(name, size);
+
+            const remove = document.createElement("button");
+            remove.type = "button";
+            remove.className = "ticket-image-remove";
+            remove.setAttribute("aria-label", `Quitar ${file.name}`);
+            remove.title = "Quitar imagen";
+            remove.innerHTML = '<i class="bi bi-x-lg"></i>';
+            remove.addEventListener("click", () => {
+                selectedImageFiles.splice(index, 1);
+                syncImageInput();
+                renderImagePreview();
+            });
+
+            item.append(image, details, remove);
             imagePreview.appendChild(item);
         });
+        imagePreview.hidden = selectedImageFiles.length === 0;
+    };
+
+    imageInput?.addEventListener("change", () => {
+        const incomingFiles = Array.from(imageInput.files || []);
+        const validFiles = incomingFiles.filter(file => file.type.startsWith("image/") && file.size <= 10 * 1024 * 1024);
+        const wouldExceedLimit = selectedImageFiles.length + validFiles.length > 5;
+        const nextFiles = [...selectedImageFiles];
+        validFiles.forEach(file => {
+            const duplicate = nextFiles.some(item => item.name === file.name && item.size === file.size && item.lastModified === file.lastModified);
+            if (!duplicate && nextFiles.length < 5) nextFiles.push(file);
+        });
+        selectedImageFiles = nextFiles;
+        syncImageInput();
+        renderImagePreview();
+        if (incomingFiles.length !== validFiles.length || wouldExceedLimit) {
+            alert("Puedes adjuntar máximo 5 imágenes de hasta 10 MB cada una.");
+        }
     });
 
     const suggestionsPanel = form.querySelector("#problemSuggestions");
@@ -475,7 +521,7 @@ async function submitTicket(e){
         if (!ticket?.id) throw new Error("El ticket se creó sin un identificador válido.");
         createdTicketId = ticket.id;
 
-        const images = Array.from(imageInput?.files || []);
+        const images = [...selectedImageFiles];
         if (images.length) {
             if (submitStatus) submitStatus.textContent = "Guardando imágenes...";
             for (const image of images) {
@@ -489,7 +535,12 @@ async function submitTicket(e){
         alert(`✅ Ticket #${ticket.id} creado correctamente${images.length ? ` con ${images.length} imagen${images.length === 1 ? "" : "es"} adjunta${images.length === 1 ? "" : "s"}` : ""}. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
 
         form.reset();
-        if (imagePreview) imagePreview.replaceChildren();
+        selectedImageFiles = [];
+        if (imageInput) imageInput.value = "";
+        if (imagePreview) {
+            imagePreview.replaceChildren();
+            imagePreview.hidden = true;
+        }
         if (description) description.placeholder = defaultDescriptionPlaceholder;
 
         const category = form.querySelector("#category");
