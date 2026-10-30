@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "sweetalert2": "^11.26.25",
     "vite": "^5.3.3"
-  },
-  "devDependencies": {}
+  }
 }

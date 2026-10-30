@@ -3,6 +3,7 @@ import { renderLayout } from "../../layouts/MainLayout.js";
 import { CreateTicketPage } from "../../pages/tickets/CreateTicketPage.js";
 import { createTicket, uploadTicketFile } from "../../services/ticketService.js";
 import api from "../../services/api.js";
+import Swal from "sweetalert2";
 
 let selectedImageFiles = [];
 
@@ -182,8 +183,9 @@ function initEvents(){
             const image = document.createElement("img");
             image.className = "ticket-image-thumb";
             image.alt = `Vista previa de ${file.name}`;
-            image.src = URL.createObjectURL(file);
-            image.onload = () => URL.revokeObjectURL(image.src);
+            const reader = new FileReader();
+            reader.onload = () => { image.src = reader.result; };
+            reader.readAsDataURL(file);
 
             const details = document.createElement("div");
             details.className = "ticket-image-details";

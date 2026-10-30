@@ -1,4 +1,5 @@
 import { requireAuth } from "../../utils/router.js";
+import Swal from "sweetalert2";
 import { renderLayout } from "../../layouts/MainLayout.js";
 import api from "../../services/api.js";
 import { Storage } from "../../utils/storage.js";
