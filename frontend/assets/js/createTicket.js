@@ -344,6 +344,33 @@ function clearFieldError(field) {
     field.parentElement?.querySelector(".field-validation-error")?.remove();
 }
 
+function formatSlaDuration(minutes) {
+    const totalMinutes = Math.max(1, Number(minutes) || 0);
+    if (totalMinutes < 60) return `${totalMinutes} minuto${totalMinutes === 1 ? "" : "s"}`;
+    const hours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    if (!remainingMinutes) return `${hours} hora${hours === 1 ? "" : "s"}`;
+    return `${hours} hora${hours === 1 ? "" : "s"} y ${remainingMinutes} minutos`;
+}
+
+function showTicketCreatedMessage(ticket, response, imageCount) {
+    const priorityLabels = { urgente: "Urgente", alta: "Alta", media: "Media", baja: "Baja" };
+    const priority = String(ticket?.priority || "media").toLowerCase();
+    const slaMinutes = Number(ticket?.sla_minutes)
+        || Number(response?.priorityAnalysis?.slaMinutes)
+        || Number(ticket?.sla_hours || response?.priorityAnalysis?.slaHours || 24) * 60;
+    const slaText = formatSlaDuration(slaMinutes);
+    const imageText = imageCount ? ` Se guardaron ${imageCount} imagen${imageCount === 1 ? "" : "es"}.` : "";
+
+    Swal.fire({
+        icon: "success",
+        title: `Ticket #${ticket.id} creado`,
+        text: `Prioridad: ${priorityLabels[priority] || priority}. Tiempo estimado de atención: ${slaText}.${imageText}`,
+        confirmButtonText: "Entendido",
+        confirmButtonColor: "#6366f1"
+    });
+}
+
 function showFieldError(field, message) {
     if (!field) return;
     clearFieldError(field);
@@ -529,10 +556,7 @@ async function submitTicket(e){
             }
         }
 
-        const priority = ticket.priority || "media";
-        const slaMinutes = Number(ticket.sla_minutes) || Number(ticket.sla_hours || 24) * 60;
-        const sla = slaMinutes < 60 ? `${slaMinutes} min` : `${Math.ceil(slaMinutes / 60)} h`;
-        alert(`✅ Ticket #${ticket.id} creado correctamente${images.length ? ` con ${images.length} imagen${images.length === 1 ? "" : "es"} adjunta${images.length === 1 ? "" : "s"}` : ""}. Prioridad: ${priority.toUpperCase()} · SLA: ${sla}`);
+        showTicketCreatedMessage(ticket, response, images.length);
 
         form.reset();
         selectedImageFiles = [];

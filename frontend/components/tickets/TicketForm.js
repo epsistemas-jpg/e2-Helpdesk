@@ -172,21 +172,6 @@ export function TicketForm(offices = []) {
 
                 </div>
 
-                <section class="ticket-sla-info" role="note" aria-label="Información del SLA">
-                    <div class="ticket-sla-icon"><i class="bi bi-clock-history"></i></div>
-                    <div class="ticket-sla-content">
-                        <strong>¿Cuánto puede tardar la atención?</strong>
-                        <p>El sistema analiza el título y la descripción y asigna automáticamente el tiempo de atención. El conteo empieza cuando se crea el ticket.</p>
-                        <div class="ticket-sla-ranges">
-                            <span><b class="sla-dot sla-dot-urgent"></b><strong>Urgente:</strong> 1–2 horas</span>
-                            <span><b class="sla-dot sla-dot-high"></b><strong>Alta:</strong> 4–8 horas</span>
-                            <span><b class="sla-dot sla-dot-medium"></b><strong>Media:</strong> 24–48 horas</span>
-                            <span><b class="sla-dot sla-dot-low"></b><strong>Baja:</strong> 72–168 horas</span>
-                        </div>
-                        <small>Si existe una reunión bloqueada en los próximos 10 minutos, el sistema puede asignar un SLA especial de 15 o 30 minutos.</small>
-                    </div>
-                </section>
-
                 <div class="remote-access-section">
                     <div class="remote-access-heading">
                         <div>
