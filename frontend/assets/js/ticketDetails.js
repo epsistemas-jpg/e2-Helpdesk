@@ -9,6 +9,7 @@ import {
     addTicketComment,
     uploadTicketFile,
     openTicketFile,
+    getTicketFileDataUrl,
     closeTicket
 } from "../../services/ticketService.js";
 
@@ -42,6 +43,17 @@ async function init() {
     });
 
     const commentBtn = document.querySelector("#commentTicket");
+    document.querySelectorAll("[data-inline-image]").forEach(async card => {
+        const image = card.querySelector("img");
+        const loading = card.querySelector(".ticket-attachment-loading");
+        try {
+            image.src = await getTicketFileDataUrl(card.dataset.ticketId, card.dataset.fileId);
+            card.classList.add("is-loaded");
+        } catch (error) {
+            card.classList.add("is-error");
+            if (loading) loading.innerHTML = '<i class="bi bi-image-alt"></i><span>No se pudo cargar</span>';
+        }
+    });
     document.querySelectorAll(".ticket-file-link").forEach(link => link.addEventListener("click", async event => {
         event.preventDefault();
         try { await openTicketFile(link.dataset.ticketId, link.dataset.fileId); }

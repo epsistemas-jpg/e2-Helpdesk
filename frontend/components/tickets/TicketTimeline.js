@@ -7,10 +7,24 @@ export function TicketTimeline(events = [], files = [], ticketId = "") {
         .replace(/\"/g, "&quot;")
         .replace(/'/g, "&#039;");
 
+    const isImage = file => String(file.mime_type || '').startsWith('image/')
+        || /\.(png|jpe?g|gif|webp|bmp|svg)$/i.test(String(file.original_name || ''));
+    const formatSize = file => {
+        const bytes = Number(file.file_size) || 0;
+        return bytes >= 1024 * 1024 ? `${(bytes / (1024 * 1024)).toFixed(1)} MB` : `${Math.max(1, Math.ceil(bytes / 1024))} KB`;
+    };
     const attachments = files.length ? `
         <div class="ticket-attachments">
             <h4>Archivos adjuntos</h4>
-            ${files.map(file => `<p><a href="#" class="ticket-file-link" data-ticket-id="${escapeHtml(ticketId)}" data-file-id="${escapeHtml(file.id)}">📎 ${escapeHtml(file.original_name)}</a> <small>(${Math.ceil(Number(file.file_size) / 1024)} KB)</small></p>`).join("")}
+            <div class="ticket-attachment-grid">
+                ${files.map(file => isImage(file)
+                    ? `<figure class="ticket-attachment-image" data-inline-image data-ticket-id="${escapeHtml(ticketId)}" data-file-id="${escapeHtml(file.id)}">
+                        <div class="ticket-attachment-image-frame"><img alt="${escapeHtml(file.original_name)}" loading="lazy"><span class="ticket-attachment-loading"><i class="bi bi-arrow-repeat"></i></span></div>
+                        <figcaption><strong>${escapeHtml(file.original_name)}</strong><small>${formatSize(file)}</small></figcaption>
+                    </figure>`
+                    : `<p><a href="#" class="ticket-file-link" data-ticket-id="${escapeHtml(ticketId)}" data-file-id="${escapeHtml(file.id)}">📎 ${escapeHtml(file.original_name)}</a> <small>(${formatSize(file)})</small></p>`
+                ).join("")}
+            </div>
         </div>` : "";
 
     if (!events.length) {

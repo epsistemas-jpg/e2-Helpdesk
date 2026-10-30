@@ -101,6 +101,20 @@ export async function openTicketFile(ticketId, fileId) {
     window.setTimeout(() => URL.revokeObjectURL(blobUrl), 60_000);
 }
 
+export async function getTicketFileDataUrl(ticketId, fileId) {
+    const response = await fetch(`${CONFIG.API_URL}/tickets/${encodeURIComponent(ticketId)}/files/${encodeURIComponent(fileId)}`, {
+        headers: { Authorization: `Bearer ${Storage.getToken()}` }
+    });
+    if (!response.ok) throw new Error("No fue posible cargar la imagen.");
+    const blob = await response.blob();
+    return await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+    });
+}
+
 export async function closeTicket(id, note) {
     return await changeTicketStatus(id, { status: "cerrado", note });
 }

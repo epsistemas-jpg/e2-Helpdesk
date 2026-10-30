@@ -244,6 +244,20 @@
 
 }
 
+.ticket-attachment-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:14px; margin-top:12px; }
+.ticket-attachment-image { overflow:hidden; margin:0; border:1px solid #dbe3ef; border-radius:14px; background:#fff; box-shadow:0 8px 20px rgba(15,23,42,.06); }
+.ticket-attachment-image-frame { position:relative; display:grid; min-height:150px; place-items:center; background:#f8fafc; }
+.ticket-attachment-image img { display:block; width:100%; height:180px; object-fit:contain; background:#f8fafc; opacity:0; transition:opacity .2s ease; }
+.ticket-attachment-image.is-loaded img { opacity:1; }
+.ticket-attachment-loading { position:absolute; display:flex; align-items:center; gap:6px; color:#6366f1; font-size:12px; }
+.ticket-attachment-loading i { animation:ticketAttachmentSpin 1s linear infinite; }
+.ticket-attachment-image.is-loaded .ticket-attachment-loading { display:none; }
+.ticket-attachment-image.is-error img { display:none; }
+.ticket-attachment-image figcaption { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 11px; }
+.ticket-attachment-image figcaption strong { overflow:hidden; color:#334155; font-size:11px; text-overflow:ellipsis; white-space:nowrap; }
+.ticket-attachment-image figcaption small { flex:0 0 auto; color:#64748b; font-size:10px; }
+@keyframes ticketAttachmentSpin { to { transform:rotate(360deg); } }
+
 /* Acciones alineadas con el lenguaje visual índigo del HelpDesk */
 .ticket-actions { padding:22px; }
 .ticket-actions h3 { display:flex; align-items:center; gap:9px; margin-bottom:18px; }
